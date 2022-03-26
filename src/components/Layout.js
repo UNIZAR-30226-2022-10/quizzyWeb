@@ -1,3 +1,11 @@
+/*
+ * Author: - Mathis
+ * Filename: - Layout.js
+ * Module: - Layout
+ * Description: - Allows you to set up the organization of the page by adding a menu 
+ *                on the side and an appbar above the main content.
+ */
+
 import * as React from 'react';
 import { NavLink} from 'react-router-dom';
 

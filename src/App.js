@@ -277,8 +277,8 @@ const App = () => {
             <DrawerHeader />
             <Routes>
               <Route path='/' element={<Menu/>} />
-              <Route path='/solo/:id' element={<Solo/>} />
-              <Route path='/chat/:id' element={<Chat/>} />
+              <Route path='/solo' element={<Solo/>} />
+              <Route path='/chat' element={<Chat/>} />
               <Route path='/shop' element={<Shop/>} />
               <Route path='/collecion' element={<Collecion/>} />
               <Route path='/stats' element={<Stats/>} />

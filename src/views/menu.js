@@ -3,8 +3,14 @@ import Paper from '@mui/material/Paper';
 
 import Button from '@mui/material/Button'
 import Icon from '@mui/material/Icon'
+import { useNavigate } from "react-router-dom";
 
 export default function Menu() {
+  let navigate = useNavigate();
+  function handleSolo(e) {
+    navigate("/solo", { replace: true });
+  }
+
   return (
     <Container  sx={{ display: 'flex', 
                       flexDirection: 'column',
@@ -29,6 +35,7 @@ export default function Menu() {
               
         <h1> Solitario</h1> 
         <Button variant="contained" 
+                onClick={handleSolo}
                 color="success"
                 size="large"
                 sx={{ width:'50%', 
@@ -79,7 +86,7 @@ export default function Menu() {
                 sx={{width:'50%', alignSelf: 'center', mb:2,backgroundColor:'#658C72'}}
                 startIcon={<Icon baseClassName="fas" className="fa-lock" />}
         >    
-          Crear partida pública
+          Crear partida privada 
         </Button>
       </Paper>
     </Container>
