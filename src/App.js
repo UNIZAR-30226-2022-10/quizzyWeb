@@ -31,7 +31,7 @@ import Shop from './views/shop'
 import Collecion from './views/collecion'
 import Stats from './views/stats'
 import Friends from './views/friends'
-import Chat from './components/chat'
+import Chat from './components/chat/chat'
 import Error404 from './views/error404'
 
 const drawerWidth = 240;

@@ -1,3 +1,10 @@
+/*
+ * Author: - Mathis
+ * Filename: - solo.js
+ * Module: - Game / Solo
+ * Description: - Start menu to begin a solo party
+ */
+
 import * as React from 'react';
 
 import Button from '@mui/material/Button';

@@ -1,3 +1,10 @@
+/*
+ * Author: - Mathis
+ * Filename: - question.js
+ * Module: - Games
+ * Description: - Display a question and the answers from the API 
+ */
+
 import React from 'react'
 import { styled } from '@mui/material/styles';
 import axios from 'axios'
@@ -39,7 +46,6 @@ const CustomLinearProgress = styled(LinearProgress)({
   },
 });
 
-
 const CustomBox = styled(Box)({
   backgroundImage: 'linear-gradient(to right, #757F9A 0%, #D7DDE8  51%, #757F9A  100%)',
   transition: '0.3s',
@@ -52,7 +58,6 @@ const CustomBox = styled(Box)({
    boxShadow: 'rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px',
   }
 });
-
 
 export default function Question(props) {
   return (
