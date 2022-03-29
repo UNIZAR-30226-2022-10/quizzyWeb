@@ -8,7 +8,11 @@ import { useNavigate } from "react-router-dom";
 export default function Menu() {
   let navigate = useNavigate();
   function handleSolo(e) {
-    navigate("/solo", { replace: true });
+    navigate("/solo", { replace: false });
+  }
+
+  function handleMultiPublico(e) {
+    navigate("/chat", { replace: false });
   }
 
   return (
@@ -65,6 +69,7 @@ export default function Menu() {
               
         <h1> Multi </h1> 
         <Button variant="contained" 
+                onClick={handleMultiPublico}   
                 color="success"
                 size="large"
                 sx={{width:'50%', alignSelf: 'center',mb:2,backgroundColor:'#658C72'}}
