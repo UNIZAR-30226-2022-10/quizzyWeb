@@ -1,105 +1,149 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef } from "react"
 import {
     initSocket,
     disconnectSocket,
     subscribeToMessages,
     sendMessage,
-    joinRoom
-} from '../sioService';
+    joinRoom,
+} from "utils/sioService"
 
-import './Chat.css'
-
-import Message from './Message';
+import "./Chat.css"
+import UserMessage from "./UserMessage"
+import SystemMessage from "./SystemMessage"
+import Grid from "@mui/material/Grid"
+import Button from "@mui/material/Button"
+import TextField from "@mui/material/TextField"
+import SendIcon from "@material-ui/icons/Send"
 
 function DateToHoursAndMinutes(datestring) {
-    const date = new Date(datestring);
-    var hours = date.getHours();
-    var minutes = date.getMinutes();
-    return hours + ":" + minutes;
+    const date = new Date(datestring)
+    return date.toLocaleTimeString().slice(0, 5)
 }
 
 function Chat() {
-    const MAIN_CHAT_ROOM = "main";
+    const MAIN_CHAT_ROOM = "main"
 
-    const [token, setToken] = useState('');
-    const [messages, setMessages] = useState([]);
+    const [token, setToken] = useState("")
+    const [chatMessage, setChatMessage] = useState([])
+    const [messages, setMessages] = useState([])
     const [room, setRoom] = useState(MAIN_CHAT_ROOM)
 
-    const tokenInputRef = useRef('');
-    const roomInputRef = useRef('');
-    const inputRef = useRef('');
+    const tokenInputRef = useRef("")
+    const roomInputRef = useRef("")
+    const inputRef = useRef("")
 
     useEffect(() => {
         // Init socket
-        initSocket(token);
+        initSocket(token)
 
         subscribeToMessages((err, data) => {
-            setMessages((prev) => [...prev, data]);
-        });
+            setMessages((prev) => [...prev, data])
+        })
 
         // Cleanup when user disconnects
         return () => {
-            disconnectSocket();
+            disconnectSocket()
         }
-    }, [token]);
+    }, [token])
 
     const submitToken = (e) => {
-        e.preventDefault();
-        const tokenValue = tokenInputRef.current.value;
-        setToken(tokenValue);
-    };
+        e.preventDefault()
+        const tokenValue = tokenInputRef.current.value
+        setToken(tokenValue)
+    }
 
     const submitRoom = (e) => {
         // TO-DO add support for joining rooms
-        e.preventDefault();
-        const roomValue = roomInputRef.current.value;
-        setRoom(roomValue);
-        joinRoom(roomValue, (cb) => {console.log(cb)})
-    };
+        e.preventDefault()
+        const roomValue = roomInputRef.current.value
+        setRoom(roomValue)
+        joinRoom(roomValue, (cb) => {
+            console.log(cb)
+        })
+    }
 
     const submitMessage = (e) => {
-        e.preventDefault();
-        const message = inputRef.current.value;
-        console.log(message)
+        e.preventDefault()
+        const message = chatMessage
+        if (message) {
+            sendMessage({ message }, (cb) => {
+                // clear the input after the message is sent
+                setChatMessage("")
+            })
+        }
+    }
 
-        sendMessage({ message }, (cb) => {
-            // clear the input after the message is sent
-            inputRef.current.value = "";
-        });
-    };
+    const inputChange = (e) => {
+        e.preventDefault()
+        setChatMessage(e.target.value)
+    }
 
     return (
-        <div className="App">
-            <p>Current room: {room}</p>
-            <form onSubmit={submitToken}>
-                <input type="text" placeholder="Enter token" ref={tokenInputRef} />
-                <button type="submit">Submit</button>
-            </form>
-            <form onSubmit={submitRoom}>
-                <input type="text" placeholder="Enter room" ref={roomInputRef} />
-                <button type="submit">Submit</button>
-            </form>
-            <div className="box">
-                <div className="messages">
-                    {messages.map((user, k) => (
-                        <div key={k}>
-                            <Message
-                                avatar={''}
-                                messages={[
-                                    user.name + ' : ' + user.message + ' ' + DateToHoursAndMinutes(user.time)
-                                ]}
+        <Grid container wrap="nowrap" direction="column" className="chat-wrapper">
+            <Grid
+                container
+                wrap="nowrap"
+                item
+                direction="column"
+                rowSpacing={1}
+                className="chat-messages"
+            >
+                {messages.map((user, k) => (
+                    <>
+                        {user.message ? (
+                            <UserMessage
+                                avatar={""}
+                                side="right"
+                                sender={user.name}
+                                message={user.message}
+                                time={DateToHoursAndMinutes(user.time)}
                             />
-                            
-                        </div>
-                    ))}
-                </div>
-                <form className="input-div" onSubmit={submitMessage}>
-                    <input type="text" placeholder="Type in text" ref={inputRef} />
-                    <button type="submit">Submit</button>
+                        ) : (
+                            <>
+                                {user.systemMsg == "connected" ? (
+                                    <SystemMessage
+                                        type="success"
+                                        message={user.name + " has joined the chat"}
+                                    />
+                                ) : (
+                                    <>
+                                        {user.systemMsg == "disconnected" ? (
+                                            <SystemMessage
+                                                type="error"
+                                                message={
+                                                    user.name + " has left the chat"
+                                                }
+                                            />
+                                        ) : (
+                                            <SystemMessage
+                                                type="warning"
+                                                message={user.name + user.systemMsg}
+                                            />
+                                        )}
+                                    </>
+                                )}
+                            </>
+                        )}
+                    </>
+                ))}
+            </Grid>
+            <Grid item>
+                <form className="chat-input" onSubmit={submitMessage}>
+                    <TextField
+                        autoFocus
+                        placeholder="Send a message"
+                        variant="outlined"
+                        value={chatMessage}
+                        fullWidth
+                        onChange={inputChange}
+                    />
+                    <Button variant="contained" type="submit" endIcon={<SendIcon />}>
+                        Submit
+                    </Button>
                 </form>
-            </div>
-        </div>
+            </Grid>
+        </Grid>
     )
 }
 
-export default Chat;
+export default Chat
