@@ -23,7 +23,7 @@ function DateToHoursAndMinutes(datestring) {
 function Chat() {
     const MAIN_CHAT_ROOM = "main"
 
-    const [token, setToken] = useState("")
+    const [token, setToken] = useState("veryverysecret") //TODO: remove this
     const [chatMessage, setChatMessage] = useState([])
     const [messages, setMessages] = useState([])
     const [room, setRoom] = useState(MAIN_CHAT_ROOM)
@@ -100,14 +100,14 @@ function Chat() {
                             />
                         ) : (
                             <>
-                                {user.systemMsg == "connected" ? (
+                                {user.systemMsg === "connected" ? (
                                     <SystemMessage
                                         type="success"
                                         message={user.name + " has joined the chat"}
                                     />
                                 ) : (
                                     <>
-                                        {user.systemMsg == "disconnected" ? (
+                                        {user.systemMsg === "disconnected" ? (
                                             <SystemMessage
                                                 type="error"
                                                 message={

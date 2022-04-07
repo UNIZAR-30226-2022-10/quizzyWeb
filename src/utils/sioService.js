@@ -1,14 +1,14 @@
 import { io } from "socket.io-client"
 
 let socket
-
+let apiURL = process.env.REACT_APP_API_ENDPOINT
 export const initSocket = (token) => {
-    socket = io("http://localhost:5000", {
+    socket = io(apiURL, {
         auth: {
             token,
         },
     })
-    console.log(`Connecting socket...`)
+    console.log(apiURL)
 }
 
 export const disconnectSocket = () => {

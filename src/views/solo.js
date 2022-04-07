@@ -49,6 +49,8 @@ function Solo() {
     var [start, setStart] = React.useState(false)
     var [difficulty, setDifficulty] = React.useState("Medium")
     const [openResume, setOpenResume] = React.useState(false)
+    const [correctAnswer, setCorrectAnswer] = React.useState(0)
+    const [wrongAnswer, setWrongAnswer] = React.useState(0)
 
     function handleStart(e, difficulty) {
         setStart(true)
@@ -60,6 +62,16 @@ function Solo() {
     function handleClose(e) {
         setOpenResume(false)
         setStart(false)
+        setCorrectAnswer(0)
+        setWrongAnswer(0)
+    }
+    const handleCorrectAnswer = (data) => {
+        console.log('Correct ' + data.question)
+        setCorrectAnswer(correctAnswer + 1)
+    }
+    const handleWrongAnswer = (data) => {
+        console.log('Wrong ' + data)
+        setWrongAnswer(wrongAnswer + 1)
     }
 
     const Transition = React.forwardRef(function Transition(props, ref) {
@@ -83,7 +95,7 @@ function Solo() {
                         <Card>
                             <CardHeader
                                 title="Summary of the session"
-                                titleTypographyProps={{ align: "start" }}
+                                titleTypographyProps={{ align: "left" }}
                                 sx={{
                                     textTransform: "capitalize",
                                     backgroundImage:
@@ -94,17 +106,18 @@ function Solo() {
                                 <DialogContentText id="alert-dialog-slide-description">
                                     Here is a summary of your performance during this
                                     session !
-                                    <p>
-                                        <ul>
-                                            <li>Art : 5/10</li>
-                                            <li>Entertainement : 5/10</li>
-                                            <li>Geography : 5/10</li>
-                                            <li>History : 5/10</li>
-                                            <li>Science : 5/10</li>
-                                            <li>Sport : 5/10</li>
-                                        </ul>
-                                    </p>
                                 </DialogContentText>
+                                <ul>
+                                    <li>Art : x/10</li>
+                                    <li>Entertainement : x/10</li>
+                                    <li>Geography : x/10</li>
+                                    <li>History : x/10</li>
+                                    <li>Science : x/10</li>
+                                    <li>Sport : x/10</li>
+                                    <li>Total : {correctAnswer}/{correctAnswer+wrongAnswer}</li>
+                                </ul>
+                                    
+                                
                             </DialogContent>
                             <DialogActions>
                                 <Button onClick={handleClose}>Ok</Button>
@@ -113,7 +126,12 @@ function Solo() {
                     </Dialog>
                 </Grid>
                 <Grid container item >
-                    <Question difficulty={difficulty} timer={2} />
+                    <Question 
+                        difficulty={difficulty} 
+                        timer={15}
+                        onCorrectAnswer={handleCorrectAnswer}
+                        onWrongAnswer={handleWrongAnswer}
+                    />
                 </Grid>
             </Grid>
         )

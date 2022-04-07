@@ -8,9 +8,8 @@
 import React from "react"
 
 import { styled } from "@mui/material/styles"
-import axios from "axios"
-
 import Box from "@mui/material/Box"
+import { Container } from "@mui/material"
 import Paper from "@mui/material/Paper"
 import LinearProgress from "@mui/material/LinearProgress"
 import Grid from "@mui/material/Grid"
@@ -22,6 +21,7 @@ import CardContent from "@mui/material/CardContent"
 import CardHeader from "@mui/material/CardHeader"
 
 import Loader from "./Loader"
+import Error from "views/error404"
 
 import {
     useQuery,
@@ -29,10 +29,33 @@ import {
     QueryClient,
     QueryClientProvider,
 } from "react-query"
-import { ReactQueryDevtools } from "react-query/devtools"
-import { Container } from "@mui/material"
+import axios from "axios"
+
+import { capitalizeFirstLetter } from "utils/stringService"
 
 const queryClient = new QueryClient()
+
+//FUNCTIONS
+//randomize an array
+function shuffle(array) {
+    var currentIndex = array.length,
+        temporaryValue,
+        randomIndex;
+
+    // While there remain elements to shuffle...
+    while (0 !== currentIndex) {
+        // Pick a remaining element...
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex -= 1;
+
+        // And swap it with the current element.
+        temporaryValue = array[currentIndex];
+        array[currentIndex] = array[randomIndex];
+        array[randomIndex] = temporaryValue;
+    }
+
+    return array;
+}
 
 //CUSTOM COMPONENTS
 const CustomLinearProgress = styled(LinearProgress)({
@@ -64,9 +87,19 @@ const CustomBox = styled(Box)({
 
 // WRAPPER FOR THE QUESTION
 export default function Question(props) {
+    const testonCorrectAnswer = (data) => {
+        props.onCorrectAnswer(data)
+    }
+    const testonWrongAnswer = (data) => { 
+        props.onWrongAnswer(data)
+    }
     return (
         <QueryClientProvider client={queryClient}>
-            <Content difficulty={props.difficulty} timer={props.timer} />
+            <Content 
+                difficulty={props.difficulty} 
+                timer={props.timer}
+                onCorrectAnswer={testonCorrectAnswer}
+                onWrongAnswer={testonWrongAnswer} />
         </QueryClientProvider>
     )
 }
@@ -75,44 +108,87 @@ function Content(props) {
     const queryClient = useQueryClient()
     const [intervalS, setIntervalMs] = React.useState(props.timer)
     const [progress, setProgress] = React.useState(0)
-
-    // Query question
-    const { status, data, error, isFetching, refetch } = useQuery(
-        "question",
-        async () => {
-            const res = await axios.get("https://opentdb.com/api.php?amount=1")
+    const [readyNext, setReadyNext] = React.useState(false)
+    const [timer,setTimer] = React.useState(0)
+    const [answered,setAnswered] = React.useState(false)
+    const { status, data, error, refetch } = useQuery(
+        ["question", props.difficulty, props.timer],
+        async() => {
             handleTimer()
+            const res = await axios.get(process.env.REACT_APP_API_ENDPOINT + "/questions", 
+                                    {params: {limit:1, difficulty:props.difficulty.toLowerCase()}}
+                                    )
+            //get answers in an array and randomize this array 
+            const anwsers = shuffle([{'string':res.data.questions[0].correct_answer}, {'string':res.data.questions[0].wrong_answer_1}, 
+                                        {'string':res.data.questions[0].wrong_answer_2}, {'string':res.data.questions[0].wrong_answer_3}])
+            //add answer to res.data.questions[0]
+            res.data.questions[0].answers = anwsers
             return res.data
-        }
+        }, 
     )
-
+        
     // Timer
-    var timer = 0
     const tick = 400 //Refresh every X ms
     var diff = (tick * 100) / (intervalS * 1000) // diff each tick
     const handleTimer = () => {
         setProgress(0)
-        timer = setInterval(() => {
-            setProgress((oldProgress) => {
-                if (oldProgress === 100) {
-                    clearInterval(timer)
-                }
-                return Math.min(oldProgress + diff, 100)
-            })
-        }, tick)
+        setTimer(
+            setInterval(() => {
+                setProgress((oldProgress) => {
+                    return Math.min(oldProgress + diff, 100)
+                })
+            }, tick)
+        )
     }
+
+    // Handle answers
+    const handleAnswer = (answer,index) => {
+        if (!answered) {
+            if (answer.string === data.questions[0].correct_answer) {
+                props.onCorrectAnswer(data.questions[0])
+                clearInterval(timer)
+                data.questions[0].answers[index].state = "correct"
+            } else {
+                props.onWrongAnswer(data.questions[0])
+                clearInterval(timer)
+                data.questions[0].answers[index].state = "wrong"
+                data.questions[0].answers.forEach(answer => {
+                    if (answer.string === data.questions[0].correct_answer) {
+                        answer.state = "correct"
+                    }
+                })
+            }
+            clearInterval(timer)
+            setReadyNext(true)
+            setAnswered(true)
+        }
+    }
+    // Handle next question
+    const handleNextQuestion = () => {
+        setReadyNext(false)
+        setAnswered(false)
+        clearInterval(timer)
+        refetch()
+    }
+
     // Called when the compoonent is unmounted
     React.useEffect(() => {
-        return () => {
+        if (progress === 100) {
+            setReadyNext(true)
+            data.questions[0].answers.map(answer => {
+                if (answer.string === data.questions[0].correct_answer) {
+                    answer.state = "correct"
+                } else {
+                    answer.state = "wrong"
+                }
+            })
             clearInterval(timer)
         }
-    }, [timer])
-
-    // Game Settings
+    }, [progress])
 
     // ERROR QUERY GESTION
     if (status === "loading") return <Loader />
-    if (status === "error") return <span>Error: {error.message}</span>
+    if (status === "error") return <Error message={error.message}/>
 
     return (
         <QueryClientProvider client={queryClient}>
@@ -127,18 +203,6 @@ function Content(props) {
                             onChange={(ev) => setIntervalMs(Number(ev.target.value))}
                             type="number"
                         />{" "}
-                        <span
-                            style={{
-                                display: "inline-block",
-                                marginLeft: ".5rem",
-                                width: 10,
-                                height: 10,
-                                background: isFetching ? "green" : "transparent",
-                                transition: !isFetching ? "all .3s ease" : "none",
-                                borderRadius: "100%",
-                                transform: "scale(2)",
-                            }}
-                        />
                     </label>
                 </Grid>
                 {/* MAIN */}
@@ -151,21 +215,19 @@ function Content(props) {
                         sx={{
                             boxShadow: "rgba(149, 157, 165, 0.2) 0px 8px 24px",
                             borderRadius: "10px",
-                            //padding: "16px",
-                            //margin: "8px",
                             background: "#eee",
                         }}
                     >
                         <>
-                            {data.results.map((item) => (
+                            {data.questions.map((item) => (
                                 <>
-                                    <Card>
+                                    <Card key="Question">
                                         <CardHeader
-                                            title={item.category}
-                                            subheader={item.difficulty}
-                                            titleTypographyProps={{ align: "start" }}
+                                            title={item.category_name}
+                                            subheader={capitalizeFirstLetter(item.difficulty)}
+                                            titleTypographyProps={{ align: "left" }}
                                             subheaderTypographyProps={{
-                                                align: "start",
+                                                align: "left",
                                             }}
                                             sx={{
                                                 textTransform: "capitalize",
@@ -205,48 +267,38 @@ function Content(props) {
                                             </Paper>
 
                                             <Grid container spacing={2}>
-                                                {item.incorrect_answers.map(
-                                                    (answer) => (
-                                                        <Grid item xs={6}>
-                                                            <CustomBox key={answer}>
-                                                                <Typography
-                                                                    variant="h6"
+                                                {item.answers.map(
+                                                    (answer,index) => (
+                                                        <Grid item xs={6} key={index} >
+                                                            
+                                                                <Button
+                                                                    variant="contained"
+                                                                    color={answer.state ? 
+                                                                            answer.state === "correct" 
+                                                                                ? "success" 
+                                                                                : "error"
+                                                                            : "secondary"
+                                                                        }
                                                                     align="center"
+                                                                    fullWidth
                                                                     sx={{
-                                                                        display:
-                                                                            "flex",
-                                                                        flexDirection:
-                                                                            "column",
-                                                                        alignItems:
-                                                                            "center",
+                                                                        color:"white"
                                                                     }}
+                                                                    onClick={() => handleAnswer(answer,index)}
                                                                 >
-                                                                    {answer}
-                                                                </Typography>
-                                                            </CustomBox>
+                                                                    {answer.string}
+                                                                </Button>
+                                                            
                                                         </Grid>
                                                     )
                                                 )}
-
-                                                <Grid item xs={6}>
-                                                    <CustomBox
-                                                        key={item.correct_answer}
-                                                    >
-                                                        <Typography
-                                                            variant="h6"
-                                                            align="center"
-                                                        >
-                                                            {item.correct_answer}
-                                                        </Typography>
-                                                    </CustomBox>
-                                                </Grid>
                                             </Grid>
                                         </CardContent>
 
                                         <CardActions>
                                             <Button
-                                                onClick={refetch}
-                                                disabled={progress !== 100}
+                                                onClick={handleNextQuestion}
+                                                disabled={!readyNext}
                                                 variant="contained"
                                                 color="success"
                                                 fullWidth
@@ -261,7 +313,7 @@ function Content(props) {
                     </Grid>
                     {/*BONUS*/}
                     <Grid
-                        container
+                        container item
                         xs={12}
                         md={2}
                         justifyContent="space-around"
@@ -273,25 +325,21 @@ function Content(props) {
                             background: "#eee",
                         }}
                     >
-                       
+                        <Grid container item xs={3} md={12} justifyContent="center">
                             <Button variant="contained">Bonus 1</Button>
-                      
-                        
+                        </Grid>
+                        <Grid container item xs={3} md={12} justifyContent="center">
                             <Button variant="contained">Bonus 2</Button>
-                      
-                        
+                        </Grid>
+                        <Grid container item xs={3} md={12} justifyContent="center">
                             <Button variant="contained">Bonus 3</Button>
-                       
-                        
+                        </Grid>
+                        <Grid container item xs={3} md={12} justifyContent="center">
                             <Button variant="contained">Bonus 4</Button>
-                    
+                        </Grid>
                     </Grid>
                 </Grid>
-            
-                <ReactQueryDevtools initialIsOpen />
-
             </Container>
-    
         </QueryClientProvider>
     )
 }
