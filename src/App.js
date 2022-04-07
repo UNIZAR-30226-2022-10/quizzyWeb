@@ -33,7 +33,10 @@ import Stats from "./views/stats"
 import Friends from "./views/friends"
 import Chat from "./components/chat/chat"
 import Error404 from "./views/error404"
+import Login from "./views/login"
+import Register from "./views/register"
 
+import AuthService from "services/auth"
 const drawerWidth = 240
 
 const openedMixin = (theme) => ({
@@ -57,24 +60,23 @@ const closedMixin = (theme) => ({
     },
 })
 
-const AppBar = styled(MuiAppBar, {
-    shouldForwardProp: (prop) => prop !== "open",
-})(({ theme, open }) => ({
-    zIndex: theme.zIndex.drawer + 1,
-    transition: theme.transitions.create(["width", "margin"], {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.leavingScreen,
-    }),
-    ...(open && {
-        marginLeft: drawerWidth,
-        width: `calc(100% - ${drawerWidth}px)`,
+const AppBar =  styled(MuiAppBar,{shouldForwardProp: (prop) => prop !== "open",})
+    (({ theme, open }) => ({
+        zIndex: theme.zIndex.drawer + 1,
         transition: theme.transitions.create(["width", "margin"], {
             easing: theme.transitions.easing.sharp,
-            duration: theme.transitions.duration.enteringScreen,
+            duration: theme.transitions.duration.leavingScreen,
         }),
-    }),
+        ...(open && {
+            marginLeft: drawerWidth,
+            width: `calc(100% - ${drawerWidth}px)`,
+            transition: theme.transitions.create(["width", "margin"], {
+                easing: theme.transitions.easing.sharp,
+                duration: theme.transitions.duration.enteringScreen,
+            }),
+        }),
 }))
-
+   
 const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== "open" })(
     ({ theme, open }) => ({
         width: drawerWidth,
@@ -91,6 +93,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== "open" 
         }),
     })
 )
+
 const DrawerHeader = styled("div")(({ theme }) => ({
     display: "flex",
     alignItems: "center",
@@ -120,16 +123,15 @@ const App = () => {
                             backgroundColor: "lightgrey",
                         },
                         "*::-webkit-scrollbar, & *::-webkit-scrollbar-thumb": {
-                            width: '26px',
-                            borderRadius: '16px',
-                            backgroundClip: 'padding-box',
-                            border: '10px solid transparent',
-                            color:'grey',
+                            width: "26px",
+                            borderRadius: "16px",
+                            backgroundClip: "padding-box",
+                            border: "10px solid transparent",
+                            color: "grey",
                         },
                         "*::-webkit-scrollbar-thumb": {
-                            boxShadow: 'inset 0 0 0 10px'
+                            boxShadow: "inset 0 0 0 10px",
                         },
-                        
                     },
                 },
             },
@@ -161,7 +163,10 @@ const App = () => {
     const handleListItemClick = (event, index) => {
         setSelectedIndex(index)
     }
-
+    // Logout
+    const logout = () => {
+        AuthService.logout()
+    }
     const menuList = [
         { text: "Inicio", icon: "fa-house", link: "/" },
         { text: "Tienda", icon: "fa-basket-shopping", link: "/shop" },
@@ -216,7 +221,7 @@ const App = () => {
                         {/* Parameters Button */}
                         <Box sx={{ flexGrow: 0 }}>
                             <Tooltip title="Disconnect">
-                                <Button variant="contained">Logout</Button>
+                                <Button variant="contained" onClick={logout}>Logout</Button>
                             </Tooltip>
                         </Box>
                     </Toolbar>
@@ -290,12 +295,10 @@ const App = () => {
                                                 justifyContent: "center",
                                             }}
                                         >
-                                           
                                             <Icon
                                                 baseClassName="fas"
                                                 className={item.icon}
                                             />
-                                            
                                         </ListItemIcon>
                                         <ListItemText
                                             sx={{
@@ -322,6 +325,8 @@ const App = () => {
                             <Route path="/collecion" element={<Collecion />} />
                             <Route path="/stats" element={<Stats />} />
                             <Route path="/friends" element={<Friends />} />
+                            <Route path="/login" element={<Login />} />
+                            <Route path="/register" element={<Register />} />
 
                             <Route path="*" element={<Error404 />} />
                         </Routes>

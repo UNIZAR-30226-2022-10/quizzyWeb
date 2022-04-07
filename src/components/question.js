@@ -31,7 +31,7 @@ import {
 } from "react-query"
 import axios from "axios"
 
-import { capitalizeFirstLetter } from "utils/stringService"
+import { capitalizeFirstLetter } from "services/stringService"
 
 const queryClient = new QueryClient()
 
@@ -40,21 +40,21 @@ const queryClient = new QueryClient()
 function shuffle(array) {
     var currentIndex = array.length,
         temporaryValue,
-        randomIndex;
+        randomIndex
 
     // While there remain elements to shuffle...
     while (0 !== currentIndex) {
         // Pick a remaining element...
-        randomIndex = Math.floor(Math.random() * currentIndex);
-        currentIndex -= 1;
+        randomIndex = Math.floor(Math.random() * currentIndex)
+        currentIndex -= 1
 
         // And swap it with the current element.
-        temporaryValue = array[currentIndex];
-        array[currentIndex] = array[randomIndex];
-        array[randomIndex] = temporaryValue;
+        temporaryValue = array[currentIndex]
+        array[currentIndex] = array[randomIndex]
+        array[randomIndex] = temporaryValue
     }
 
-    return array;
+    return array
 }
 
 //CUSTOM COMPONENTS
@@ -90,16 +90,17 @@ export default function Question(props) {
     const testonCorrectAnswer = (data) => {
         props.onCorrectAnswer(data)
     }
-    const testonWrongAnswer = (data) => { 
+    const testonWrongAnswer = (data) => {
         props.onWrongAnswer(data)
     }
     return (
         <QueryClientProvider client={queryClient}>
-            <Content 
-                difficulty={props.difficulty} 
+            <Content
+                difficulty={props.difficulty}
                 timer={props.timer}
                 onCorrectAnswer={testonCorrectAnswer}
-                onWrongAnswer={testonWrongAnswer} />
+                onWrongAnswer={testonWrongAnswer}
+            />
         </QueryClientProvider>
     )
 }
@@ -109,24 +110,29 @@ function Content(props) {
     const [intervalS, setIntervalMs] = React.useState(props.timer)
     const [progress, setProgress] = React.useState(0)
     const [readyNext, setReadyNext] = React.useState(false)
-    const [timer,setTimer] = React.useState(0)
-    const [answered,setAnswered] = React.useState(false)
+    const [timer, setTimer] = React.useState(0)
+    const [answered, setAnswered] = React.useState(false)
     const { status, data, error, refetch } = useQuery(
         ["question", props.difficulty, props.timer],
-        async() => {
+        async () => {
             handleTimer()
-            const res = await axios.get(process.env.REACT_APP_API_ENDPOINT + "/questions", 
-                                    {params: {limit:1, difficulty:props.difficulty.toLowerCase()}}
-                                    )
-            //get answers in an array and randomize this array 
-            const anwsers = shuffle([{'string':res.data.questions[0].correct_answer}, {'string':res.data.questions[0].wrong_answer_1}, 
-                                        {'string':res.data.questions[0].wrong_answer_2}, {'string':res.data.questions[0].wrong_answer_3}])
+            const res = await axios.get(
+                process.env.REACT_APP_API_ENDPOINT + "/questions",
+                { params: { limit: 1, difficulty: props.difficulty.toLowerCase() } }
+            )
+            //get answers in an array and randomize this array
+            const anwsers = shuffle([
+                { string: res.data.questions[0].correct_answer },
+                { string: res.data.questions[0].wrong_answer_1 },
+                { string: res.data.questions[0].wrong_answer_2 },
+                { string: res.data.questions[0].wrong_answer_3 },
+            ])
             //add answer to res.data.questions[0]
             res.data.questions[0].answers = anwsers
             return res.data
-        }, 
+        }
     )
-        
+
     // Timer
     const tick = 400 //Refresh every X ms
     var diff = (tick * 100) / (intervalS * 1000) // diff each tick
@@ -142,7 +148,7 @@ function Content(props) {
     }
 
     // Handle answers
-    const handleAnswer = (answer,index) => {
+    const handleAnswer = (answer, index) => {
         if (!answered) {
             if (answer.string === data.questions[0].correct_answer) {
                 props.onCorrectAnswer(data.questions[0])
@@ -152,7 +158,7 @@ function Content(props) {
                 props.onWrongAnswer(data.questions[0])
                 clearInterval(timer)
                 data.questions[0].answers[index].state = "wrong"
-                data.questions[0].answers.forEach(answer => {
+                data.questions[0].answers.forEach((answer) => {
                     if (answer.string === data.questions[0].correct_answer) {
                         answer.state = "correct"
                     }
@@ -175,7 +181,7 @@ function Content(props) {
     React.useEffect(() => {
         if (progress === 100) {
             setReadyNext(true)
-            data.questions[0].answers.map(answer => {
+            data.questions[0].answers.map((answer) => {
                 if (answer.string === data.questions[0].correct_answer) {
                     answer.state = "correct"
                 } else {
@@ -188,7 +194,7 @@ function Content(props) {
 
     // ERROR QUERY GESTION
     if (status === "loading") return <Loader />
-    if (status === "error") return <Error message={error.message}/>
+    if (status === "error") return <Error message={error.message} />
 
     return (
         <QueryClientProvider client={queryClient}>
@@ -224,7 +230,9 @@ function Content(props) {
                                     <Card key="Question">
                                         <CardHeader
                                             title={item.category_name}
-                                            subheader={capitalizeFirstLetter(item.difficulty)}
+                                            subheader={capitalizeFirstLetter(
+                                                item.difficulty
+                                            )}
                                             titleTypographyProps={{ align: "left" }}
                                             subheaderTypographyProps={{
                                                 align: "left",
@@ -268,27 +276,36 @@ function Content(props) {
 
                                             <Grid container spacing={2}>
                                                 {item.answers.map(
-                                                    (answer,index) => (
-                                                        <Grid item xs={6} key={index} >
-                                                            
-                                                                <Button
-                                                                    variant="contained"
-                                                                    color={answer.state ? 
-                                                                            answer.state === "correct" 
-                                                                                ? "success" 
-                                                                                : "error"
-                                                                            : "secondary"
-                                                                        }
-                                                                    align="center"
-                                                                    fullWidth
-                                                                    sx={{
-                                                                        color:"white"
-                                                                    }}
-                                                                    onClick={() => handleAnswer(answer,index)}
-                                                                >
-                                                                    {answer.string}
-                                                                </Button>
-                                                            
+                                                    (answer, index) => (
+                                                        <Grid
+                                                            item
+                                                            xs={6}
+                                                            key={index}
+                                                        >
+                                                            <Button
+                                                                variant="contained"
+                                                                color={
+                                                                    answer.state
+                                                                        ? answer.state ===
+                                                                          "correct"
+                                                                            ? "success"
+                                                                            : "error"
+                                                                        : "secondary"
+                                                                }
+                                                                align="center"
+                                                                fullWidth
+                                                                sx={{
+                                                                    color: "white",
+                                                                }}
+                                                                onClick={() =>
+                                                                    handleAnswer(
+                                                                        answer,
+                                                                        index
+                                                                    )
+                                                                }
+                                                            >
+                                                                {answer.string}
+                                                            </Button>
                                                         </Grid>
                                                     )
                                                 )}
@@ -313,7 +330,8 @@ function Content(props) {
                     </Grid>
                     {/*BONUS*/}
                     <Grid
-                        container item
+                        container
+                        item
                         xs={12}
                         md={2}
                         justifyContent="space-around"

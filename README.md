@@ -4,12 +4,12 @@ Web server repository
 
 ## Technologies
 
-- ReactJs
-- Socket.io
-- MaterialUI
-- React-Redux
-- React-Router
-- and more to come...
+-   ReactJs
+-   Socket.io
+-   MaterialUI
+-   React-Redux
+-   React-Router
+-   and more to come...
 
 ## Setup
 
@@ -26,7 +26,7 @@ in order to work properly.
 
 Now you should be able to start the development server with the options provided by the `npm` scripts:
 
-- `npm run start`: Start the server in development mode
+-   `npm run start`: Start the server in development mode
 
 ## Testing
 

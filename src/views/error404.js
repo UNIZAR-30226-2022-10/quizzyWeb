@@ -26,11 +26,10 @@ export default function Error(props) {
                 />
                 <CardContent sx={{ backgroundColor: "#fcf0e4" }}>
                     <Typography variant="h3" color="text.secondary">
-                       Error :  
-                        { props.message 
+                        Error :
+                        {props.message
                             ? props.message
-                            : ' Pusheen no pudo encontrar esta página :('
-                        }
+                            : " Pusheen no pudo encontrar esta página :("}
                     </Typography>
                 </CardContent>
             </Card>

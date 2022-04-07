@@ -66,11 +66,11 @@ function Solo() {
         setWrongAnswer(0)
     }
     const handleCorrectAnswer = (data) => {
-        console.log('Correct ' + data.question)
+        console.log("Correct " + data.question)
         setCorrectAnswer(correctAnswer + 1)
     }
     const handleWrongAnswer = (data) => {
-        console.log('Wrong ' + data)
+        console.log("Wrong " + data)
         setWrongAnswer(wrongAnswer + 1)
     }
 
@@ -114,10 +114,11 @@ function Solo() {
                                     <li>History : x/10</li>
                                     <li>Science : x/10</li>
                                     <li>Sport : x/10</li>
-                                    <li>Total : {correctAnswer}/{correctAnswer+wrongAnswer}</li>
+                                    <li>
+                                        Total : {correctAnswer}/
+                                        {correctAnswer + wrongAnswer}
+                                    </li>
                                 </ul>
-                                    
-                                
                             </DialogContent>
                             <DialogActions>
                                 <Button onClick={handleClose}>Ok</Button>
@@ -125,9 +126,9 @@ function Solo() {
                         </Card>
                     </Dialog>
                 </Grid>
-                <Grid container item >
-                    <Question 
-                        difficulty={difficulty} 
+                <Grid container item>
+                    <Question
+                        difficulty={difficulty}
                         timer={15}
                         onCorrectAnswer={handleCorrectAnswer}
                         onWrongAnswer={handleWrongAnswer}
@@ -137,10 +138,7 @@ function Solo() {
         )
 
     return (
-        <Container
-            maxWidth="md"
-            component="main"
-        >
+        <Container maxWidth="md" component="main">
             <Box my={4}>
                 <Typography
                     component="h1"
@@ -160,7 +158,7 @@ function Solo() {
                     Lorem ipsum dolor sit amet, consectetur adipiscing elit.
                 </Typography>
             </Box>
-        
+
             <Grid container spacing={5} justifyContent="center">
                 {difficulties.map((d) => (
                     // Enterprise card is full width at sm breakpoint
@@ -171,10 +169,7 @@ function Solo() {
                                 title={d.title}
                                 titleTypographyProps={{ align: "center" }}
                                 action={
-                                    <Icon
-                                        baseClassName="fas"
-                                        className={d.icon}
-                                    />
+                                    <Icon baseClassName="fas" className={d.icon} />
                                 }
                                 subheaderTypographyProps={{
                                     align: "center",

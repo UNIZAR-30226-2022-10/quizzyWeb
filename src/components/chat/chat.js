@@ -5,7 +5,7 @@ import {
     subscribeToMessages,
     sendMessage,
     joinRoom,
-} from "utils/sioService"
+} from "services/sioService"
 
 import "./Chat.css"
 import UserMessage from "./UserMessage"
