@@ -212,7 +212,7 @@ const App = () => {
                             component="div"
                             sx={{ mr: 2 }}
                         >
-                            Username
+                            {localStorage.getItem("user")}
                         </Typography>
 
                         {/* Spacer */}

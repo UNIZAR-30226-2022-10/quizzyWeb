@@ -2,10 +2,12 @@ import { useState } from "react"
 import AuthService from "services/auth"
 import { useNavigate } from "react-router-dom";
 import "index.css"
+
 import Container from '@mui/material/Container'
 import Alert from '@mui/material/Alert'
 import AlertTitle from '@mui/material/AlertTitle'
 
+const bcrypt = require("bcryptjs")
 
 function Register() {
     const [error, setError] = useState("")
@@ -16,10 +18,11 @@ function Register() {
         Register(details)
     }
     let navigate = useNavigate();
-    const Register = (details) => {
+    const Register = async (details) => {
         setError("")
         if (details.psw === details.confirmPsw) {
-            AuthService.register(details.nickname, details.mail, details.psw)
+            const hash = await bcrypt.hash(details.psw, 10);
+            AuthService.register(details.nickname, details.mail, hash)
                 .then(res => {  
                     if (res.data.ok) {
                         console.log("Registered")

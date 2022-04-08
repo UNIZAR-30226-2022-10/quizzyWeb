@@ -27,7 +27,7 @@ function DateToHoursAndMinutes(datestring) {
 function Chat() {
     const MAIN_CHAT_ROOM = "main"
 
-    const [token, setToken] = useState("veryverysecret") //TODO: remove this
+    const [token, setToken] = useState(localStorage.getItem('user')) 
     const [chatMessage, setChatMessage] = useState([])
     const [messages, setMessages] = useState([])
     const [room, setRoom] = useState(MAIN_CHAT_ROOM)
