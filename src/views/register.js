@@ -22,7 +22,7 @@ function Register() {
             AuthService.register(details.nickname, details.mail, details.psw)
                 .then(res => {  
                     if (res.data.ok) {
-                        console.log("lezgo")
+                        console.log("Registered")
                         setRegistered(true)
                         setTimeout(() => {
                             navigate("/login")

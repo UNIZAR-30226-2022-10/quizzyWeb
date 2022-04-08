@@ -39,7 +39,7 @@ form {
     position: relative;
 }
 
-form:after {
+.customForm:after {
     content: "";
     display: block;
     position: absolute;

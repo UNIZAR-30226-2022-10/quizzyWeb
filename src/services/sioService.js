@@ -8,7 +8,6 @@ export const initSocket = (token) => {
             token,
         },
     })
-    console.log(apiURL)
 }
 
 export const disconnectSocket = () => {
@@ -19,19 +18,19 @@ export const disconnectSocket = () => {
 // Handle message receive event
 export const subscribeToMessages = (cb) => {
     if (!socket) return true
-    socket.on("message", (msg) => {
+    socket.on("chat:message", (msg) => {
         return cb(null, msg)
     })
-    socket.on("connected", (msg) => {
+    socket.on("otherConnect", (msg) => {
         return cb(null, msg)
     })
-    socket.on("disconnected", (msg) => {
+    socket.on("otherDisconnect", (msg) => {
         return cb(null, msg)
     })
 }
 
-export const sendMessage = ({ message }, cb) => {
-    if (socket) socket.emit("message", { message }, cb)
+export const sendMessage = ({ message,roomName }, cb) => {
+    if (socket) socket.emit("chat:send", { message, roomName}, cb)
 }
 
 export const joinRoom = (roomName, cb) => {

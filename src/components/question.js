@@ -33,7 +33,13 @@ import axios from "axios"
 
 import { capitalizeFirstLetter } from "services/stringService"
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+     defaultOptions: {
+     queries: {
+       refetchOnWindowFocus: false,
+     },
+   },
+})
 
 //FUNCTIONS
 //randomize an array

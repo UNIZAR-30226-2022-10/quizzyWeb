@@ -20,7 +20,7 @@ function Login() {
 
     React.useEffect(() => {
         if (AuthService.isLoggedIn()) {
-            console.log("logged in")
+            console.log("already logged in")
             setLogged(true)
             navigate("/")
         } else
@@ -33,6 +33,7 @@ function Login() {
                 .then(res => {  
                     if (res.ok) {
                         setLogged(true)
+                        console.log("Logged in")
                         setTimeout(() => {
                             navigate("/")
                         }, 3000)
@@ -51,7 +52,7 @@ function Login() {
 
     return (
         <div className="App">
-            <form onSubmit={submitHandler}>
+            <form className="customForm" onSubmit={submitHandler}>
             <div className="form-inner">
                 <Container sx={{display:'flex',justifyContent:'space-around'}}>
                     <h2>Log in</h2>

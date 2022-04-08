@@ -10,10 +10,14 @@ import {
 import "./Chat.css"
 import UserMessage from "./UserMessage"
 import SystemMessage from "./SystemMessage"
+
+import CssBaseline from "@mui/material/CssBaseline"
 import Grid from "@mui/material/Grid"
 import Button from "@mui/material/Button"
 import TextField from "@mui/material/TextField"
 import SendIcon from "@material-ui/icons/Send"
+import Container from '@material-ui/core/Container'
+import { Socket } from "socket.io-client"
 
 function DateToHoursAndMinutes(datestring) {
     const date = new Date(datestring)
@@ -39,7 +43,6 @@ function Chat() {
         subscribeToMessages((err, data) => {
             setMessages((prev) => [...prev, data])
         })
-
         // Cleanup when user disconnects
         return () => {
             disconnectSocket()
@@ -53,7 +56,7 @@ function Chat() {
     }
 
     const submitRoom = (e) => {
-        // TO-DO add support for joining rooms
+        // TODO: add dynamic room support
         e.preventDefault()
         const roomValue = roomInputRef.current.value
         setRoom(roomValue)
@@ -66,9 +69,12 @@ function Chat() {
         e.preventDefault()
         const message = chatMessage
         if (message) {
-            sendMessage({ message }, (cb) => {
+            sendMessage({ message, roomName: 'main' }, (cb) => { 
+                // TODO: add dynamic room support
                 // clear the input after the message is sent
                 setChatMessage("")
+                setMessages((prev) => [...prev, {name:'Me', message: message, self: true}])
+
             })
         }
     }
@@ -79,7 +85,9 @@ function Chat() {
     }
 
     return (
-        <Grid container wrap="nowrap" direction="column" className="chat-wrapper">
+        <Container maxWidth="xs">
+            <Grid container wrap="nowrap" direction="column" className="chat-wrapper">
+            <CssBaseline />
             <Grid
                 container
                 wrap="nowrap"
@@ -88,36 +96,36 @@ function Chat() {
                 rowSpacing={1}
                 className="chat-messages"
             >
-                {messages.map((user, k) => (
+                {messages.map((item, k) => (
                     <>
-                        {user.message ? (
+                        {item.message ? (
                             <UserMessage
                                 avatar={""}
-                                side="right"
-                                sender={user.name}
-                                message={user.message}
-                                time={DateToHoursAndMinutes(user.time)}
+                                side= {item.self ? "left":"right"}
+                                sender={item.name}
+                                message={item.message}
+                                time={DateToHoursAndMinutes(item.time)}
                             />
                         ) : (
                             <>
-                                {user.systemMsg === "connected" ? (
+                                {item.systemMsg === "connection" ? (
                                     <SystemMessage
                                         type="success"
-                                        message={user.name + " has joined the chat"}
+                                        message={item.name + " has joined the chat"}
                                     />
                                 ) : (
                                     <>
-                                        {user.systemMsg === "disconnected" ? (
+                                        {item.systemMsg === "disconnection" ? (
                                             <SystemMessage
                                                 type="error"
                                                 message={
-                                                    user.name + " has left the chat"
+                                                    item.name + " has left the chat"
                                                 }
                                             />
                                         ) : (
                                             <SystemMessage
                                                 type="warning"
-                                                message={user.name + user.systemMsg}
+                                                message={item.name + item.systemMsg}
                                             />
                                         )}
                                     </>
@@ -143,6 +151,8 @@ function Chat() {
                 </form>
             </Grid>
         </Grid>
+          
+        </Container>
     )
 }
 
