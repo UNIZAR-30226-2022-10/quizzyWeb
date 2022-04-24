@@ -2,8 +2,11 @@ import React, { useState } from "react"
 import Container from '@mui/material/Container'
 import { useNavigate } from "react-router-dom"
 import AuthService from "services/auth"
+
 import Alert from '@mui/material/Alert'
 import AlertTitle from '@mui/material/AlertTitle'
+import Link from '@mui/material/Link'
+import Grid from '@mui/material/Grid'
 
 import "index.css"
 
@@ -20,11 +23,9 @@ function Login() {
 
     React.useEffect(() => {
         if (AuthService.isLoggedIn()) {
-            console.log("already logged in")
             setLogged(true)
             navigate("/")
-        } else
-        console.log("not logged in")
+        }
     }, [])
 
     const Login = (details) => {
@@ -33,10 +34,9 @@ function Login() {
                 .then(res => {  
                     if (res.ok) {
                         setLogged(true)
-                        console.log("Logged in")
                         setTimeout(() => {
                             navigate("/")
-                        }, 3000)
+                        }, 2000)
                     }
                     else
                         setError(res.msg)
@@ -52,51 +52,67 @@ function Login() {
 
     return (
         <div className="App">
-            <form className="customForm" onSubmit={submitHandler}>
-            <div className="form-inner">
-                <Container sx={{display:'flex',justifyContent:'space-around'}}>
-                    <h2>Log in</h2>
-                    <img height="100" src={process.env.PUBLIC_URL + "/images/quizzylogo.png"} alt=""></img>
-                </Container>
-                {error != "" ? <div className="error">{error}</div> : ""}
-                <div className="form-group">
-                    <label htmlFor="nickname">Nickname:</label>
-                    <input
-                        type="text"
-                        name="nickname"
-                        onChange={(e) =>
-                            setDetails({ ...details, nickname: e.target.value })
+            <Container maxWidth="xs" sx={{display:'flex',flexDirection:'column'}}>
+                <Grid container justifyContent="center">
+                    <Grid item xs={12}>
+                        <form className="customForm" onSubmit={submitHandler}>
+                        <div className="form-inner">
+                            <Container sx={{display:'flex',justifyContent:'space-around'}}>
+                                <h2>Log in</h2>
+                                <img height="100" src={process.env.PUBLIC_URL + "/images/quizzylogo.png"} alt=""></img>
+                            </Container>
+                            {error != "" ? <div className="error">{error}</div> : ""}
+                            <div className="form-group">
+                                <label htmlFor="nickname">Nickname:</label>
+                                <input
+                                    type="text"
+                                    name="nickname"
+                                    onChange={(e) =>
+                                        setDetails({ ...details, nickname: e.target.value })
+                                    }
+                                    value={details.nickname}
+                                    autoComplete='username'
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="psw">Password:</label>
+                                <input
+                                    type="password"
+                                    name="psw"
+                                    autoComplete='current-password'
+                                    onChange={(e) =>
+                                        setDetails({ ...details, psw: e.target.value })
+                                    }
+                                    value={details.psw}
+                                />
+                            </div>   
+                            <Grid container>
+                                <Grid item xs={4}>
+                                    <input type="submit" value="Login" />
+                                </Grid>
+                                <Grid item xs={8}>
+                                    <Link href="/register" variant="body2">
+                                    {"Don't have an account? Sign Up"}
+                                    </Link>
+                                </Grid>
+                            </Grid>
+                        
+                        </div>
+                        </form>
+                    </Grid>              
+                    <Grid item xs={4}>
+                        {logged ? 
+                            <Alert severity="success">
+                                <AlertTitle> <strong> Welcome </strong> </AlertTitle>
+                            </Alert>
+                            : ""
                         }
-                        value={details.nickname}
-                    />
-                </div>
-                <div className="form-group">
-                    <label htmlFor="psw">Password:</label>
-                    <input
-                        type="password"
-                        name="psw"
-                        onChange={(e) =>
-                            setDetails({ ...details, psw: e.target.value })
-                        }
-                        value={details.psw}
-                    />
-                </div>   
-                <input type="submit" value="Login" />
-            </div>
-            </form>
-
-            <br/>
-            
-            <p>
-                {logged ? 
-                    <Alert severity="success">
-                        <AlertTitle> <strong> Welcome </strong> </AlertTitle>
-                    </Alert>
-                    : ""
-                }
-            </p>
-          
+                    </Grid>
+                
+                </Grid>
+            </Container>
         </div>
+      
     )
 }
 
