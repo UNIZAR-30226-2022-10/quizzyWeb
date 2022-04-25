@@ -75,21 +75,6 @@ const CustomLinearProgress = styled(LinearProgress)({
         backgroundImage: "linear-gradient(315deg, #000000 0%, #414141 74%)",
     },
 })
-const CustomBox = styled(Box)({
-    backgroundImage:
-        "linear-gradient(to right, #757F9A 0%, #D7DDE8  51%, #757F9A  100%)",
-    transition: "0.3s",
-    height: "100%",
-    m: 4,
-    borderRadius: "10px",
-    "&:hover": {
-        backgroundPosition:
-            "right center" /* change the direction of the change here */,
-        color: "#fff",
-        boxShadow:
-            "rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px",
-    },
-})
 
 // WRAPPER FOR THE QUESTION
 export default function Question(props) {
@@ -104,6 +89,7 @@ export default function Question(props) {
             <Content
                 difficulty={props.difficulty}
                 timer={props.timer}
+                categories={props.categories}
                 onCorrectAnswer={testonCorrectAnswer}
                 onWrongAnswer={testonWrongAnswer}
             />
@@ -118,13 +104,25 @@ function Content(props) {
     const [readyNext, setReadyNext] = React.useState(false)
     const [timer, setTimer] = React.useState(0)
     const [answered, setAnswered] = React.useState(false)
+    /* SELECT RANDOM CATEGORY */
+    const randomCategory = () => {
+        //get random in the categories
+        var arr = props.categories[Math.floor(Math.random()*props.categories.length)];
+        return arr
+    }
+    /* API REQUEST */
     const { status, data, error, refetch } = useQuery(
-        ["question", props.difficulty, props.timer],
+        ["question", props.difficulty, props.timer, props.categories],
         async () => {
             handleTimer()
+            let chosenCategory = randomCategory()
             const res = await axios.get(
                 process.env.REACT_APP_API_ENDPOINT + "/questions",
-                { params: { limit: 1, difficulty: props.difficulty.toLowerCase() } }
+                { params: { 
+                    limit: 1, 
+                    difficulty: props.difficulty.toLowerCase(),
+                    category: chosenCategory
+                }}
             )
             //get answers in an array and randomize this array
             const anwsers = shuffle([
@@ -187,7 +185,7 @@ function Content(props) {
     React.useEffect(() => {
         if (progress === 100) {
             setReadyNext(true)
-            data.questions[0].answers.map((answer) => {
+            data.questions[0].answers.forEach((answer) => {
                 if (answer.string === data.questions[0].correct_answer) {
                     answer.state = "correct"
                 } else {
