@@ -1,5 +1,5 @@
 import * as React from "react"
-import { NavLink } from "react-router-dom"
+import { NavLink, Outlet } from "react-router-dom"
 
 import { styled, ThemeProvider, createTheme } from "@mui/material/styles"
 import MuiDrawer from "@mui/material/Drawer"
@@ -23,7 +23,7 @@ import Tooltip from "@mui/material/Tooltip"
 
 import { loadCSS } from "fg-loadcss"
 import Icon from "@mui/material/Icon"
-import { Route, BrowserRouter, Routes } from "react-router-dom"
+import { Route, BrowserRouter, Routes, Redirect } from "react-router-dom"
 
 import Solo from "./views/solo"
 import Menu from "./views/menu"
@@ -46,6 +46,8 @@ const openedMixin = (theme) => ({
         duration: theme.transitions.duration.enteringScreen,
     }),
     overflowX: "hidden",
+    backgroundColor: theme.palette.primary.main,
+    color: theme.palette.light.main,
 })
 
 const closedMixin = (theme) => ({
@@ -58,6 +60,8 @@ const closedMixin = (theme) => ({
     [theme.breakpoints.up("sm")]: {
         width: `calc(${theme.spacing(8)} + 1px)`,
     },
+    backgroundColor: theme.palette.primary.main,
+    color: theme.palette.light.main,
 })
 
 const AppBar =  styled(MuiAppBar,{shouldForwardProp: (prop) => prop !== "open",})
@@ -91,13 +95,16 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== "open" 
             ...closedMixin(theme),
             "& .MuiDrawer-paper": closedMixin(theme),
         }),
+
+
     })
 )
 
 const DrawerHeader = styled("div")(({ theme }) => ({
     display: "flex",
     alignItems: "center",
-    justifyContent: "flex-end",
+    color: theme.palette.light.main,
+    justifyContent: "space-between",
     padding: theme.spacing(0, 1),
     // necessary for content to be below app bar
     ...theme.mixins.toolbar,
@@ -136,6 +143,20 @@ const App = () => {
                 },
             },
         },
+        palette: {
+            primary: {
+                main: '#112D4E',
+            },
+            secondary: {
+                main: '#3F72AF',
+            },
+            accent: {
+                main: '#CADEFC',
+            },
+            light: {
+                main: '#E8F0FC',
+            },
+          }
     })
     React.useEffect(() => {
         const node = loadCSS(
@@ -163,10 +184,7 @@ const App = () => {
     const handleListItemClick = (event, index) => {
         setSelectedIndex(index)
     }
-    // Logout
-    const logout = () => {
-        AuthService.logout()
-    }
+
     const menuList = [
         { text: "Inicio", icon: "fa-house", link: "/" },
         { text: "Tienda", icon: "fa-basket-shopping", link: "/shop" },
@@ -175,6 +193,18 @@ const App = () => {
         { text: "Amigos", icon: "fa-user-group", link: "/friends" },
     ]
 
+    const ProtectedRoute = () => {
+        AuthService.verifyToken()
+        .then(user => {  
+            localStorage.setItem("user",JSON.stringify(user))
+        })
+        .catch((err) => { 
+            console.log(err)
+            AuthService.logout()
+        })
+        return <Outlet/>;
+    };
+    
     return (
         <ThemeProvider theme={theme}>
             <Box sx={{ display: "flex" }}>
@@ -183,8 +213,8 @@ const App = () => {
                     position="fixed"
                     open={open}
                     sx={{
-                        bgcolor: "background.default",
-                        color: "text.primary",
+                        bgcolor: "primary",
+                        color: "accent",
                         boxShadow: 1,
                     }}
                 >
@@ -212,7 +242,10 @@ const App = () => {
                             component="div"
                             sx={{ mr: 2 }}
                         >
-                            {localStorage.getItem("user")}
+                            {JSON.parse(localStorage.getItem("token"))
+                                ? JSON.parse(localStorage.getItem("token")).token 
+                                : '' 
+                            }
                         </Typography>
 
                         {/* Spacer */}
@@ -221,28 +254,41 @@ const App = () => {
                         {/* Parameters Button */}
                         <Box sx={{ flexGrow: 0 }}>
                             <Tooltip title="Disconnect">
-                                <Button variant="contained" onClick={logout}>Logout</Button>
+                                <Button 
+                                    color="secondary"
+                                    variant="contained" 
+                                    onClick={() => AuthService.logout()}
+                                >
+                                    Logout
+                                </Button>
                             </Tooltip>
                         </Box>
                     </Toolbar>
                 </AppBar>
                 <BrowserRouter>
-                    <Drawer component="nav" variant="permanent" open={open}>
+                    {/* SIDE MENU */}
+                    <Drawer 
+                        component="nav" 
+                        variant="permanent" 
+                        open={open}
+                    >
                         <DrawerHeader>
                             {/* Avatar */}
-                            <Avatar alt="Logo" src="/public/images/quizzylogo.png" />
+                            <Avatar alt="Logo" 
+                                src={process.env.PUBLIC_URL + "/images/quizzylogo.png"} 
+                            />
 
                             {/* Username */}
                             <Typography
-                                variant="h6"
+                                variant="h5"
                                 noWrap
                                 component="div"
-                                sx={{ mr: 2 }}
+                                sx={{ ml: 2 }}
                             >
                                 Quizzly
                             </Typography>
 
-                            <IconButton onClick={handleDrawerClose}>
+                            <IconButton onClick={handleDrawerClose} color="light">
                                 {theme.direction === "rtl" ? (
                                     <ChevronRightIcon />
                                 ) : (
@@ -251,7 +297,7 @@ const App = () => {
                             </IconButton>
                         </DrawerHeader>
 
-                        <Divider />
+                        <Divider sx={{borderColor:"white"}}/>
 
                         <List>
                             {menuList.map((item, index) => (
@@ -259,14 +305,13 @@ const App = () => {
                                     style={({ isActive }) =>
                                         isActive
                                             ? {
-                                                  color: "blue",
-                                                  background: "blue",
-                                                  textDecoration: "none",
+                                                color: "#3F72AF",
+                                                textDecoration: "none",
+                                                fontWeight: "bold"
                                               }
                                             : {
-                                                  color: "inherit",
-                                                  background: "inherit",
-                                                  textDecoration: "inherit",
+                                                color:'inherit',
+                                                textDecoration: "none",
                                               }
                                     }
                                     to={item.link}
@@ -279,6 +324,7 @@ const App = () => {
                                             handleListItemClick(event, index)
                                         }
                                         sx={{
+                                            color:'inherit',
                                             minHeight: 48,
                                             justifyContent: open
                                                 ? "initial"
@@ -290,6 +336,7 @@ const App = () => {
                                     >
                                         <ListItemIcon
                                             sx={{
+                                                color:'inherit',
                                                 minWidth: 0,
                                                 mr: open ? 3 : "auto",
                                                 justifyContent: "center",
@@ -302,6 +349,7 @@ const App = () => {
                                         </ListItemIcon>
                                         <ListItemText
                                             sx={{
+                                                color:'inherit',
                                                 opacity: open ? 1 : 0,
                                                 textDecoration: "none",
                                             }}
@@ -313,18 +361,20 @@ const App = () => {
                             ))}
                         </List>
                     </Drawer>
-
-                    <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+                    {/* CONTENT */}
+                    <Box component="main" sx={{ flexGrow: 1 }}>
                         <DrawerHeader />
                         <Routes>
-                            <Route path="/" element={<Menu />} />
+                            <Route element={<ProtectedRoute />}>
+                                <Route path="/" element={<Menu />} />
+                                <Route path="/solo" element={<Solo />} />
+                                <Route path="/chat" element={<Chat />} />
+                                <Route path="/shop" element={<Shop />} />
+                                <Route path="/collecion" element={<Collecion />} />
+                                <Route path="/stats" element={<Stats />} />
+                                <Route path="/friends" element={<Friends />} />
+                            </Route>
 
-                            <Route path="/solo" element={<Solo />} />
-                            <Route path="/chat" element={<Chat />} />
-                            <Route path="/shop" element={<Shop />} />
-                            <Route path="/collecion" element={<Collecion />} />
-                            <Route path="/stats" element={<Stats />} />
-                            <Route path="/friends" element={<Friends />} />
                             <Route path="/login" element={<Login />} />
                             <Route path="/register" element={<Register />} />
 

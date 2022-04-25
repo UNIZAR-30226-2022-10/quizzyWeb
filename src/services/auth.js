@@ -1,4 +1,5 @@
 import axios from "axios";
+import authHeader from './authHeader';
 
 const API_URL = process.env.REACT_APP_API_ENDPOINT;
 
@@ -17,26 +18,37 @@ const login = (nickname, password) => {
     })
     .then((response) => {
       if (response.data.token) {
-        localStorage.setItem("user", response.data.token);
+        localStorage.setItem("token", JSON.stringify(response.data));
       }
       return response.data;
     });
 };
 const logout = () => {
-  localStorage.removeItem("user");
+  localStorage.removeItem("token");
   window.location.href = "/login";
 };
-/*const getCurrentUser = () => {
-  return JSON.parse(localStorage.getItem("user"));
-};*/
 const isLoggedIn = () => { 
-  return localStorage.getItem("user") ? true : false;
+  return JSON.parse(localStorage.getItem("token")) ? true : false;
+}
+/* Locally verify token with token from local storage */
+const verifyToken = () => {
+  return axios
+  .get(API_URL + "/user", { headers: authHeader() })
+  .then((response) => {
+    let user = {
+      actual_cosmetic: response.data.actual_cosmetic,
+      email: response.data.email,
+      nickname: response.data.nickname,
+      wallet: response.data.wallet,
+    }
+    return user;
+  });
 }
 const AuthService = {
   register,
   login,
   logout,
-  /*getCurrentUser,*/
   isLoggedIn,
+  verifyToken
 };
 export default AuthService;
