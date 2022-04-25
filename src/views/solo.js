@@ -101,6 +101,7 @@ function Solo() {
         Sports: [0,0],
         Entertainment: [0,0],
         Art: [0,0],
+        Total: [0,0],
     })
 
     function handleStart(e) {
@@ -122,91 +123,100 @@ function Solo() {
             Sports: [0,0],
             Entertainment: [0,0],
             Art: [0,0],
+            Total: [0,0],
         })
     }
     const handleCorrectAnswer = (data) => {
         switch (data.category_name) {
             case "History":
-                setAnswer({
+                setAnswer(answer => ({
                     ...answer,
-                    History: [answer.History[0] + 1, answer.History[1]],
-                })
+                    History: [answer.History[0] + 1, answer.History[1] + 1],
+                }))
                 break
             case "Science":
-                setAnswer({
+                setAnswer(answer => ({
                     ...answer,
-                    Science: [answer.Science[0] + 1, answer.Science[1]],
-                })
+                    Science: [answer.Science[0] + 1, answer.Science[1] + 1],
+                }))
                 break
             case "Geography":
-                setAnswer({
+                setAnswer(answer => ({
                     ...answer,
-                    Geography: [answer.Geography[0] + 1, answer.Geography[1]],
-                })
+                    Geography: [answer.Geography[0] + 1, answer.Geography[1] + 1],
+                }))
                 break
             case "Sports":
-                setAnswer({
+                setAnswer(answer => ({
                     ...answer,
-                    Sports: [answer.Sports[0] + 1, answer.Sports[1]],
-                })
+                    Sports: [answer.Sports[0] + 1, answer.Sports[1] + 1],
+                }))
                 break
             case "Entertainment":
-                setAnswer({
+                setAnswer(answer => ({
                     ...answer,
-                    Entertainment: [answer.Entertainment[0] + 1, answer.Entertainment[1]],
-                })
+                    Entertainment: [answer.Entertainment[0] + 1, answer.Entertainment[1] + 1],
+                }))
                 break
             case "Art":
-                setAnswer({
+                setAnswer(answer => ({
                     ...answer,
-                    Art: [answer.Art[0] + 1, answer.Art[1]],
-                })
+                    Art: [answer.Art[0] + 1, answer.Art[1] + 1],
+                }))
                 break
             default:
                 break
         }
+        setAnswer(answer => ({
+            ...answer,
+            Total: [answer.Total[0] + 1, answer.Total[1] + 1],
+        }))
     }
     const handleWrongAnswer = (data) => {
         switch (data.category_name) {
             case "History":
-                setAnswer({
+                setAnswer(answer => ({
                     ...answer,
                     History: [answer.History[0] , answer.History[1] + 1],
-                })
+                }))
                 break
             case "Science":
-                setAnswer({
+                setAnswer(answer => ({
                     ...answer,
                     Science: [answer.Science[0], answer.Science[1] + 1],
-                })
+                }))
                 break
             case "Geography":
-                setAnswer({
+                setAnswer(answer => ({
                     ...answer,
                     Geography: [answer.Geography[0], answer.Geography[1] + 1],
-                })
+                }))
                 break
             case "Sports":
-                setAnswer({
+                setAnswer(answer => ({
                     ...answer,
                     Sports: [answer.Sports[0], answer.Sports[1] + 1],
-                })
+                }))
                 break
             case "Entertainment":
-                setAnswer({
+                setAnswer(answer => ({
                     ...answer,
                     Entertainment: [answer.Entertainment[0], answer.Entertainment[1] + 1],
-                })
+                }))
                 break
             case "Art":
-                setAnswer({
+                setAnswer(answer => ({
                     ...answer,
                     Art: [answer.Art[0], answer.Art[1] + 1],
-                })
+                }))
                 break
             default:
                 break
         }
+        setAnswer(answer => ({
+            ...answer,
+            Total: [answer.Total[0], answer.Total[1] + 1],
+        }))
     }
     const handleDifficulty = (event,data) => {
         if (data !== null) {
@@ -248,6 +258,7 @@ function Solo() {
                     <Button variant="contained" color="error" onClick={handleQuit}>
                         Quit
                     </Button>
+                    {/* SUMMARY */}
                     <Dialog
                         open={openResume}
                         TransitionComponent={Transition}
@@ -275,14 +286,9 @@ function Solo() {
                                         <li key={item}>
                                             {capitalizeFirstLetter(item)} 
                                             {': '}
-                                            {answer[item][0]} / {answer[item][0] + answer[item][1]}
+                                            {answer[item][0]} / {answer[item][1]}
                                         </li>
                                     ))}
-
-                                    
-                                    <li>
-                                        Total : 
-                                    </li>
                                 </ul>
                             </DialogContent>
                             <DialogActions>
