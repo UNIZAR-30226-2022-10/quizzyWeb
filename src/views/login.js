@@ -34,6 +34,14 @@ function Login() {
                 .then(res => {  
                     if (res.ok) {
                         setLogged(true)
+                        AuthService.verifyToken()
+                        .then(user => {  
+                            localStorage.setItem("user",JSON.stringify(user))
+                        })
+                        .catch((err) => { 
+                            console.log(err)
+                            AuthService.logout()
+                        })
                         setTimeout(() => {
                             navigate("/")
                         }, 2000)

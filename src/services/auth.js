@@ -17,14 +17,15 @@ const login = (nickname, password) => {
       password,
     })
     .then((response) => {
-      if (response.data.token) {
-        localStorage.setItem("token", JSON.stringify(response.data));
+      if (response.data.ok) {
+        localStorage.setItem("token", response.data.token);
       }
       return response.data;
     });
 };
 const logout = () => {
   localStorage.removeItem("token");
+  localStorage.removeItem("user");
   window.location.href = "/login";
 };
 const isLoggedIn = () => { 

@@ -7,7 +7,7 @@ import {
     joinRoom,
 } from "services/sioService"
 
-import "./Chat.css"
+import "css/chat.css"
 import UserMessage from "./UserMessage"
 import SystemMessage from "./SystemMessage"
 
@@ -27,7 +27,7 @@ function DateToHoursAndMinutes(datestring) {
 function Chat() {
     const MAIN_CHAT_ROOM = "main"
 
-    const [token, setToken] = useState(localStorage.getItem('user')) 
+    const [token, setToken] = useState(localStorage.getItem('token')) 
     const [chatMessage, setChatMessage] = useState([])
     const [messages, setMessages] = useState([])
     const [room, setRoom] = useState(MAIN_CHAT_ROOM)
@@ -73,7 +73,7 @@ function Chat() {
                 // TODO: add dynamic room support
                 // clear the input after the message is sent
                 setChatMessage("")
-                setMessages((prev) => [...prev, {name:'Me', message: message, self: true}])
+                setMessages((prev) => [...prev, {username:'Me', message: message, self: true}])
 
             })
         }
@@ -101,7 +101,7 @@ function Chat() {
                         {item.message ? (
                             <UserMessage
                                 avatar={""}
-                                side= {item.self ? "left":"right"}
+                                side= {item.self ? "right":"left"}
                                 sender={item.name}
                                 message={item.message}
                                 time={DateToHoursAndMinutes(item.time)}

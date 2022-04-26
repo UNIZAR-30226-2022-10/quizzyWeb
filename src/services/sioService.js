@@ -30,7 +30,8 @@ export const subscribeToMessages = (cb) => {
 }
 
 export const sendMessage = ({ message,roomName }, cb) => {
-    if (socket) socket.emit("chat:send", { message, roomName}, cb)
+    let username = JSON.parse(localStorage.getItem("user")).nickname
+    if (socket) socket.emit("chat:send", { username, message, roomName}, cb)
 }
 
 export const joinRoom = (roomName, cb) => {

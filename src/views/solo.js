@@ -30,7 +30,7 @@ import Typography from "@mui/material/Typography"
 import Question from "components/question"
 
 import "css/solo.css"
-import {capitalizeFirstLetter} from "services/stringService"
+import {capitalizeFirstLetter} from "utils/stringService"
 
 const DifficultyToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
     '& .MuiToggleButtonGroup-grouped': {

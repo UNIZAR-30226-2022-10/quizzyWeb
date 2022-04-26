@@ -226,14 +226,14 @@ const Layout = () => {
                                 component="div"
                                 sx={{ ml: 2, fontWeight: 'bold'}}
                             >
-                                Nickname : {JSON.parse(localStorage.getItem("user")).nickname || "Usuario"}
+                                Apodo : {JSON.parse(localStorage.getItem("user"))?.nickname || "Usuario"}
                             </Typography>
                             <Typography
                                 variant="h6"
                                 component="div"
                                 sx={{ ml: 2}}
                             >
-                                Wallet : {JSON.parse(localStorage.getItem("user")).wallet || "0"}
+                                Cartera : {JSON.parse(localStorage.getItem("user"))?.wallet || "0"}
                             </Typography>
                         </Box>
 
@@ -248,7 +248,7 @@ const Layout = () => {
                                     variant="contained" 
                                     onClick={() => AuthService.logout()}
                                 >
-                                    Logout
+                                    Cerrar Sesión
                                 </Button>
                             </Tooltip>
                         </Box>
@@ -350,7 +350,7 @@ const Layout = () => {
                     </List>
                 </Drawer>
                 {/* CONTENT */}
-                <Box component="main" sx={{ flexGrow: 1 }}>
+                <Box component="main" sx={{ flexGrow: 1, margin: 1 }}>
                     <DrawerHeader />
                     <Outlet/>
                 </Box>

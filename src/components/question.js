@@ -31,7 +31,7 @@ import {
 } from "react-query"
 import axios from "axios"
 
-import { capitalizeFirstLetter } from "services/stringService"
+import { capitalizeFirstLetter } from "utils/stringService"
 
 const queryClient = new QueryClient({
      defaultOptions: {
