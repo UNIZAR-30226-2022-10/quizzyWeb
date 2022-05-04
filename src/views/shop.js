@@ -337,7 +337,7 @@ export default function Shop() {
                                         max: 50, min: 1
                                     }
                                 }}
-                                onChange={(e) => {setAmount(e.target.value)}}
+                                onChange={(e) => {setAmount(parseInt(e.target.value))}}
                             />
                     
                             <Typography> Actual wallet: {JSON.parse(localStorage.getItem("user"))?.wallet} </Typography>
