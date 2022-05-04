@@ -218,7 +218,7 @@ const Layout = () => {
                             <MenuIcon />
                         </IconButton>
                         {/* Avatar */}
-                        <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
+                        <Avatar alt="Remy Sharp" src={process.env.PUBLIC_URL + "/images/cosmetics/cosmetic_" + JSON.parse(localStorage.getItem("user")).actual_cosmetic + ".jpg"} />
                         <Box sx={{display:'flex', flexDirection:'column' }}>   
                             {/* Username */}
                             <Typography
@@ -233,7 +233,7 @@ const Layout = () => {
                                 component="div"
                                 sx={{ ml: 2}}
                             >
-                                Cartera : {JSON.parse(localStorage.getItem("user"))?.wallet || "0"}
+                                Monedero : {JSON.parse(localStorage.getItem("user"))?.wallet || "0"}
                             </Typography>
                         </Box>
 

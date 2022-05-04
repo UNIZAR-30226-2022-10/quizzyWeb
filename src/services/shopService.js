@@ -18,7 +18,9 @@ const getWildcards = () => {
 
 const buyCosmetics = (id) => {
   return axios
-  .get(API_URL + "/shop/cosmestics/buy", { headers: authHeader(), id:id })
+  .post(API_URL + "/shop/cosmetics/buy", 
+  { id }, 
+  { headers: authHeader()})
   .then((response) => {
     
     return response;
@@ -26,7 +28,9 @@ const buyCosmetics = (id) => {
 };
 const buyWildcards = (id,amount) => {
   return axios
-  .get(API_URL + "/shop/wildcards/buy", { headers: authHeader(),id:id, amount:amount })
+  .post(API_URL + "/shop/wildcards/buy", 
+  { id, amount }, 
+  { headers: authHeader()})
   .then((response) => {
     
     return response;

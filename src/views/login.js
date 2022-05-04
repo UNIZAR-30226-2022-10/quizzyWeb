@@ -26,7 +26,7 @@ function Login() {
             setLogged(true)
             navigate("/")
         }
-    }, [])
+    }, [navigate])
 
     const Login = (details) => {
         if (details.nickname !== "" && details.psw !== "") {
@@ -69,7 +69,7 @@ function Login() {
                                 <h2>Log in</h2>
                                 <img height="100" src={process.env.PUBLIC_URL + "/images/quizzylogo.png"} alt=""></img>
                             </Container>
-                            {error != "" ? <div className="error">{error}</div> : ""}
+                            {error !== "" ? <div className="error">{error}</div> : ""}
                             <div className="form-group">
                                 <label htmlFor="nickname">Nickname:</label>
                                 <input
