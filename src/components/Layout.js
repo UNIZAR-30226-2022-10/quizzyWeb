@@ -9,7 +9,7 @@
 import * as React from "react"
 import { NavLink, Outlet} from "react-router-dom"
 
-import { styled, ThemeProvider, createTheme } from "@mui/material/styles"
+import { styled, ThemeProvider } from "@mui/material/styles"
 import MuiDrawer from "@mui/material/Drawer"
 import MuiAppBar from "@mui/material/AppBar"
 import Toolbar from "@mui/material/Toolbar"
@@ -31,6 +31,8 @@ import Tooltip from "@mui/material/Tooltip"
 
 import { loadCSS } from "fg-loadcss"
 import Icon from "@mui/material/Icon"
+
+import theme from '../utils/theme';
 
 import AuthService from "services/auth"
 const drawerWidth = 240
@@ -107,53 +109,7 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 }))
 
 const Layout = () => {
-    const theme = createTheme({
-        components: {
-            MuiIcon: {
-                styleOverrides: {
-                    root: {
-                        // Match 24px = 3 * 2 + 1.125 * 16
-                        boxSizing: "content-box",
-                        padding: 3,
-                        fontSize: "1.125rem",
-                    },
-                },
-            },
-            MuiCssBaseline: {
-                styleOverrides: {
-                    body: {
-                        "*::-webkit-scrollbar": {
-                            backgroundColor: "lightgrey",
-                        },
-                        "*::-webkit-scrollbar, & *::-webkit-scrollbar-thumb": {
-                            width: "26px",
-                            borderRadius: "16px",
-                            backgroundClip: "padding-box",
-                            border: "10px solid transparent",
-                            color: "grey",
-                        },
-                        "*::-webkit-scrollbar-thumb": {
-                            boxShadow: "inset 0 0 0 10px",
-                        },
-                    },
-                },
-            },
-        },
-        palette: {
-            primary: {
-                main: '#112D4E',
-            },
-            secondary: {
-                main: '#3F72AF',
-            },
-            accent: {
-                main: '#CADEFC',
-            },
-            light: {
-                main: '#E8F0FC',
-            },
-          }
-    })
+    
     React.useEffect(() => {
         const node = loadCSS(
             "https://use.fontawesome.com/releases/v6.1.1/css/all.css",
@@ -293,7 +249,7 @@ const Layout = () => {
                                 style={({ isActive }) =>
                                     isActive
                                         ? {
-                                            color: "#3F72AF",
+                                            color: theme.palette.secondary.main,
                                             textDecoration: "none",
                                             fontWeight: "bold"
                                             }
@@ -320,6 +276,9 @@ const Layout = () => {
                                         px: 2.5,
                                         mx: 1,
                                         borderRadius: "12px",
+                                        "&:hover": {
+                                            backgroundColor: theme.palette.secondary.main,
+                                        }
                                     }}
                                 >
                                     <ListItemIcon
@@ -350,7 +309,12 @@ const Layout = () => {
                     </List>
                 </Drawer>
                 {/* CONTENT */}
-                <Box component="main" sx={{ flexGrow: 1, margin: 1 }}>
+                <Box component="main" 
+                    sx={{ 
+                        flexGrow: 1, 
+                        margin: 1,
+                    }}
+                >
                     <DrawerHeader />
                     <Outlet/>
                 </Box>

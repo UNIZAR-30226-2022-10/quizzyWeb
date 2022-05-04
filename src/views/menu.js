@@ -1,9 +1,13 @@
+import { styled, ThemeProvider } from "@mui/material/styles"
 import Container from "@mui/material/Container"
 import Paper from "@mui/material/Paper"
+import Typography from "@mui/material/Typography"
 
 import Button from "@mui/material/Button"
 import Icon from "@mui/material/Icon"
 import { useNavigate } from "react-router-dom"
+
+import theme from '../utils/theme';
 
 export default function Menu() {
     let navigate = useNavigate()
@@ -20,9 +24,10 @@ export default function Menu() {
             sx={{
                 display: "flex",
                 flexDirection: "column",
-                justifyContent: "space-between",
+                justifyContent: "center",
+                gap: "1em",
+                minHeight: "100%"
             }}
-            maxWidth="md"
         >
             {/* SOLO */}
             <Paper
@@ -30,27 +35,34 @@ export default function Menu() {
                 sx={{
                     display: "flex",
                     flexDirection: "column",
-                    mb: 2,
+                    width : "50%",
+                    mx: "auto",
+                    gap: "0.5em",
                     p: 2,
                     borderRadius: "20px",
-                    backgroundImage:
-                        "linear-gradient(135deg, #667eea 0%, #764ba2 100%);",
-                    "&:hover": {
-                        backgroundColor: "primary.main",
-                        opacity: [0.9, 0.8, 0.7],
-                    },
+                    backgroundColor: theme.palette.primary.main,
                 }}
             >
-                <h1> Solitario</h1>
+                <Typography
+                    variant="h4"
+                    component="div"
+                    sx={{ 
+                        m: 2,
+                        color: "white",
+                        alignSelf: "center",
+                    }}
+                >
+                    Solitario
+                </Typography>
                 <Button
                     variant="contained"
                     onClick={handleSolo}
-                    color="success"
+                    color="secondary"
                     size="large"
                     sx={{
-                        width: "50%",
+                        width: "100%",
                         alignSelf: "center",
-                        backgroundColor: "#658C72",
+                        borderRadius: "10px",
                     }}
                     startIcon={
                         <Icon baseClassName="fas" className="fa-circle-plus" />
@@ -66,28 +78,34 @@ export default function Menu() {
                 sx={{
                     display: "flex",
                     flexDirection: "column",
-                    mb: 2,
+                    width : "50%",
+                    mx: "auto",
+                    gap: "0.5em",
                     p: 2,
                     borderRadius: "20px",
-                    backgroundImage:
-                        "linear-gradient(135deg, #667eea 0%, #764ba2 100%);",
-                    "&:hover": {
-                        backgroundColor: "primary.main",
-                        opacity: [0.9, 0.8, 0.7],
-                    },
+                    backgroundColor: theme.palette.primary.main,
                 }}
             >
-                <h1> Multi </h1>
+                <Typography
+                    variant="h4"
+                    component="div"
+                    sx={{ 
+                        m: 2,
+                        color: "white",
+                        alignSelf: "center",
+                    }}
+                >
+                    Multi
+                </Typography>
                 <Button
                     variant="contained"
                     onClick={handleMultiPublico}
-                    color="success"
+                    color="secondary"
                     size="large"
                     sx={{
-                        width: "50%",
+                        width: "100%",
                         alignSelf: "center",
-                        mb: 2,
-                        backgroundColor: "#658C72",
+                        borderRadius: "10px",
                     }}
                     startIcon={<Icon baseClassName="fas" className="fa-globe" />}
                 >
@@ -95,13 +113,12 @@ export default function Menu() {
                 </Button>
                 <Button
                     variant="contained"
-                    color="success"
+                    color="secondary"
                     size="large"
                     sx={{
-                        width: "50%",
+                        width: "100%",
                         alignSelf: "center",
-                        mb: 2,
-                        backgroundColor: "#658C72",
+                        borderRadius: "10px",
                     }}
                     startIcon={<Icon baseClassName="fas" className="fa-lock" />}
                 >
@@ -109,13 +126,12 @@ export default function Menu() {
                 </Button>
                 <Button
                     variant="contained"
-                    color="success"
+                    color="secondary"
                     size="large"
                     sx={{
-                        width: "50%",
+                        width: "100%",
                         alignSelf: "center",
-                        mb: 2,
-                        backgroundColor: "#658C72",
+                        borderRadius: "10px",
                     }}
                     startIcon={<Icon baseClassName="fas" className="fa-lock" />}
                 >
