@@ -35,7 +35,7 @@ const getUser = () => {
 };
 
 const equipCosmetic = (cosmeticId) => {
-  return axios.post(API_URL + "/user/cosmetics/equip", { cosmeticId }, { headers: authHeader() })
+  return axios.put(API_URL + "/user/equip", { id : cosmeticId }, { headers: authHeader() })
   .then((response) => {
     return response;
   });
@@ -48,6 +48,7 @@ const userService = {
   getCosmetics,
   getWildcards,
   setWildcard,
-  getUser
+  getUser,
+  equipCosmetic
 };
 export default userService;

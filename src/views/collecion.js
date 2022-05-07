@@ -19,7 +19,6 @@ import Toolbar from "@mui/material/Toolbar";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from '@mui/material/Typography';
 
-
 import userService from 'services/userService';
 
 function cosmeticssrcSet(id) {
@@ -61,14 +60,15 @@ export default function Shop() {
         setLoading(true);
         userService.equipCosmetic(id)
             .then(res => {
-                if (res.ok) {
+                if (res.data.ok) {
                     setChosen(null);
                     setDialogCosmetic(false);
                     setEquipped(id);
                     setSuccess("Cosmético equipado correctamente");
                 }
                 else {
-                    setError(res.msg);
+                    console.log(res)
+                    setError("Ha habido algún problema");
                 }
             })
             .catch(err => {
@@ -292,7 +292,7 @@ export default function Shop() {
                         No, cancel
                         </Button>
                         <Button color="success" variant="contained" onClick={() => {handleEquipCosmetic(chosen.cosmetic_id)}}>
-                            {loading ? <CircularProgress size={25} color="light"/> : 'Yes, confirm (Not Implement Yet)'} 
+                            {loading ? <CircularProgress size={25} color="light"/> : 'Yes, confirm'} 
                         </Button>
                     </DialogActions>
                 </Dialog>
