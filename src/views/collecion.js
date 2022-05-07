@@ -68,7 +68,7 @@ export default function Shop() {
                 }
                 else {
                     console.log(res)
-                    setError("Ha habido algún problema");
+                    setError(res.msg);
                 }
             })
             .catch(err => {
