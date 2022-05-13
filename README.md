@@ -43,3 +43,7 @@ Or if you want to test individual routes and modules:
 ```bash
 npm run test -- <filename>
 ```
+
+## Deployment
+
+This repo is linked to the Heroku app. The [API URL](https://quizzyappbackend.herokuapp.com) listens on port 80
