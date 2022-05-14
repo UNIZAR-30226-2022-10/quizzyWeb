@@ -113,6 +113,7 @@ export default function Shop() {
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
+                mt: 2,
             }}
             maxWidth="md"
         >

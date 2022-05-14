@@ -48,6 +48,7 @@ const userService = {
   getCosmetics,
   getWildcards,
   setWildcard,
+  equipCosmetic,
   getUser
 };
 export default userService;

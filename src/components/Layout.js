@@ -309,10 +309,11 @@ const Layout = () => {
                     </List>
                 </Drawer>
                 {/* CONTENT */}
-                <Box component="main" 
+                <Box 
+                    component="main"
                     sx={{ 
+                        height: "100vh",
                         flexGrow: 1, 
-                        margin: 1,
                     }}
                 >
                     <DrawerHeader />

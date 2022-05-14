@@ -9,6 +9,7 @@ import * as React from "react"
 import { Outlet, Route, BrowserRouter, Routes } from "react-router-dom"
 
 import Solo from "./views/solo"
+import Tablejo from "./views/tablejo"
 import Menu from "./views/menu"
 import Shop from "./views/shop"
 import Collecion from "./views/collecion"
@@ -47,7 +48,9 @@ const App = () => {
                             <Route path="/collecion" element={<Collecion />} />
                             <Route path="/stats" element={<Stats />} />
                             <Route path="/friends" element={<Friends />} />
+                            <Route path="/tablejo" element={<Tablejo />} />
                         </Route>
+                       
                     </Route>
 
                     <Route path="/login" element={<Login />} />

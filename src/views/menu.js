@@ -1,4 +1,3 @@
-import { styled, ThemeProvider } from "@mui/material/styles"
 import Container from "@mui/material/Container"
 import Paper from "@mui/material/Paper"
 import Typography from "@mui/material/Typography"
@@ -25,8 +24,8 @@ export default function Menu() {
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "center",
-                gap: "1em",
-                minHeight: "100%"
+                gap: "1rem",
+                mt: 2,
             }}
         >
             {/* SOLO */}
