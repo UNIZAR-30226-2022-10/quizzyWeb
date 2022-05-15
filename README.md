@@ -24,9 +24,23 @@ npm install
 This will install all the packages and development dependencies for the project
 in order to work properly.
 
+Now, create a .env file with the following variables:
+
+- REACT_APP_API_ENDPOINT : The URL of the API
+- ENABLE_PROXY : Set a local proxy for local development. Use "yes" if you deployed the backend on your local machine
+
+For example:
+
+```
+REACT_APP_API_ENDPOINT=quizzyappweb.herokuapp.com
+ENABLE_PROXY="no"
+```
+
 Now you should be able to start the development server with the options provided by the `npm` scripts:
 
--   `npm run start`: Start the server in development mode
+-   `npm run dev`: Start the server in development mode
+-   `npm run build`: Create the static files for an optimized build ready for production
+-   `npm run start`: Serve the optimized build static files
 
 ## Testing
 
@@ -46,4 +60,4 @@ npm run test -- <filename>
 
 ## Deployment
 
-This repo is linked to the Heroku app. The [API URL](https://quizzyappbackend.herokuapp.com) listens on port 80
+This repo is linked to the Heroku app. The [web server](https://quizzyappweb.herokuapp.com) listens on port 80
