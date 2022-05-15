@@ -1,8 +1,11 @@
 import {useState, useRef, useEffect } from 'react';
 
 import Avatar from '@mui/material/Avatar';
+import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
+
+import Dice from "react-dice-roll";
 
 import ImageMapper from 'react-img-mapper';
 
@@ -12,6 +15,7 @@ export default function Tablejo() {
     const [dimY, setDimY] = useState(500);
     const [dimX, setDimX] = useState(1000);
     const ref = useRef();
+    const [myTurn, setMyTurn] = useState(true);
     const [cases, setCases] = useState([1,3,5]);
     const [reachableCase, setReachableCase] = useState(undefined);
 
@@ -45,7 +49,7 @@ export default function Tablejo() {
                 item
                 container
                 xs={10}
-                sx={{display:'flex', justifyContent:'center',backgroundColor:'accent.main'}}
+                sx={{display:'flex', justifyContent:'center',backgroundColor:'accent.main', position:'relative'}}
             >                
                 <ImageMapper
                     parentWidth={dimY*4/3}
@@ -56,6 +60,11 @@ export default function Tablejo() {
                         console.log(area.id);
                     }}
                 />   
+                {myTurn && 
+                    <Box sx={{position:'absolute', bottom:'8px', right : '8px' }}>
+                        <Dice size="75" cheatValue={2} rollingTime={1500}/>
+                    </Box>
+                }
             </Grid>
             <Grid item container direction={'column'} xs={2} sx={{backgroundColor:'light.main', alignContent:'center', justifyContent:'space-around',pt:2}}>
                 <Grid item>
