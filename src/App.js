@@ -19,6 +19,7 @@ import Error404 from "./views/error404"
 import Login from "./views/login"
 import Register from "./views/register"
 import Layout from "components/Layout"
+import Multi from "./views/multiPublic"
 
 import AuthService from "services/auth"
 
@@ -47,6 +48,7 @@ const App = () => {
                             <Route path="/collecion" element={<Collecion />} />
                             <Route path="/stats" element={<Stats />} />
                             <Route path="/friends" element={<Friends />} />
+                            <Route path="/multi" element={<Multi />} />
                         </Route>
                     </Route>
 
