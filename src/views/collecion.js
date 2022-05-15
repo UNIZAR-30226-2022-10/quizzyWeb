@@ -306,7 +306,7 @@ export default function Shop() {
             </Snackbar>
             {/* Error snackbar */}
             <Snackbar open={error !== false} autoHideDuration={6000} onClose={() =>setError(false)}>
-                <Alert onClose={() => setSuccess(false)} severity="error" sx={{ width: '100%' }}>
+                <Alert onClose={() => setError(false)} severity="error" sx={{ width: '100%' }}>
                     {error}
                 </Alert>
             </Snackbar>

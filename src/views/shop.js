@@ -60,14 +60,14 @@ export default function Shop() {
             setCosmetics(resCosmetics.cosmetics)
         }   
         else //TODO: DISPLAY ERROR MESSAGE
-            console.log('Error ! cosmetics not found')
+            console.log('Este cosmético no existe');
 
         const resPossessedCosmetics = await userService.getCosmetics()
         if (resPossessedCosmetics.ok && resPossessedCosmetics.cosmetics.length > 0) {
             setPossessedCosmetics(resPossessedCosmetics.cosmetics)
         }   
         else //TODO: DISPLAY ERROR MESSAGE
-            console.log('Error ! cosmetics not found')
+            console.log('Este cosmético no existe')
        
         setLoading(false);
     }
@@ -123,7 +123,7 @@ export default function Shop() {
                 //Close dialog
                 handleConfirmCosmetic()
                 //Display success message
-                setSuccess("Compra realizada !!")
+                setSuccess("¡Compra realizada!")
                 //TODO: REFRESH USER
                 userService.getUser().then(response => {
                     if (response.status === 200) {
@@ -131,21 +131,20 @@ export default function Shop() {
                         setSuccess("Monedero actualizado !!")
                     }
                     else {
-                        setError("Error al actualizar monedero !! Por favor actualice la página")
+                        setError("¡Error al actualizar el monedero! Por favor, actualiza la página")
                     }
                 }).catch(error => {
                     console.log(error)
-                    setError("Error al actualizar monedero !! Por favor actualice la página")
+                    setError("¡Error al actualizar el monedero! Por favor, actualiza la página.")
                 })
             }
             else {
-                console.log('Error ! buying failed')
-                setError("Error ! buying failed")
+                setError("¡Error al comprar el artículo!")
             }
         })
         .catch(error => {
             console.log(error.response.data.msg || error.response.data.message || error)
-            setError("Error ! buying failed")
+            setError("Error en la respuesta")
             
         })
         setLoading(false);
