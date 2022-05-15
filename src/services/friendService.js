@@ -19,9 +19,33 @@ const getPending = async () => {
         });
 };
 
+const addFriend = async (friendNickname) => {
+    return await axios.post(API_URL +"/friends/add", { friendNickname }, { headers: authHeader() })
+        .then((response) => {
+            return response.data;
+        });
+}
+
+const acceptFriend = async (friendNickname) => {
+    return await axios.put(API_URL +"/friends/accept", { friendNickname }, { headers: authHeader() })
+        .then((response) => {
+            return response.data;
+        });
+}
+
+const deleteFriend = async (friendNickname) => {
+    return await axios.delete(API_URL +"/friends/delete", { headers: authHeader(), data : { friendNickname } })
+        .then((response) => {
+            return response.data;
+        });
+}
+
 const friendService = {
     getFriends,
     getPending,
+    addFriend,
+    acceptFriend,
+    deleteFriend
 };
 
 export default friendService;
