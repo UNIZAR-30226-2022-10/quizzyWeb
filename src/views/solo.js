@@ -352,7 +352,7 @@ function Solo() {
                                     <CardMedia
                                         component="img"
                                         height="140"
-                                        image={require(process.env.PUBLIC_URL + "/images/category/"+item.toLowerCase()+".png")}
+                                        image={process.env.PUBLIC_URL + "/images/category/"+item.toLowerCase()+".png"}
                                         alt={item}
                                     />
                                     <CardContent sx={{textAlign:'center'}}>
