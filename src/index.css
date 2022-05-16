@@ -48,7 +48,7 @@ form {
     right: -5px;
     bottom: -5px;
     z-index: 1;
-    background-image: linear-gradient(to bottom right, #ffce00, #fe4880);
+    background-image: linear-gradient(to bottom right, #3F72AF);
 }
 
 form .form-inner {
@@ -57,18 +57,20 @@ form .form-inner {
     background-color: #fff;
     padding: 30px;
     z-index: 2;
+    box-shadow: 2px 2px 5px 1px rgba(0, 0, 0, 0.2);
+    border-radius: 1rem;
 }
 
 form .form-inner h2 {
     color: #888;
     font-size: 28px;
     font-weight: 500;
-    margin-bottom: 30px;
+    margin: auto 0;
 }
 
 form .form-inner .form-group {
     display: block;
-    width: 300px;
+    width: 100%;
     margin-bottom: 15px;
 }
 
@@ -91,6 +93,7 @@ form .form-inner .form-group input {
     background-color: #f8f8f8;
     border-radius: 8px;
     transition: 0.4s;
+    width: 100%;
 }
 
 .form-inner .form-group input:focus {
@@ -102,7 +105,7 @@ form .form-inner input[type="submit"],
     display: inline-block;
     padding: 10px 15px;
     border-radius: 8px;
-    background-image: linear-gradient(to right, #ffce00 50%, #ffce00 50%, #ff4880);
+    background-image: linear-gradient(to right, #112D4E 50%, #3F72AF);
     background-size: 200%;
     background-position: 0%;
     transition: 0.4s;
