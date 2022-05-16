@@ -23,29 +23,22 @@ import {capitalizeFirstLetter} from "utils/stringService"
 function MultiPublic() {
     
 
-    /*var [start, setStart] = React.useState(false)
-    var [timer, setTimer] = React.useState('15')
+    var [start, setStart] = React.useState(false)
+
+    const [jugadores] = React.useState([
+        "Jugador1",
+        "Jugador2",
+        "Jugador3",
+        "Jugador4",
+        "Jugador5",
+        "Jugador6"
+    ])
 
     function handleStart(e) {
-        setTimer(Number(timer))
         setStart(true)
     }
 
-    const handleTimer = (event,data) => {
-        if (data !== null) {
-            setTimer(data)
-        }
-    }
-*/
-
-const [jugadores,setJugadores] = React.useState([
-    "Jugador1",
-    "Jugador2",
-    "Jugador3",
-    "Jugador4",
-    "Jugador5",
-    "Jugador6"
-])
+    //if (start == true) <- go to board (game)
 
   return (
     <Container maxWidth="md" component="main">
@@ -64,12 +57,13 @@ const [jugadores,setJugadores] = React.useState([
         <div
             style = {{
                 display: "flex",
-                columnGap: "30px"
+                columnGap: "160px"
             }}>
+                {/* Chat*/}
                 <div>
                     <Chat></Chat>
                 </div>
-
+                {/* Players*/}
                 <div>
                 <Paper
                 elevation={5}
@@ -81,31 +75,31 @@ const [jugadores,setJugadores] = React.useState([
                     p: 2,
                     borderRadius: "20px",
                 }}
-            >
-                <h1>Jugadores</h1>
-                <Grid container item justifyContent="center" spacing={1}>
-                    {Object.keys(jugadores).map((item) => (
-                        <Grid item xs={4} md={2} key={item}>
-                            <Card 
-                                sx={{   opacity: jugadores[item]? '1' : '0.4',
-                                        backgroundColor: jugadores[item]? '#fff' : '#C0C1B7',
-                                    }}>
-                                <CardContent sx={{display: "flex", textAlign:'center', flexDirection: "column"}}>
-                                    <Typography variant="h6" gutterBottom component="div">
-                                        {capitalizeFirstLetter(item)}
-                                    </Typography> 
-                                </CardContent>
-                            </Card>
-                        </Grid>
-                    ))}
-                </Grid>
+                >
+                    <h1>Jugadores</h1>
+                    <Grid container item justifyContent="center" spacing={1} flexDirection="column">
+                        {Object.keys(jugadores).map((item) => (
+                            <Grid item xs={4} md={24} key={item}>
+                                <Card 
+                                    sx={{   opacity: jugadores[item]? '1' : '0.4',
+                                            backgroundColor: jugadores[item]? '#fff' : '#C0C1B7',
+                                        }}>
+                                    <CardContent sx={{textAlign:'center'}}>
+                                        <Typography variant="h6" gutterBottom component="div">
+                                            {capitalizeFirstLetter(jugadores[item])}
+                                        </Typography> 
+                                    </CardContent>
+                                </Card>
+                            </Grid>
+                        ))}
+                    </Grid>
                 </Paper>
             </div>
         </div> 
 
         {/* Start button*/}
         <Grid container item justifyContent="center">
-            <Button variant="contained" size="large" /*onClick={handleStart}*/>
+            <Button variant="contained" size="large" onClick={handleStart}>
                 Start
             </Button>
         </Grid>
