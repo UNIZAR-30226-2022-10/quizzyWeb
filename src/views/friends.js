@@ -28,7 +28,7 @@ import friendService from "../services/friendService"
 import Loader from "components/Loader"
 import userService from "services/userService"
 
-const tabs = ["Buscar amigos", "Amigos", "Solicitudes"]
+import "index.css"
 
 export default function Friends() {
     const theme = useTheme()
@@ -225,9 +225,27 @@ export default function Friends() {
                     aria-label="friend tabs"
                     variant="fullWidth"
                 >
-                    {tabs.map((tab, key) => (
-                        <Tab key={key} label={tab} />
-                    ))}
+                    <Tab label={"Buscar amigos"} />
+                    <Tab label={"Amigos"} />
+                    <Tab label={
+                        <div
+                            style={{
+                                display: "flex",
+                                justifyContent: "space-around",
+                                alignItems: "center",
+                                gap: "1rem"
+                            }}
+                        >
+                            <p>Solicitudes</p>
+                            { !pendingLoading && pending.friends?.length > 0 &&
+                                <div className="ring-container">
+                                    <div className="ringring"></div>
+                                    <div className="circle"></div>
+                                </div>
+                            }
+                        </div>
+                    } 
+                    />
                 </Tabs>
             </Box>
             <TabPanel value={value} index={0}>
