@@ -14,10 +14,12 @@ import Shop from "./views/shop"
 import Collecion from "./views/collecion"
 import Stats from "./views/stats"
 import Friends from "./views/friends"
-import Chat from "./components/chat/chat"
 import Error404 from "./views/error404"
 import Login from "./views/login"
 import Register from "./views/register"
+import Proposal from "views/proposal"
+
+import Chat from "./components/chat/chat"
 import Layout from "components/Layout"
 
 import AuthService from "services/auth"
@@ -38,22 +40,23 @@ const App = () => {
     return (
         <BrowserRouter>
             <Routes>
-                    <Route element={<ProtectedRoute />}>
-                        <Route element={<Layout />}>
-                            <Route path="/" element={<Menu />} />
-                            <Route path="/solo" element={<Solo />} />
-                            <Route path="/chat" element={<Chat />} />
-                            <Route path="/shop" element={<Shop />} />
-                            <Route path="/collecion" element={<Collecion />} />
-                            <Route path="/stats" element={<Stats />} />
-                            <Route path="/friends" element={<Friends />} />
-                        </Route>
+                <Route element={<ProtectedRoute />}>
+                    <Route element={<Layout />}>
+                        <Route path="/" element={<Menu />} />
+                        <Route path="/solo" element={<Solo />} />
+                        <Route path="/chat" element={<Chat />} />
+                        <Route path="/shop" element={<Shop />} />
+                        <Route path="/collecion" element={<Collecion />} />
+                        <Route path="/stats" element={<Stats />} />
+                        <Route path="/friends" element={<Friends />} />
+                        <Route path="/proposal" element={<Proposal />} />
                     </Route>
+                </Route>
 
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/register" element={<Register />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
 
-                    <Route path="*" element={<Error404 />} />
+                <Route path="*" element={<Error404 />} />
             </Routes>
         </BrowserRouter>
     
