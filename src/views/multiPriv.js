@@ -18,6 +18,8 @@ import ToggleButtonGroup from "@mui/material/ToggleButtonGroup"
 import ToggleButton from "@mui/material/ToggleButton"
 import Icon from "@mui/material/Icon"
 import { styled } from '@mui/material/styles';
+import CardActionArea from "@mui/material/CardActionArea"
+import CardMedia from "@mui/material/CardMedia"
 
 import Chat from "../components/chat/chat"
 import "css/solo.css"
@@ -102,6 +104,10 @@ function MultiPublic() {
         setStart(true)
     }
 
+    function handlePlayers(e) {
+        
+    }
+
     const handleDifficulty = (event,data) => {
         if (data !== null) {
             setDifficulty(data)
@@ -171,7 +177,13 @@ function MultiPublic() {
                     borderRadius: "20px",
                 }}
                 >
-                    <h1>Jugadores</h1>
+                    <Typography 
+                        variant="h6" 
+                        component="div" 
+                        sx={{display:'flex',alignItems:'center',marginRight:'8px',fontWeight:'bold'}}>
+                        Jugadores: 
+                    </Typography>
+                    {/* Players */}
                     <Grid container item justifyContent="center" spacing={0.2} flexDirection="column" >
                         {Object.keys(jugadores).map((item) => (
                             <Grid item xs={20} md={24} key={item}>
@@ -190,7 +202,7 @@ function MultiPublic() {
                     </Grid>
                 </Paper>
             </div>
-            {/* Difficulty & Timer*/}
+            {/* Categories & Difficulty & Timer*/}
             <div>
             <Paper
                 elevation={5}
@@ -203,8 +215,51 @@ function MultiPublic() {
                     borderRadius: "20px",
                 }}
                 >
-                <div></div>
-               <Grid container item justifyContent="space-between">
+                {/* Categories */}
+                <Grid container rowSpacing={1}>
+                <Typography
+                    variant="h5"
+                    align="center"
+                    color="text.secondary"
+                    component="p"
+                >
+                    Unselect the categories you don't want to play with 
+                    and the difficulty of the questions you want to answer 
+                    and the maximum response time !
+                </Typography>
+                    {/* Categories*/}
+                    <Typography 
+                        variant="h6" 
+                        component="div" 
+                        sx={{display:'flex',alignItems:'center',marginRight:'8px',fontWeight:'bold'}}>
+                        Categories: 
+                    </Typography>
+                    <Grid container item justifyContent="center" spacing={1} display="flex" flexWrap="row wrap">
+                        {Object.keys(categories).map((item) => (
+                            <Grid item xs={6} md={4} key={item}>
+                                <Card 
+                                    sx={{   opacity: categories[item]? '1' : '0.4', 
+                                            backgroundColor: categories[item]? '#fff' : '#C0C1B7',
+                                    }}>
+                                    <CardActionArea onClick={() => {handleCategory(item)}}>
+                                        <CardMedia
+                                            component="img"
+                                            height="140"
+                                            image={process.env.PUBLIC_URL+"/images/category/"+item+".png"}
+                                            alt={item}
+                                        />
+                                        <CardContent sx={{textAlign:'center'}}>
+                                            <Typography variant="h6" gutterBottom component="div">
+                                                {capitalizeFirstLetter(item)}
+                                            </Typography> 
+                                        </CardContent>
+                                    </CardActionArea>
+                                </Card>
+                            </Grid>
+                        ))}
+                    </Grid>
+                </Grid>
+                <Grid container item justifyContent="space-between">
                     {/* Difficulty*/}
                     <Grid container item xs={12} md={6} justifyContent="center" flexDirection="column">
                     <Typography variant="h6" component="div" sx={{display:'flex',alignItems:'center',marginRight:'8px',fontWeight:'bold'}}>
@@ -257,17 +312,17 @@ function MultiPublic() {
                 </Paper>
             </div>
         </div> 
-
-        {/* Start button*/}
-        <Grid container item justifyContent="center">
-            <Button variant="contained" size="large" onClick={handleStart}>
+        <div align="center" display="flex" flexDirection="column">
+            {/* Invite button*/}
+            <Button variant="contained" display="inline-block" size="large" onClick={handlePlayers} margin="4px 2px">
                 + Invitar amigos
             </Button>
-
-            <Button variant="contained" size="large" onClick={handleStart}>
+            
+            {/* Start button*/}
+            <Button variant="contained" display="inline-block" size="large" onClick={handleStart}>
                 Start
             </Button>
-        </Grid>
+        </div>
     </Container>
         
   )
