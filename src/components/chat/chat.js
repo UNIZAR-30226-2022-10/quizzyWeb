@@ -85,8 +85,13 @@ function Chat() {
     }
 
     return (
-        <Container maxWidth="xs">
-            <Grid container wrap="nowrap" direction="column" className="chat-wrapper">
+        <Grid 
+            container 
+            wrap="nowrap" 
+            direction="column" 
+            className="chat-wrapper"
+            sx={{height:'calc(80vh - 64px)', p: 1}}
+        >
             <CssBaseline />
             <Grid
                 container
@@ -151,8 +156,6 @@ function Chat() {
                 </form>
             </Grid>
         </Grid>
-          
-        </Container>
     )
 }
 
