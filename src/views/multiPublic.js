@@ -76,10 +76,16 @@ function MultiPublic() {
                     borderRadius: "20px",
                 }}
                 >
-                    <h1>Jugadores</h1>
-                    <Grid container item justifyContent="center" spacing={1} flexDirection="column">
+                    <Typography 
+                        variant="h6" 
+                        component="div" 
+                        sx={{display:'flex',alignItems:'center',marginRight:'8px',fontWeight:'bold'}}>
+                        Jugadores: 
+                    </Typography>
+                    {/* Players */}
+                    <Grid container item justifyContent="center" spacing={0.2} flexWrap="wrap" >
                         {Object.keys(jugadores).map((item) => (
-                            <Grid item xs={4} md={24} key={item}>
+                            <Grid item xs={20} md={24} key={item}>
                                 <Card 
                                     sx={{   opacity: jugadores[item]? '1' : '0.4',
                                             backgroundColor: jugadores[item]? '#fff' : '#C0C1B7',
