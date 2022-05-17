@@ -36,20 +36,24 @@ function Register() {
                             navigate("/login")
                         }, 2000)   
                     }
-                    else
+                    else {
                         setDBerror(res.msg)
-                }
-                )
+                        setTimeout(() => {
+                            setDBerror("")
+                        }   , 3000) 
+                    }
+                })
                 .catch((err) => { 
                     setDBerror(err.response.data.msg)
                 })
         }
         else {
             setDBerror("Passwords must match")
+            setTimeout(() => {
+                setDBerror("")
+            }   , 3000) 
         }
-        setTimeout(() => {
-            setDBerror("")
-        }   , 3000) 
+        
     }
 
     return (

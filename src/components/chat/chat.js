@@ -16,8 +16,6 @@ import Grid from "@mui/material/Grid"
 import Button from "@mui/material/Button"
 import TextField from "@mui/material/TextField"
 import SendIcon from "@material-ui/icons/Send"
-import Container from '@material-ui/core/Container'
-import { Socket } from "socket.io-client"
 
 function DateToHoursAndMinutes(datestring) {
     const date = new Date(datestring)
