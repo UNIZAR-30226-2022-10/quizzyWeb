@@ -15,7 +15,7 @@ export default function Menu() {
     }
 
     function handleMultiPublico(e) {
-        navigate("/chat", { replace: false })
+        navigate("/multi", { replace: false })
     }
 
     return (

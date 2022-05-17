@@ -19,7 +19,6 @@ import Toolbar from "@mui/material/Toolbar";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from '@mui/material/Typography';
 
-
 import userService from 'services/userService';
 
 function cosmeticssrcSet(id) {
@@ -61,13 +60,14 @@ export default function Shop() {
         setLoading(true);
         userService.equipCosmetic(id)
             .then(res => {
-                if (res.ok) {
+                if (res.data.ok) {
                     setChosen(null);
                     setDialogCosmetic(false);
                     setEquipped(id);
                     setSuccess("Cosmético equipado correctamente");
                 }
                 else {
+                    console.log(res)
                     setError(res.msg);
                 }
             })
@@ -293,7 +293,7 @@ export default function Shop() {
                         No, cancel
                         </Button>
                         <Button color="success" variant="contained" onClick={() => {handleEquipCosmetic(chosen.cosmetic_id)}}>
-                            {loading ? <CircularProgress size={25} color="light"/> : 'Yes, confirm (Not Implement Yet)'} 
+                            {loading ? <CircularProgress size={25} color="light"/> : 'Yes, confirm'} 
                         </Button>
                     </DialogActions>
                 </Dialog>
@@ -307,7 +307,7 @@ export default function Shop() {
             </Snackbar>
             {/* Error snackbar */}
             <Snackbar open={error !== false} autoHideDuration={6000} onClose={() =>setError(false)}>
-                <Alert onClose={() => setSuccess(false)} severity="error" sx={{ width: '100%' }}>
+                <Alert onClose={() => setError(false)} severity="error" sx={{ width: '100%' }}>
                     {error}
                 </Alert>
             </Snackbar>

@@ -63,10 +63,20 @@ function Login() {
             <Container maxWidth="xs" sx={{display:'flex',flexDirection:'column'}}>
                 <Grid container justifyContent="center">
                     <Grid item xs={12}>
-                        <form className="customForm" onSubmit={submitHandler}>
+                        <form 
+                            className="customForm" 
+                            onSubmit={submitHandler}>
                         <div className="form-inner">
-                            <Container sx={{display:'flex',justifyContent:'space-around'}}>
-                                <h2>Log in</h2>
+                            <Container 
+                                sx={{
+                                    display:'flex',
+                                    justifyContent: 'space-around',
+                                    alignItems: 'center'
+                                }}
+                            >
+                                <h2>
+                                    Log in
+                                </h2>
                                 <img height="100" src={process.env.PUBLIC_URL + "/images/quizzylogo.png"} alt=""></img>
                             </Container>
                             {error !== "" ? <div className="error">{error}</div> : ""}
@@ -98,7 +108,14 @@ function Login() {
                                 <Grid item xs={4}>
                                     <input type="submit" value="Login" />
                                 </Grid>
-                                <Grid item xs={8}>
+                                <Grid 
+                                    sx={{
+                                        display: "flex",
+                                        alignItems: "center"
+                                    }}
+                                    item 
+                                    xs={8}
+                                >
                                     <Link href="/register" variant="body2">
                                     {"Don't have an account? Sign Up"}
                                     </Link>
