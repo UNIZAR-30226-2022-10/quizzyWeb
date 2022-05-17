@@ -1,7 +1,7 @@
 /*
  * Author: - Diana
- * Filename: - multiPublic.js
- * Module: - Game / Multi / Public
+ * Filename: - multiPriv.js
+ * Module: - Game / Multi / Priv
  * Description: - Start menu to begin a multi party
  */
 import * as React from 'react'
@@ -314,7 +314,7 @@ function MultiPublic() {
         </div> 
         <div align="center" display="flex" flexDirection="column">
             {/* Invite button*/}
-            <Button variant="contained" display="inline-block" size="large" onClick={handlePlayers} margin="4px 2px">
+            <Button variant="contained" display="inline-block" size="large" onClick={handlePlayers}>
                 + Invitar amigos
             </Button>
             

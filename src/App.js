@@ -21,7 +21,7 @@ import Register from "./views/register"
 import Layout from "components/Layout"
 import Multi from "./views/multiPublic"
 import Privada from "./views/multiPriv"
-
+import Games from "./views/games"
 import AuthService from "services/auth"
 
 const App = () => {
@@ -51,6 +51,7 @@ const App = () => {
                             <Route path="/friends" element={<Friends />} />
                             <Route path="/multi" element={<Multi />} />
                             <Route path="/privada" element={<Privada />} />
+                            <Route path="/games" element={<Games />}/>
                         </Route>
                     </Route>
 

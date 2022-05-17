@@ -1,22 +1,51 @@
-import { styled, ThemeProvider } from "@mui/material/styles"
+import React from "react"
 import Container from "@mui/material/Container"
 import Paper from "@mui/material/Paper"
 import Typography from "@mui/material/Typography"
-
 import Button from "@mui/material/Button"
 import Icon from "@mui/material/Icon"
 import { useNavigate } from "react-router-dom"
+import CardMedia from "@mui/material/CardMedia"
+import Card from "@mui/material/Card"
+import CardActionArea from "@mui/material/CardActionArea"
+import CardContent from "@mui/material/CardContent"
+import Grid from "@mui/material/Grid"
+
+import {capitalizeFirstLetter} from "utils/stringService"
 
 import theme from '../utils/theme';
 
 export default function Menu() {
+
+    var [game, setGame] = React.useState({
+        Partida_1: true, 
+        Partida_2: true,
+        Partida_3: true,
+        Partida_4: true,
+        Partida_5: true,
+        Partida_6: true,
+    })
+
+    const handleGame = (data) => {
+        // if data in the game is true, set to false
+        // else set to true
+        setGame({
+            ...game,
+            [data]: !game[data]
+        })
+    }
+
     let navigate = useNavigate()
-    function handleSolo(e) {
-        navigate("/solo", { replace: false })
+    function handleGames(e) {
+        navigate("/games", { replace: false })
     }
 
     function handleMultiPublico(e) {
         navigate("/multi", { replace: false })
+    }
+
+    function handleCrearPrivada(e) {
+        navigate("/privada", {replace: false})
     }
 
     return (
@@ -26,43 +55,22 @@ export default function Menu() {
                 flexDirection: "column",
                 justifyContent: "center",
                 gap: "1em",
-                minHeight: "100%"
+                minHeight: "100%",
+                marginBlockStart: "50px"
             }}
         >
-            {/* SOLO */}
-            <Paper
-                elevation={5}
-                sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    width : "50%",
-                    mx: "auto",
-                    gap: "0.5em",
-                    p: 2,
-                    borderRadius: "20px",
-                    backgroundColor: theme.palette.primary.main,
-                }}
-            >
-                <Typography
-                    variant="h4"
-                    component="div"
-                    sx={{ 
-                        m: 2,
-                        color: "white",
-                        alignSelf: "center",
-                    }}
-                >
-                    Solitario
-                </Typography>
+            {/* Nueva Partida */}
+            
                 <Button
                     variant="contained"
-                    onClick={handleSolo}
-                    color="secondary"
+                    onClick={handleGames}
+                    color="primary"
                     size="large"
                     sx={{
-                        width: "100%",
+                        width: "50%",
                         alignSelf: "center",
                         borderRadius: "10px",
+                        height: "70px"
                     }}
                     startIcon={
                         <Icon baseClassName="fas" className="fa-circle-plus" />
@@ -70,12 +78,13 @@ export default function Menu() {
                 >
                     Nueva Partida
                 </Button>
-            </Paper>
+            
 
             {/* MULTI */}
             <Paper
                 elevation={5}
                 sx={{
+                    marginBlockStart: "20px",
                     display: "flex",
                     flexDirection: "column",
                     width : "50%",
@@ -95,48 +104,30 @@ export default function Menu() {
                         alignSelf: "center",
                     }}
                 >
-                    Multi
+                    Esperando Turno
                 </Typography>
-                <Button
-                    variant="contained"
-                    onClick={handleMultiPublico}
-                    color="secondary"
-                    size="large"
-                    sx={{
-                        width: "100%",
-                        alignSelf: "center",
-                        borderRadius: "10px",
-                    }}
-                    startIcon={<Icon baseClassName="fas" className="fa-globe" />}
-                >
-                    Unirse a partida pública
-                </Button>
-                <Button
-                    variant="contained"
-                    color="secondary"
-                    size="large"
-                    sx={{
-                        width: "100%",
-                        alignSelf: "center",
-                        borderRadius: "10px",
-                    }}
-                    startIcon={<Icon baseClassName="fas" className="fa-lock" />}
-                >
-                    Unirse a partida privada
-                </Button>
-                <Button
-                    variant="contained"
-                    color="secondary"
-                    size="large"
-                    sx={{
-                        width: "100%",
-                        alignSelf: "center",
-                        borderRadius: "10px",
-                    }}
-                    startIcon={<Icon baseClassName="fas" className="fa-lock" />}
-                >
-                    Crear partida privada
-                </Button>
+                <Grid container item justifyContent="center" spacing={2} display="flex" flexDirection="column" flexWrap="row wrap">
+                        {Object.keys(game).map((item) => (
+                            <Grid item xs={20} md={20} key={item}>
+                                <Card 
+                                    sx={{   opacity: game[item]? '1' : '0.4', 
+                                            backgroundColor: game[item]? '#fff' : '#C0C1B7',
+                                    }}>
+                                    <CardActionArea onClick={() => {handleGames(item)}}>
+                                        <CardMedia
+                                            height="140"
+                                            alt={item}
+                                        />
+                                        <CardContent sx={{textAlign:'center'}}>
+                                            <Typography variant="h6" gutterBottom component="div">
+                                                {capitalizeFirstLetter(item)}
+                                            </Typography> 
+                                        </CardContent>
+                                    </CardActionArea>
+                                </Card>
+                            </Grid>
+                        ))}
+                    </Grid>
             </Paper>
         </Container>
     )
