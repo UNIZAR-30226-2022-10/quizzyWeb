@@ -17,9 +17,10 @@ import ImageMapper from 'react-img-mapper';
 const tableroURL = process.env.PUBLIC_URL + '/images/tablero.png';
 
 export default function Tablero() {
-    const [dimY, setDimY] = useState(500);
-    const [dimX, setDimX] = useState(1000);
     const ref = useRef();
+
+    const [dimY, setDimY] = useState(null);
+    const [dimX, setDimX] = useState(null);
     const [myTurn, setMyTurn] = useState(false);
     const [cases, setCases] = useState([1,3,5]);
     const [reachableCase, setReachableCase] = useState(undefined);
@@ -42,6 +43,7 @@ export default function Tablero() {
             setDimY(ref.current.clientHeight);
         }
         handleResize();
+
         // TODO: REPLACE THIS SIMULATION WITH REAL GAME
         setTimeout(() => {
             setMyTurn(true);
@@ -96,7 +98,7 @@ export default function Tablero() {
                 </Accordion>
             </Grid>
             {/* Side */}
-            <Grid item container xs={12} lg={2} wrap sx={{flexDirection: { xs: "row", lg: "column"}, backgroundColor:'light.main', alignContent:'center', justifyContent:'space-around',pt:2}}>
+            <Grid item container xs={12} lg={2} wrap="nowrap" sx={{flexDirection: { xs: "row", lg: "column"}, backgroundColor:'light.main', alignContent:'center', justifyContent:'space-around',pt:2}}>
                 <Grid item xs={2} lg={12}>
                     <Paper elevation={3} sx={{display:'flex',justifyContent:'center',alignItems:'center', backgroundColor:'blue'}}>
                         <Avatar

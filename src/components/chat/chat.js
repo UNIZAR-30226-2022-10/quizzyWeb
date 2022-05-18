@@ -103,6 +103,7 @@ function Chat() {
                     <>
                         {item.message ? (
                             <UserMessage
+                                key={"user-message-"+k}
                                 avatar={""}
                                 side= {item.self ? "right":"left"}
                                 sender={item.name}
@@ -113,6 +114,7 @@ function Chat() {
                             <>
                                 {item.systemMsg === "connection" ? (
                                     <SystemMessage
+                                        key={"connection-msg-" + k}
                                         type="success"
                                         message={item.name + " has joined the chat"}
                                     />
@@ -120,6 +122,7 @@ function Chat() {
                                     <>
                                         {item.systemMsg === "disconnection" ? (
                                             <SystemMessage
+                                                key={"disconnection-msg-" + k}
                                                 type="error"
                                                 message={
                                                     item.name + " has left the chat"
@@ -127,6 +130,7 @@ function Chat() {
                                             />
                                         ) : (
                                             <SystemMessage
+                                                key={"warning-message-"+k}
                                                 type="warning"
                                                 message={item.name + item.systemMsg}
                                             />
