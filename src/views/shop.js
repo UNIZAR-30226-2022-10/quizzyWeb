@@ -1,4 +1,6 @@
 import {useState, useEffect} from "react";
+import { useOutletContext } from "react-router-dom";
+import { useQuery } from "react-query";
 
 import AppBar from '@mui/material/AppBar';
 import Alert from '@mui/material/Alert';
@@ -39,6 +41,7 @@ function comodinesrcSet(id) {
 }
 
 export default function Shop() {
+    const [user,setUser] = useOutletContext();
     var [cosmetics, setCosmetics] = useState([]);
     var [possessedCosmetics, setPossessedCosmetics] = useState([]);
     var [possessedWildcards, setPossessedWildcards] = useState([]);
@@ -52,7 +55,7 @@ export default function Shop() {
     const [DialogCosmetic, setDialogCosmetic] = useState(false);
     const [DialogWildcard, setDialogWildcard] = useState(false);
 
-    //fetch Data
+    // fetch cosmetics and wildcards
     async function fetchCosmetics() {
         setLoading(true);
         const resCosmetics = await shopService.getCosmetics()
@@ -87,7 +90,20 @@ export default function Shop() {
         else //TODO: DISPLAY ERROR MESSAGE
             console.log('Error ! wildcards not found')
         setLoading(false);
-    }
+    } 
+
+    // fetch and sync user
+    const {
+        isLoading,
+        error: errorUser,
+        data: userData,
+        refetch: refetchUser,
+    } = useQuery("user", userService.getUser)
+    useEffect(() => {
+        if (userData) {
+            setUser(userData.data)
+        }
+    }, [userData])
 
     const handleConfirmCosmetic = (item) => {
         setLoading(false)
@@ -124,19 +140,6 @@ export default function Shop() {
                 handleConfirmCosmetic()
                 //Display success message
                 setSuccess("¡Compra realizada!")
-                //TODO: REFRESH USER
-                userService.getUser().then(response => {
-                    if (response.status === 200) {
-                        localStorage.setItem("user",JSON.stringify(response.data));
-                        setSuccess("Monedero actualizado !!")
-                    }
-                    else {
-                        setError("¡Error al actualizar el monedero! Por favor, actualiza la página")
-                    }
-                }).catch(error => {
-                    console.log(error)
-                    setError("¡Error al actualizar el monedero! Por favor, actualiza la página.")
-                })
             }
             else {
                 setError("¡Error al comprar el artículo!")
@@ -146,6 +149,9 @@ export default function Shop() {
             console.log(error.response.data.msg || error.response.data.message || error)
             setError("Error en la respuesta")
             
+        })
+        .finally(() => {
+            refetchUser();
         })
         setLoading(false);
     };
@@ -159,19 +165,6 @@ export default function Shop() {
                 handleConfirmWildcard()
                 //Display success message
                 setSuccess("Compra realizada !!")
-                //TODO: REFRESH USER
-                userService.getUser().then(response => {
-                    if (response.status === 200) {
-                        localStorage.setItem("user",JSON.stringify(response.data));
-                        setSuccess("Monedero actualizado !!")
-                    }
-                    else {
-                        setError("Error al actualizar monedero !! Por favor actualice la página")
-                    }
-                }).catch(error => {
-                    console.log(error)
-                    setError("Error al actualizar monedero !! Por favor actualice la página")
-                })
             }
             else {
                 console.log('Error ! buying failed')
@@ -183,16 +176,19 @@ export default function Shop() {
             setError("Error ! buying failed")
             
         })
+        .finally(() => {
+            refetchUser();
+        })
         setLoading(false);
     };
 
     useEffect(() => {
         if (chosen) {
             if (amount > 0) {
-                setTotal(JSON.parse(localStorage.getItem("user"))?.wallet - chosen.price * amount)
+                setTotal(user?.wallet - chosen.price * amount)
             }
             else {
-                setTotal(JSON.parse(localStorage.getItem("user"))?.wallet - chosen.price)
+                setTotal(user?.wallet - chosen.price)
             }
         }
     }, [chosen, amount]);
@@ -340,7 +336,7 @@ export default function Shop() {
                                 onChange={(e) => {setAmount(parseInt(e.target.value))}}
                             />
                     
-                            <Typography> Actual wallet: {JSON.parse(localStorage.getItem("user"))?.wallet} </Typography>
+                            <Typography> Actual wallet: {user?.wallet} </Typography>
                             <Typography> Cost: {chosen?.price * amount} </Typography>
                             <Typography> Remaining after purchase: {total} </Typography>
                         
@@ -464,7 +460,7 @@ export default function Shop() {
                         />
                     </Box>
                     <DialogContent sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                        <Typography> Actual wallet: {JSON.parse(localStorage.getItem("user"))?.wallet} </Typography>
+                        <Typography> Actual wallet: {user?.wallet} </Typography>
                         <Typography> Cost: {chosen?.price} </Typography>
                         <Typography> Remaining after purchase: {total}</Typography>
                     </DialogContent>
