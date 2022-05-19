@@ -18,6 +18,7 @@ import Error404 from "./views/error404"
 import Login from "./views/login"
 import Register from "./views/register"
 import Proposal from "views/proposal"
+import Admin from "views/admin"
 
 import Chat from "./components/chat/chat"
 import Layout from "components/Layout"
@@ -29,6 +30,19 @@ const App = () => {
         AuthService.verifyToken()
         .then(user => {  
             localStorage.setItem("user",JSON.stringify(user))
+        })
+        .catch((err) => { 
+            console.log(err)
+            AuthService.logout()
+        })
+        return <Outlet/>;
+    };
+
+    const AdminRoute = () => {
+        AuthService.verifyToken()
+        .then(user => {
+            console.log(user);
+            if (!user.is_admin) throw new Error("Not an admin");
         })
         .catch((err) => { 
             console.log(err)
@@ -50,6 +64,9 @@ const App = () => {
                         <Route path="/stats" element={<Stats />} />
                         <Route path="/friends" element={<Friends />} />
                         <Route path="/proposal" element={<Proposal />} />
+                        <Route element={<AdminRoute />}>
+                            <Route path="/admin" element={<Admin />} />
+                        </Route>
                     </Route>
                 </Route>
 
