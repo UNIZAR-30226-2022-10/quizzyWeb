@@ -41,6 +41,7 @@ const verifyToken = () => {
       email: response.data.email,
       nickname: response.data.nickname,
       wallet: response.data.wallet,
+      is_admin: response.data.is_admin
     }
     return user;
   });
