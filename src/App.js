@@ -41,7 +41,6 @@ const App = () => {
     const AdminRoute = () => {
         AuthService.verifyToken()
         .then(user => {
-            console.log(user);
             if (!user.is_admin) throw new Error("Not an admin");
         })
         .catch((err) => { 

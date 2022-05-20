@@ -31,8 +31,38 @@ const sendProposal = async (stmt, cat, diff, c, w1, w2, w3) => {
     });
 }
 
+// Get list of pending proposals
+const getPendingProposals = async () => {
+    return await axios.get(API_URL +"/questions/pending", { headers: authHeader() })
+        .then((response) => {
+            console.log(response.data)
+            return response.data;
+        });
+};
+
+// Accept a question proposal
+const acceptProposal = async (id) => {
+    return await axios.put(API_URL +`/questions/review?id=${id}` , null, { headers: authHeader() })
+        .then((response) => {
+            console.log(response.data)
+            return response.data;
+        });
+};
+
+// Accept a question proposal
+const rejectProposal = async (id) => {
+    return await axios.delete(API_URL +`/questions/review?id=${id}`, { headers: authHeader()})
+        .then((response) => {
+            console.log(response.data)
+            return response.data;
+        });
+};
+
 const questionService = {
     sendProposal,
+    getPendingProposals,
+    acceptProposal,
+    rejectProposal,
 }
 
 export default questionService;

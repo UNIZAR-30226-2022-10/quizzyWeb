@@ -143,7 +143,7 @@ const Layout = () => {
         { text: "Colección", icon: "fa-shirt", link: "/collecion" },
         { text: "Estadísticas", icon: "fa-chart-pie", link: "/stats" },
         { text: "Amigos", icon: "fa-user-group", link: "/friends" },
-        { text: "Proponer preguntas", icon: "fa-file-circle-question", link: "/proposal" },
+        { text: "Propuestas", icon: "fa-file-circle-question", link: "/proposal" },
     ]
 
     if ( JSON.parse(localStorage.getItem("user")).is_admin ) {
