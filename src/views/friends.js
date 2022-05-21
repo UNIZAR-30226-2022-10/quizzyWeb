@@ -9,6 +9,8 @@ import {
     Box,
     List,
     ListItem,
+    ListItemAvatar,
+    Avatar,
     ListItemText,
     TextField,
     Typography,
@@ -29,6 +31,14 @@ import Loader from "components/Loader"
 import userService from "services/userService"
 
 import "index.css"
+
+function cosmeticssrcSet(id) {
+    return {
+        src: process.env.PUBLIC_URL + "/images/cosmetics/cosmetic_" + id + ".jpg",
+
+        srcSet: process.env.PUBLIC_URL + "/images/cosmetics/cosmetic_" + id + ".jpg",
+    }
+}
 
 export default function Friends() {
     const theme = useTheme()
@@ -139,7 +149,7 @@ export default function Friends() {
                 setSuccess(
                     "Se ha borrado a " + nickDelete + " de tu lista de amigos."
                 )
-                refetchFriends();
+                refetchFriends()
             })
             .catch((e) => {
                 setError("No se pudo enviar la solicitud.")
@@ -154,11 +164,9 @@ export default function Friends() {
         await friendService
             .acceptFriend(nick)
             .then(() => {
-                setSuccess(
-                    "Se ha añadido a " + nick + " a tu lista de amigos."
-                )
-                refetchPending();
-                refetchFriends();
+                setSuccess("Se ha añadido a " + nick + " a tu lista de amigos.")
+                refetchPending()
+                refetchFriends()
             })
             .catch((e) => {
                 setError("No se pudo enviar la solicitud.")
@@ -172,10 +180,8 @@ export default function Friends() {
         await friendService
             .deleteFriend(nick)
             .then(() => {
-                setSuccess(
-                    "Se ha rechazado la solicitud de amistad de " + nick
-                )
-                refetchPending();
+                setSuccess("Se ha rechazado la solicitud de amistad de " + nick)
+                refetchPending()
             })
             .catch((e) => {
                 setError("No se pudo enviar la solicitud.")
@@ -227,24 +233,25 @@ export default function Friends() {
                 >
                     <Tab label={"Buscar amigos"} />
                     <Tab label={"Amigos"} />
-                    <Tab label={
-                        <div
-                            style={{
-                                display: "flex",
-                                justifyContent: "space-around",
-                                alignItems: "center",
-                                gap: "1rem"
-                            }}
-                        >
-                            <p>Solicitudes</p>
-                            { !pendingLoading && pending.friends?.length > 0 &&
-                                <div className="ring-container">
-                                    <div className="ringring"></div>
-                                    <div className="circle"></div>
-                                </div>
-                            }
-                        </div>
-                    } 
+                    <Tab
+                        label={
+                            <div
+                                style={{
+                                    display: "flex",
+                                    justifyContent: "space-around",
+                                    alignItems: "center",
+                                    gap: "1rem",
+                                }}
+                            >
+                                <p>Solicitudes</p>
+                                {!pendingLoading && pending.friends?.length > 0 && (
+                                    <div className="ring-container">
+                                        <div className="ringring"></div>
+                                        <div className="circle"></div>
+                                    </div>
+                                )}
+                            </div>
+                        }
                     />
                 </Tabs>
             </Box>
@@ -278,10 +285,20 @@ export default function Friends() {
                     {search.map((user, key) => (
                         <div key={key}>
                             <ListItem sx={listItemStyle}>
+                                <ListItemAvatar>
+                                    <Avatar
+                                        src={
+                                            cosmeticssrcSet(user.actual_cosmetic).src
+                                        }
+                                    />
+                                </ListItemAvatar>
                                 <ListItemText primary={user.nickname} />
                                 <Button
                                     onClick={(e) => handleClickAdd(e, user.nickname)}
                                     variant="contained"
+                                    disabled={
+                                        !friendsLoading && friends.friends.some((f) => f.nickname === user.nickname)
+                                    }
                                     color="secondary"
                                     startIcon={
                                         <Icon
@@ -290,7 +307,11 @@ export default function Friends() {
                                         />
                                     }
                                 >
-                                    Añadir amigo
+                                    {(!friendsLoading && friends.friends.some((f) => f.nickname === user.nickname)) ? (
+                                        <p>Añadir amigo</p>
+                                    ) : (
+                                        <p>Añadir amigo</p>
+                                    )}
                                 </Button>
                             </ListItem>
                             <Divider />
@@ -307,13 +328,19 @@ export default function Friends() {
                             friends.friends?.map((friend, key) => (
                                 <div key={key}>
                                     <ListItem sx={listItemStyle}>
-                                        <ListItemText primary={friend.nickname_2} />
+                                        <ListItemAvatar>
+                                            <Avatar
+                                                src={
+                                                    cosmeticssrcSet(
+                                                        friend.actual_cosmetic
+                                                    ).src
+                                                }
+                                            />
+                                        </ListItemAvatar>
+                                        <ListItemText primary={friend.nickname} />
                                         <Button
                                             onClick={(e) =>
-                                                handleClickDelete(
-                                                    e,
-                                                    friend.nickname_2
-                                                )
+                                                handleClickDelete(e, friend.nickname)
                                             }
                                             variant="contained"
                                             color="error"

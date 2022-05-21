@@ -54,9 +54,8 @@ export default function Menu() {
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "center",
-                gap: "1em",
-                minHeight: "100%",
-                marginBlockStart: "50px"
+                gap: "1rem",
+                mt: 2,
             }}
         >
             {/* Nueva Partida */}
