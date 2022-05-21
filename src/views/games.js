@@ -1,9 +1,28 @@
-import React from 'react'
-import Container from "@mui/material/Container"
-import Paper from "@mui/material/Paper"
-import Typography from "@mui/material/Typography"
-import Button from "@mui/material/Button"
-import Icon from "@mui/material/Icon"
+import React, { useState, useEffect } from 'react'
+import {
+    Container,
+    Paper,
+    Tabs,
+    Tab,
+    Box,
+    List,
+    ListItem,
+    ListItemAvatar,
+    Avatar,
+    ListItemText,
+    TextField,
+    Typography,
+    Icon,
+    Button,
+    Divider,
+    Dialog,
+    DialogTitle,
+    DialogContentText,
+    DialogActions,
+    Alert,
+    Snackbar,
+    CircularProgress,
+} from "@mui/material"
 import { useNavigate } from "react-router-dom"
 
 import theme from '../utils/theme';
@@ -57,15 +76,13 @@ function Games() {
         <Container
             sx={{
                 display: "flex",
-                flexDirection: "column",
                 justifyContent: "center",
-                gap: "1em",
-                minHeight: "100%"
+                gap: "1rem",
+                mt: 2,
             }}
         >
             {/* SOLO */}
             <Paper
-                elevation={5}
                 sx={{
                     display: "flex",
                     flexDirection: "column",
@@ -108,7 +125,6 @@ function Games() {
 
             {/* MULTI */}
             <Paper
-                elevation={5}
                 sx={{
                     display: "flex",
                     flexDirection: "column",
@@ -133,9 +149,10 @@ function Games() {
                 </Typography>
                 <Button
                     variant="contained"
-                    onClick={handleMultiPublico}
+                    onClick={handleMultiPublic}
                     color="secondary"
                     size="large"
+                    disabled={waiting}
                     sx={{
                         width: "100%",
                         alignSelf: "center",
@@ -143,11 +160,14 @@ function Games() {
                     }}
                     startIcon={<Icon baseClassName="fas" className="fa-globe" />}
                 >
-                    Unirse a partida pública
+                    {waiting ? (
+                        <CircularProgress size={25} color="light" />
+                    ) : (
+                        "Unirse a partida pública"
+                    )}
                 </Button>
                 <Button
                     variant="contained"
-                    onClick={handleJoinPrivada}
                     color="secondary"
                     size="large"
                     sx={{
@@ -161,7 +181,6 @@ function Games() {
                 </Button>
                 <Button
                     variant="contained"
-                    onClick={handleCrearPrivada}
                     color="secondary"
                     size="large"
                     sx={{
@@ -173,7 +192,50 @@ function Games() {
                 >
                     Crear partida privada
                 </Button>
+                {waiting && <Button
+                    variant="contained"
+                    onClick={handleLeave}
+                    color="error"
+                    size="large"
+                    sx={{
+                        alignSelf: "center",
+                        borderRadius: "10px",
+                    }}
+                    startIcon={
+                        <Icon baseClassName="fas" className="fa-xmark" />
+                    }
+                >
+                    Cancelar
+                </Button>}
             </Paper>
+            {/* Success snackbar */}
+            <Snackbar
+                open={success !== null}
+                autoHideDuration={6000}
+                onClose={() => setSuccess(null)}
+            >
+                <Alert
+                    onClose={() => setSuccess(null)}
+                    severity="success"
+                    sx={{ width: "100%" }}
+                >
+                    {success}
+                </Alert>
+            </Snackbar>
+            {/* Error snackbar */}
+            <Snackbar
+                open={error !== null}
+                autoHideDuration={6000}
+                onClose={() => setError(null)}
+            >
+                <Alert
+                    onClose={() => setError(null)}
+                    severity="error"
+                    sx={{ width: "100%" }}
+                >
+                    {error}
+                </Alert>
+            </Snackbar>
         </Container>
     )
 }
