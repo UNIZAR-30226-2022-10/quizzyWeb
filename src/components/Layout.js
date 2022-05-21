@@ -147,13 +147,19 @@ const Layout = () => {
     const handleListItemClick = (event, index) => {
         setSelectedIndex(index)
     }
-    const menuList = [
+
+    let menuList = [
         { text: "Inicio", icon: "fa-house", link: "/" },
         { text: "Tienda", icon: "fa-basket-shopping", link: "/shop" },
         { text: "Colección", icon: "fa-shirt", link: "/collecion" },
         { text: "Estadísticas", icon: "fa-chart-pie", link: "/stats" },
         { text: "Amigos", icon: "fa-user-group", link: "/friends" },
+        { text: "Propuestas", icon: "fa-file-circle-question", link: "/proposal" },
     ]
+
+    if ( JSON.parse(localStorage.getItem("user")).is_admin ) {
+        menuList.push({ text: "Administrador", icon: "fa-screwdriver-wrench", link: "/admin" })
+    }
 
     return (
         <ThemeProvider theme={theme}>
