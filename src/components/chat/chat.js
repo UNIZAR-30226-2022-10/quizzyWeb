@@ -67,8 +67,7 @@ function Chat() {
         e.preventDefault()
         const message = chatMessage
         if (message) {
-            sendMessage({ message, roomName: 'main' }, (cb) => { 
-                // TODO: add dynamic room support
+            sendMessage({ message, roomName: 'main' }, (cb) => {
                 // clear the input after the message is sent
                 setChatMessage("")
                 setMessages((prev) => [...prev, {username:'Me', message: message, self: true}])

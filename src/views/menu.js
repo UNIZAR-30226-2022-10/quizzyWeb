@@ -1,9 +1,29 @@
-import React from "react"
-import Container from "@mui/material/Container"
-import Paper from "@mui/material/Paper"
-import Typography from "@mui/material/Typography"
-import Button from "@mui/material/Button"
-import Icon from "@mui/material/Icon"
+import React, { useState, useEffect } from 'react'
+import {
+    Container,
+    Paper,
+    Tabs,
+    Tab,
+    Box,
+    List,
+    ListItem,
+    ListItemAvatar,
+    Avatar,
+    ListItemText,
+    TextField,
+    Typography,
+    Icon,
+    Button,
+    Divider,
+    Dialog,
+    DialogTitle,
+    DialogContentText,
+    DialogActions,
+    Alert,
+    Snackbar,
+    CircularProgress,
+} from "@mui/material"
+
 import { useNavigate } from "react-router-dom"
 import CardMedia from "@mui/material/CardMedia"
 import Card from "@mui/material/Card"
@@ -14,6 +34,12 @@ import Grid from "@mui/material/Grid"
 import {capitalizeFirstLetter} from "utils/stringService"
 
 import theme from '../utils/theme';
+import { 
+    disconnectSocket, 
+    initSocket, 
+    joinPublicMatch,
+    leavePublicMatch
+} from 'services/sioService'
 
 export default function Menu() {
 
@@ -40,13 +66,19 @@ export default function Menu() {
         navigate("/games", { replace: false })
     }
 
-    function handleMultiPublico(e) {
-        navigate("/multi", { replace: false })
-    }
+    useEffect(() => {
+        // init socket
+        initSocket(localStorage.getItem('token'));
+        return () => {
+            // disconnect and clean state
+            disconnectSocket(() => leavePublicMatch(({ok, msg}) => { setWaiting(false); }));
+        }
+    }, [])
 
-    function handleCrearPrivada(e) {
-        navigate("/privada", {replace: false})
-    }
+    // success and error snackbar message
+    const [success, setSuccess] = useState(null)
+    const [error, setError] = useState(null)
+    const [waiting, setWaiting ] = useState(false);
 
     return (
         <Container
@@ -81,7 +113,6 @@ export default function Menu() {
 
             {/* MULTI */}
             <Paper
-                elevation={5}
                 sx={{
                     marginBlockStart: "20px",
                     display: "flex",
@@ -106,28 +137,56 @@ export default function Menu() {
                     Esperando Turno
                 </Typography>
                 <Grid container item justifyContent="center" spacing={2} display="flex" flexDirection="column" flexWrap="row wrap">
-                        {Object.keys(game).map((item) => (
-                            <Grid item xs={20} md={20} key={item}>
-                                <Card 
-                                    sx={{   opacity: game[item]? '1' : '0.4', 
-                                            backgroundColor: game[item]? '#fff' : '#C0C1B7',
-                                    }}>
-                                    <CardActionArea onClick={() => {handleGames(item)}}>
-                                        <CardMedia
-                                            height="140"
-                                            alt={item}
-                                        />
-                                        <CardContent sx={{textAlign:'center'}}>
-                                            <Typography variant="h6" gutterBottom component="div">
-                                                {capitalizeFirstLetter(item)}
-                                            </Typography> 
-                                        </CardContent>
-                                    </CardActionArea>
-                                </Card>
-                            </Grid>
-                        ))}
-                    </Grid>
+                    {Object.keys(game).map((item) => (
+                        <Grid item xs={20} md={20} key={item}>
+                            <Card 
+                                sx={{   opacity: game[item]? '1' : '0.4', 
+                                        backgroundColor: game[item]? '#fff' : '#C0C1B7',
+                                }}>
+                                <CardActionArea onClick={() => {handleGames(item)}}>
+                                    <CardMedia
+                                        height="140"
+                                        alt={item}
+                                    />
+                                    <CardContent sx={{textAlign:'center'}}>
+                                        <Typography variant="h6" gutterBottom component="div">
+                                            {capitalizeFirstLetter(item)}
+                                        </Typography> 
+                                    </CardContent>
+                                </CardActionArea>
+                            </Card>
+                        </Grid>
+                    ))}
+                </Grid>
             </Paper>
+            {/* Success snackbar */}
+            <Snackbar
+                open={success !== null}
+                autoHideDuration={6000}
+                onClose={() => setSuccess(null)}
+            >
+                <Alert
+                    onClose={() => setSuccess(null)}
+                    severity="success"
+                    sx={{ width: "100%" }}
+                >
+                    {success}
+                </Alert>
+            </Snackbar>
+            {/* Error snackbar */}
+            <Snackbar
+                open={error !== null}
+                autoHideDuration={6000}
+                onClose={() => setError(null)}
+            >
+                <Alert
+                    onClose={() => setError(null)}
+                    severity="error"
+                    sx={{ width: "100%" }}
+                >
+                    {error}
+                </Alert>
+            </Snackbar>
         </Container>
     )
 }
