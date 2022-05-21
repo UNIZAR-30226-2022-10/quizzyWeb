@@ -42,23 +42,27 @@ export default function Menu() {
     }
 
     const joinCallback = ({ok, msg}) => {
-        if ( !ok ) {
-            setError("Error al entrar en una sala pública:", msg);
-        }
-    }
-
-    const joinedCallback = ({ ok, rid, msg }) => {
-        console.log("done")
-        setWaiting(false);
-        if ( ok ) {
-            navigate("/multi", { replace: false });
+        if ( ok ) {  
+            setWaiting(true);
+            setSuccess("Esperando más jugadores...");
         } else {
             setError("Error al entrar en una sala pública:", msg);
         }
     }
 
+    const joinedCallback = ({ rid }) => {
+        console.log("done")
+        setWaiting(false);
+        if ( rid ) {
+            setWaiting(false);
+            console.log("joined", rid);
+            navigate("/multi", { replace: false });
+        } else {
+            setError("Error al entrar en una sala pública:");
+        }
+    }
+
     function handleMultiPublic(e) {
-        setWaiting(true);
         console.log("waiting")
         joinPublicMatch(
             joinCallback,
@@ -66,12 +70,18 @@ export default function Menu() {
         )
     }
 
+    function handleLeave(e) {
+        e.preventDefault();
+        leavePublicMatch(({ok, msg}) => { setWaiting(false); });
+        setSuccess("Búsqueda de partida cancelada con éxito")
+    }
+
     useEffect(() => {
         // init socket
         initSocket(localStorage.getItem('token'));
         return () => {
             // disconnect and clean state
-            disconnectSocket(leavePublicMatch);
+            disconnectSocket(() => leavePublicMatch(({ok, msg}) => { setWaiting(false); }));
         }
     }, [])
 
@@ -84,7 +94,6 @@ export default function Menu() {
         <Container
             sx={{
                 display: "flex",
-                flexDirection: "column",
                 justifyContent: "center",
                 gap: "1rem",
                 mt: 2,
@@ -92,7 +101,6 @@ export default function Menu() {
         >
             {/* SOLO */}
             <Paper
-                elevation={5}
                 sx={{
                     display: "flex",
                     flexDirection: "column",
@@ -135,7 +143,6 @@ export default function Menu() {
 
             {/* MULTI */}
             <Paper
-                elevation={5}
                 sx={{
                     display: "flex",
                     flexDirection: "column",
@@ -163,6 +170,7 @@ export default function Menu() {
                     onClick={handleMultiPublic}
                     color="secondary"
                     size="large"
+                    disabled={waiting}
                     sx={{
                         width: "100%",
                         alignSelf: "center",
@@ -170,7 +178,11 @@ export default function Menu() {
                     }}
                     startIcon={<Icon baseClassName="fas" className="fa-globe" />}
                 >
-                    Unirse a partida pública
+                    {waiting ? (
+                        <CircularProgress size={25} color="light" />
+                    ) : (
+                        "Unirse a partida pública"
+                    )}
                 </Button>
                 <Button
                     variant="contained"
@@ -198,6 +210,21 @@ export default function Menu() {
                 >
                     Crear partida privada
                 </Button>
+                {waiting && <Button
+                    variant="contained"
+                    onClick={handleLeave}
+                    color="error"
+                    size="large"
+                    sx={{
+                        alignSelf: "center",
+                        borderRadius: "10px",
+                    }}
+                    startIcon={
+                        <Icon baseClassName="fas" className="fa-xmark" />
+                    }
+                >
+                    Cancelar
+                </Button>}
             </Paper>
             {/* Success snackbar */}
             <Snackbar

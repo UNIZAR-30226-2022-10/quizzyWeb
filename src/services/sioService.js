@@ -51,9 +51,9 @@ export const joinPublicMatch = (joinCallback, joinedCallback) => {
     }
 }
 
-export const leavePublicMatch = () => {
+export const leavePublicMatch = (cb) => {
 
     if (socket) {
-        socket.emit("public:leave", ({ok, msg}) => { console.log("leaving queue") });
+        socket.emit("public:leave", cb);
     }
 }
