@@ -14,18 +14,45 @@ function Games() {
         navigate("/solo", { replace: false })
     }
 
-    function handleMultiPublico(e) {
-        navigate("/multi", { replace: false })
+    const joinCallback = ({ok, msg}) => {
+        if ( ok ) {  
+            setWaiting(true);
+            setSuccess("Esperando más jugadores...");
+        } else {
+            setError("Error al entrar en una sala pública:", msg);
+        }
     }
 
     function handleCrearPrivada(e) {
         navigate("/privada", {replace: false})
     }
 
-    function handleJoinPrivada(e) {
-        navigate("/join", {replace: false})
+    const joinedCallback = ({ rid }) => {
+        console.log("done")
+        setWaiting(false);
+        if ( rid ) {
+            setWaiting(false);
+            console.log("joined", rid);
+            navigate("/multi", { replace: false });
+        } else {
+            setError("Error al entrar en una sala pública:");
+        }
     }
 
+    function handleMultiPublic(e) {
+        console.log("waiting")
+        joinPublicMatch(
+            joinCallback,
+            joinedCallback
+        )
+    }
+
+    function handleLeave(e) {
+        e.preventDefault();
+        leavePublicMatch(({ok, msg}) => { setWaiting(false); });
+        setSuccess("Búsqueda de partida cancelada con éxito")
+    }
+    
     return (
         <Container
             sx={{
