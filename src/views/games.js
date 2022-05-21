@@ -25,6 +25,13 @@ import {
 } from "@mui/material"
 import { useNavigate } from "react-router-dom"
 
+import {
+    initSocket,
+    disconnectSocket,
+    joinPublicMatch,
+    leavePublicMatch
+} from '../services/sioService'
+
 import theme from '../utils/theme';
 
 function Games() {
@@ -71,6 +78,20 @@ function Games() {
         leavePublicMatch(({ok, msg}) => { setWaiting(false); });
         setSuccess("Búsqueda de partida cancelada con éxito")
     }
+
+    // success and error snackbar message
+    const [success, setSuccess] = useState(null)
+    const [error, setError] = useState(null)
+    const [waiting, setWaiting ] = useState(false);
+
+    useEffect(() => {
+        // init socket
+        initSocket(localStorage.getItem('token'));
+        return () => {
+            // disconnect and clean state
+            disconnectSocket(() => leavePublicMatch(({ok, msg}) => { setWaiting(false); }));
+        }
+    }, [])
     
     return (
         <Container

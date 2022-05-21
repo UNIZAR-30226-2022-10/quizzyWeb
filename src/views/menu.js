@@ -66,20 +66,6 @@ export default function Menu() {
         navigate("/games", { replace: false })
     }
 
-    useEffect(() => {
-        // init socket
-        initSocket(localStorage.getItem('token'));
-        return () => {
-            // disconnect and clean state
-            disconnectSocket(() => leavePublicMatch(({ok, msg}) => { setWaiting(false); }));
-        }
-    }, [])
-
-    // success and error snackbar message
-    const [success, setSuccess] = useState(null)
-    const [error, setError] = useState(null)
-    const [waiting, setWaiting ] = useState(false);
-
     return (
         <Container
             sx={{
@@ -159,34 +145,6 @@ export default function Menu() {
                     ))}
                 </Grid>
             </Paper>
-            {/* Success snackbar */}
-            <Snackbar
-                open={success !== null}
-                autoHideDuration={6000}
-                onClose={() => setSuccess(null)}
-            >
-                <Alert
-                    onClose={() => setSuccess(null)}
-                    severity="success"
-                    sx={{ width: "100%" }}
-                >
-                    {success}
-                </Alert>
-            </Snackbar>
-            {/* Error snackbar */}
-            <Snackbar
-                open={error !== null}
-                autoHideDuration={6000}
-                onClose={() => setError(null)}
-            >
-                <Alert
-                    onClose={() => setError(null)}
-                    severity="error"
-                    sx={{ width: "100%" }}
-                >
-                    {error}
-                </Alert>
-            </Snackbar>
         </Container>
     )
 }
