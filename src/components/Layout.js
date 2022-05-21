@@ -8,6 +8,7 @@
 
 import * as React from "react"
 import { NavLink, Outlet} from "react-router-dom"
+import { useQuery } from "react-query";
 
 import { styled, ThemeProvider } from "@mui/material/styles"
 import MuiDrawer from "@mui/material/Drawer"
@@ -35,8 +36,9 @@ import Icon from "@mui/material/Icon"
 import theme from '../utils/theme';
 
 import AuthService from "services/auth"
-const drawerWidth = 240
+import userService from 'services/userService';
 
+const drawerWidth = 240
 const openedMixin = (theme) => ({
     width: drawerWidth,
     transition: theme.transitions.create("width", {
@@ -47,7 +49,6 @@ const openedMixin = (theme) => ({
     backgroundColor: theme.palette.primary.main,
     color: theme.palette.light.main,
 })
-
 const closedMixin = (theme) => ({
     transition: theme.transitions.create("width", {
         easing: theme.transitions.easing.sharp,
@@ -61,7 +62,6 @@ const closedMixin = (theme) => ({
     backgroundColor: theme.palette.primary.main,
     color: theme.palette.light.main,
 })
-
 const AppBar =  styled(MuiAppBar,{shouldForwardProp: (prop) => prop !== "open",})
     (({ theme, open }) => ({
         zIndex: theme.zIndex.drawer + 1,
@@ -78,7 +78,6 @@ const AppBar =  styled(MuiAppBar,{shouldForwardProp: (prop) => prop !== "open",}
             }),
         }),
 }))
-   
 const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== "open" })(
     ({ theme, open }) => ({
         width: drawerWidth,
@@ -97,7 +96,6 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== "open" 
 
     })
 )
-
 const DrawerHeader = styled("div")(({ theme }) => ({
     display: "flex",
     alignItems: "center",
@@ -109,7 +107,7 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 }))
 
 const Layout = () => {
-    
+    // Fix font awseome icons
     React.useEffect(() => {
         const node = loadCSS(
             "https://use.fontawesome.com/releases/v6.1.1/css/all.css",
@@ -122,6 +120,19 @@ const Layout = () => {
         }
     }, [])
 
+    // User context
+    const [user,setUser] = React.useState(null);
+    const {
+        isLoading,
+        error: errorUser,
+        data: userData,
+        refetch: refetchUser,
+    } = useQuery("user", userService.getUser)
+    React.useEffect(() => {
+        if (userData) {
+            setUser(userData.data)
+        }
+    }, [userData])
     // Setting Open Gestion
     const [open, setOpen] = React.useState(false)
     // Left drawer Open Gestion
@@ -179,7 +190,7 @@ const Layout = () => {
                             <MenuIcon />
                         </IconButton>
                         {/* Avatar */}
-                        <Avatar alt="Remy Sharp" src={process.env.PUBLIC_URL + "/images/cosmetics/cosmetic_" + JSON.parse(localStorage.getItem("user")).actual_cosmetic + ".jpg"} />
+                        <Avatar alt="Remy Sharp" src={process.env.PUBLIC_URL + "/images/cosmetics/cosmetic_" + user?.actual_cosmetic + ".jpg"} />
                         <Box sx={{display:'flex', flexDirection:'column' }}>   
                             {/* Username */}
                             <Typography
@@ -187,14 +198,14 @@ const Layout = () => {
                                 component="div"
                                 sx={{ ml: 2, fontWeight: 'bold'}}
                             >
-                                Apodo : {JSON.parse(localStorage.getItem("user"))?.nickname || "Usuario"}
+                                Apodo : {user?.nickname || "Usuario"}
                             </Typography>
                             <Typography
                                 variant="h6"
                                 component="div"
                                 sx={{ ml: 2}}
                             >
-                                Monedero : {JSON.parse(localStorage.getItem("user"))?.wallet || "0"}
+                                Monedero : {user?.wallet || "0"}
                             </Typography>
                         </Box>
 
@@ -322,10 +333,10 @@ const Layout = () => {
                     }}
                 >
                     <DrawerHeader />
-                    <Outlet/>
+                    <Outlet context={[user, setUser]} />
                 </Box>
             </Box>
-        </ThemeProvider>
+        </ThemeProvider> 
     )
 }
 

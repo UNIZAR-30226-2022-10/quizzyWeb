@@ -1,4 +1,5 @@
 import {useState, useRef, useEffect } from 'react';
+import { useOutletContext } from "react-router-dom";
 
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
@@ -12,68 +13,118 @@ import Typography from '@mui/material/Typography';
 
 import Chat from '../components/chat/chat';
 import Dice from "react-dice-roll";
-import ImageMapper from 'react-img-mapper';
+import ImageMapper from '../imgMapper/ImageMapper';
+import {tableroCoords, tableroMap} from '../imgMapper/tableroMap.js';
 
 const tableroURL = process.env.PUBLIC_URL + '/images/tablero.png';
 
 export default function Tablero() {
-    const [dimY, setDimY] = useState(500);
-    const [dimX, setDimX] = useState(1000);
-    const ref = useRef();
+    const [user,setUser] = useOutletContext();
+    const gridRef = useRef();
+    const [playersPos,setPlayersPos] = useState([0,2,4,6]);
+    const [loading, setLoading] = useState(false);
+    const [dimY, setDimY] = useState(null);
+    const [dimX, setDimX] = useState(null);
     const [myTurn, setMyTurn] = useState(false);
-    const [cases, setCases] = useState([1,3,5]);
-    const [reachableCase, setReachableCase] = useState(undefined);
+    const [cases, setCases] = useState([0]);
 
-    const map = require('../utils/tableroMap.json')[0];
-    const filteredMap = () => {
-        let mapcpy = JSON.parse(JSON.stringify(map));
-        mapcpy.name = "filtered-map";
-        mapcpy.areas = mapcpy.areas.filter(area => cases.includes(area.id));;
-        return mapcpy
-    }
-    
+    const [map, setMap] = useState(tableroMap);
+    // Set reachable case in map
     useEffect(() => {
-        setReachableCase(filteredMap())
+        setMap((prevState) => ({
+            ...prevState,
+            areas: 
+                tableroMap.areas.filter(area => cases.includes(area.id) || area.shape === "player").concat(...prevState.areas.slice(-playersPos.length))
+        }));
     },[cases])
+    // Set players position in map
+    useEffect(() => {
+        let newPlayersPos = []
+        const colors = ["#ff0000","#00ff00","#0000ff","#ffff00","#ff00ff","#00ffff"]
+        playersPos.forEach((pos,index) => {
+            newPlayersPos.push({
+                "id": "player-" + index, 
+                "shape": "player", 
+                "coords": tableroCoords[pos],
+                "preFillColor": "rgba(0,0,0,0.3)",
+                "fillColor": "blue",
+                "strokeColor": colors[index],
+                "lineWidth": 6,
+                "cosmeticId": index+1,
+            })
+        })
+        setMap((prevState) => ({
+            ...prevState,
+            areas: [
+                ...prevState.areas.slice(0,cases.length).concat(newPlayersPos)   
+            ]
+        })); 
+    },[playersPos])
 
     useEffect(() => {
         function handleResize() {
-            setDimX(ref.current.clientWidth);
-            setDimY(ref.current.clientHeight);
+            setLoading(true);
+            setDimX(gridRef.current.clientWidth);
+            setDimY(gridRef.current.clientHeight);
+            setLoading(false);
         }
         handleResize();
+        window.addEventListener('resize', handleResize)
+
         // TODO: REPLACE THIS SIMULATION WITH REAL GAME
+        // Set player turn to true
         setTimeout(() => {
             setMyTurn(true);
-        }, 4000);
-        setTimeout(() => {
-            setCases([1,2,3,5])
-        }, 10000);
-        //
-        window.addEventListener('resize', handleResize)
+        }, 1000);
+        //randomly set 0 to 5 random cases reachable
+        setInterval(() => {
+            //generate array of random length between 0 and 5 of values between 0 to 54
+            setCases(Array(Math.floor(Math.random() * 5) + 1).fill(0).map(() => Math.floor(Math.random() * 54)));
+        }, 5000);
+        //randomly change or not position of players between 0 and 54 each 7s
+        setInterval(() => {
+            setPlayersPos((prevState) => {
+                
+                let newPlayersPos = prevState.map((pos) => {
+                    if(Math.random() > 0.5) {
+                        return Math.floor(Math.random() * 54);
+                    }
+                    return pos;
+                })   
+                return newPlayersPos;     
+            })
+        }, 7000);
     }, [])
    
     return (
-        <Grid container  
+        <Grid container
+            direction={{ xs: 'column', lg: 'row' }}
             sx={{height:'calc(100vh - 64px)', p: 1}}
         >
             {/* Tablero */}
-            <Grid id="ref" ref={ref}  
+            <Grid 
+                id="gridRef" 
+                ref={gridRef}  
                 item
-                container
-                xs={12}
+                xs
                 lg={10}
+                container
                 sx={{display:'flex', justifyContent:'center',backgroundColor:'accent.main', position:'relative'}}
-            >                
-                {reachableCase !== undefined && <ImageMapper
+            >           
+                {map !== undefined && !loading && <ImageMapper
+                    id="map"
                     parentWidth={Math.min(dimY*4/3, dimX)}
                     responsive
                     src={tableroURL}
-                    map={reachableCase}
+                    map={map}
                     onClick={(area) => {
-                        console.log(area.id);
+                        if (area.shape === "player") {
+                            console.log("Clicked on :", area.id)
+                        } else {
+                            console.log("Clicked on case :",area.id )
+                        }
                     }}
-                />   
+            />
                 }
                 {myTurn && 
                     <Box sx={{position:'absolute', bottom:8, right :8 }}>
@@ -96,7 +147,7 @@ export default function Tablero() {
                 </Accordion>
             </Grid>
             {/* Side */}
-            <Grid item container xs={12} lg={2} wrap sx={{flexDirection: { xs: "row", lg: "column"}, backgroundColor:'light.main', alignContent:'center', justifyContent:'space-around',pt:2}}>
+            <Grid item container lg={2} wrap="nowrap" sx={{flexDirection: { xs: "row", lg: "column"}, backgroundColor:'light.main', alignContent:'center', justifyContent:'space-around',pt:2}}>
                 <Grid item xs={2} lg={12}>
                     <Paper elevation={3} sx={{display:'flex',justifyContent:'center',alignItems:'center', backgroundColor:'blue'}}>
                         <Avatar

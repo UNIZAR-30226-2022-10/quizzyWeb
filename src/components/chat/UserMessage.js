@@ -53,7 +53,7 @@ const UserMessage = withStyles(defaultChatMsgStyles, { name: "ChatMsg" })(
             <Grid
                 container
                 item
-                justify={side === "right" ? "flex-end" : "flex-start"}
+                justifyContent={side === "right" ? "flex-end" : "flex-start"}
             >
                 {side === "left" && (
                     <Grid item>

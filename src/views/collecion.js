@@ -1,4 +1,6 @@
 import {useState, useEffect} from "react";
+import { useOutletContext } from "react-router-dom";
+import { useQuery } from "react-query";
 
 import Alert from "@mui/material/Alert"
 import AppBar from '@mui/material/AppBar';
@@ -36,8 +38,10 @@ function comodinesrcSet(id) {
 }
 
 export default function Shop() {
-    var [cosmetics, setCosmetics] = useState([]);
-    var [wildcards, setWildcards] = useState([]);
+    const [user,setUser] = useOutletContext();
+    
+    const [cosmetics, setCosmetics] = useState([]);
+    const [wildcards, setWildcards] = useState([]);
     const [equipped, setEquipped] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
@@ -75,6 +79,9 @@ export default function Shop() {
                 console.log(err)
                 setError(err.response.data.msg || err.response.data.message || err );
             })
+            .finally(() => {
+                refetchUser();
+            })
             setLoading(false);
     }
 
@@ -105,6 +112,19 @@ export default function Shop() {
         fetchWildcards();
         setLoading(false);
     }, []);
+     // fetch and sync user
+    const {
+        isLoading,
+        error: errorUser,
+        data: userData,
+        refetch: refetchUser,
+    } = useQuery("user", userService.getUser)
+    useEffect(() => {
+        if (userData) {
+            console.log("userData", userData)
+            setUser(userData.data)
+        }
+    }, [userData])
 
 
     return (
@@ -254,7 +274,7 @@ export default function Shop() {
                                         actionIcon={
                                             <Button
                                                 variant="contained"
-                                                color="secondary"
+                                                color={equipped === item.cosmetic_id ? "secondary" : "primary"}
                                                 sx={{ color: 'white', textTransform: 'capitalize', mr: 1 }}
                                                 startIcon={ equipped === item.cosmetic_id ? <Icon
                                                                 baseClassName="fas"
@@ -263,7 +283,7 @@ export default function Shop() {
                                                         }
                                                 onClick={() => {handleConfirmCosmetic(item)}}
                                             >
-                                                Equipar
+                                                {equipped === item.cosmetic_id ? "Actual" : "Equipar"}
                                             </Button>
                                         }
                                         actionPosition="left"
