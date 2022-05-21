@@ -243,11 +243,11 @@ function MultiPublic() {
                                     }}>
                                     <CardActionArea onClick={() => {handleCategory(item)}}>
                                         <CardMedia
-                                            component="img"
-                                            height="140"
-                                            image={process.env.PUBLIC_URL+"/images/category/"+item+".png"}
-                                            alt={item}
-                                        />
+                                        component="img"
+                                        height="140"
+                                        image={process.env.PUBLIC_URL + "/images/category/"+item.toLowerCase()+".png"}
+                                        alt={item}
+                                    />
                                         <CardContent sx={{textAlign:'center'}}>
                                             <Typography variant="h6" gutterBottom component="div">
                                                 {capitalizeFirstLetter(item)}

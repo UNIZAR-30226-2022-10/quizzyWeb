@@ -22,6 +22,10 @@ function Games() {
         navigate("/privada", {replace: false})
     }
 
+    function handleJoinPrivada(e) {
+        navigate("/join", {replace: false})
+    }
+
     return (
         <Container
             sx={{
@@ -116,6 +120,7 @@ function Games() {
                 </Button>
                 <Button
                     variant="contained"
+                    onClick={handleJoinPrivada}
                     color="secondary"
                     size="large"
                     sx={{
