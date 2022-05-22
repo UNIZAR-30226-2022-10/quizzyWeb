@@ -1,21 +1,20 @@
-import { useEffect, useState, useRef } from "react"
+import { useEffect, useState } from "react"
 import {
     initSocket,
-    disconnectSocket,
     subscribeToMessages,
     sendMessage,
-    joinRoom,
 } from "services/sioService"
 
 import "css/chat.css"
 import UserMessage from "./UserMessage"
 import SystemMessage from "./SystemMessage"
 
+import Button from "@mui/material/Button"
 import CssBaseline from "@mui/material/CssBaseline"
 import Grid from "@mui/material/Grid"
-import Button from "@mui/material/Button"
-import TextField from "@mui/material/TextField"
 import SendIcon from "@material-ui/icons/Send"
+import TextField from "@mui/material/TextField"
+
 
 function DateToHoursAndMinutes(datestring) {
     const date = new Date(datestring)
@@ -23,16 +22,10 @@ function DateToHoursAndMinutes(datestring) {
 }
 
 function Chat() {
-    const MAIN_CHAT_ROOM = "main"
 
     const [token, setToken] = useState(localStorage.getItem('token')) 
     const [chatMessage, setChatMessage] = useState([])
     const [messages, setMessages] = useState([])
-    const [room, setRoom] = useState(MAIN_CHAT_ROOM)
-
-    const tokenInputRef = useRef("")
-    const roomInputRef = useRef("")
-    const inputRef = useRef("")
 
     useEffect(() => {
         // Init socket
@@ -41,27 +34,7 @@ function Chat() {
         subscribeToMessages((err, data) => {
             setMessages((prev) => [...prev, data])
         })
-        // Cleanup when user disconnects
-        return () => {
-            disconnectSocket()
-        }
     }, [token])
-
-    const submitToken = (e) => {
-        e.preventDefault()
-        const tokenValue = tokenInputRef.current.value
-        setToken(tokenValue)
-    }
-
-    const submitRoom = (e) => {
-        // TODO: add dynamic room support
-        e.preventDefault()
-        const roomValue = roomInputRef.current.value
-        setRoom(roomValue)
-        joinRoom(roomValue, (cb) => {
-            console.log(cb)
-        })
-    }
 
     const submitMessage = (e) => {
         e.preventDefault()
@@ -87,7 +60,6 @@ function Chat() {
             wrap="nowrap" 
             direction="column" 
             className="chat-wrapper"
-            sx={{height:'calc(80vh - 64px)', p: 1}}
         >
             <CssBaseline />
             <Grid

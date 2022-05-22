@@ -130,10 +130,6 @@ export default function Menu() {
                                         backgroundColor: game[item]? '#fff' : '#C0C1B7',
                                 }}>
                                 <CardActionArea onClick={() => {handleGames(item)}}>
-                                    <CardMedia
-                                        height="140"
-                                        alt={item}
-                                    />
                                     <CardContent sx={{textAlign:'center'}}>
                                         <Typography variant="h6" gutterBottom component="div">
                                             {capitalizeFirstLetter(item)}
