@@ -25,16 +25,12 @@ import {
 } from "@mui/material"
 import { useNavigate } from "react-router-dom"
 
-import {
-    initSocket,
-    disconnectSocket,
-    joinPublicMatch,
-    leavePublicMatch
-} from '../services/sioService'
-
 import theme from '../utils/theme';
+import { useSocketContext } from 'context/socketContext';
 
 function Games() {
+
+    const { socket, socketService } = useSocketContext();
     let navigate = useNavigate()
     function handleSolo(e) {
         navigate("/solo", { replace: false })
@@ -66,8 +62,7 @@ function Games() {
     }
 
     function handleMultiPublic(e) {
-        console.log("waiting")
-        joinPublicMatch(
+        socketService.joinPublicMatch(
             joinCallback,
             joinedCallback
         )
@@ -75,7 +70,7 @@ function Games() {
 
     function handleLeave(e) {
         e.preventDefault();
-        leavePublicMatch(({ok, msg}) => { setWaiting(false); });
+        socketService.leavePublicMatch(({ok, msg}) => { setWaiting(false); });
         setSuccess("Búsqueda de partida cancelada con éxito")
     }
 
@@ -83,20 +78,12 @@ function Games() {
     const [success, setSuccess] = useState(null)
     const [error, setError] = useState(null)
     const [waiting, setWaiting ] = useState(false);
-
-    useEffect(() => {
-        // init socket
-        initSocket(localStorage.getItem('token'));
-        return () => {
-            // disconnect and clean state
-            disconnectSocket(() => leavePublicMatch(({ok, msg}) => { setWaiting(false); }));
-        }
-    }, [])
     
     return (
         <Container
             sx={{
                 display: "flex",
+                flexDirection:"column",
                 justifyContent: "center",
                 gap: "1rem",
                 mt: 2,

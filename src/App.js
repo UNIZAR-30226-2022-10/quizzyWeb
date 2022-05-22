@@ -29,11 +29,17 @@ import Games from "./views/games"
 import AuthService from "services/auth"
 import JoinPriv from "views/joinPriv"
 
+import { useSocketContext } from "context/socketContext";
+
 const App = () => {
+
+    const { socket, socketService } = useSocketContext();
+
     const ProtectedRoute = () => {
         AuthService.verifyToken()
         .then(user => {  
-            localStorage.setItem("user",JSON.stringify(user))
+            localStorage.setItem("user",JSON.stringify(user));
+            socketService.initSocket();
         })
         .catch((err) => { 
             console.log(err)
@@ -74,7 +80,7 @@ const App = () => {
                         <Route element={<AdminRoute />}>
                             <Route path="/admin" element={<Admin />} />
                         </Route>
-                       
+                    
                     </Route>
                 </Route>
 
@@ -84,7 +90,6 @@ const App = () => {
                 <Route path="*" element={<Error404 />} />
             </Routes>
         </BrowserRouter>
-    
     )
 }
 

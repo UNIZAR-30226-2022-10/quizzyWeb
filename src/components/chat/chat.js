@@ -1,11 +1,4 @@
 import { useEffect, useState, useRef } from "react"
-import {
-    initSocket,
-    disconnectSocket,
-    subscribeToMessages,
-    sendMessage,
-    joinRoom,
-} from "services/sioService"
 
 import "css/chat.css"
 import UserMessage from "./UserMessage"
@@ -16,6 +9,7 @@ import Grid from "@mui/material/Grid"
 import Button from "@mui/material/Button"
 import TextField from "@mui/material/TextField"
 import SendIcon from "@material-ui/icons/Send"
+import { useSocketContext } from "context/socketContext"
 
 function DateToHoursAndMinutes(datestring) {
     const date = new Date(datestring)
@@ -24,6 +18,8 @@ function DateToHoursAndMinutes(datestring) {
 
 function Chat() {
     const MAIN_CHAT_ROOM = "main"
+
+    const { socket, socketService } = useSocketContext();
 
     const [token, setToken] = useState(localStorage.getItem('token')) 
     const [chatMessage, setChatMessage] = useState([])
@@ -35,16 +31,10 @@ function Chat() {
     const inputRef = useRef("")
 
     useEffect(() => {
-        // Init socket
-        initSocket(token)
 
-        subscribeToMessages((err, data) => {
+        socketService.subscribeToMessages((err, data) => {
             setMessages((prev) => [...prev, data])
         })
-        // Cleanup when user disconnects
-        return () => {
-            disconnectSocket()
-        }
     }, [token])
 
     const submitToken = (e) => {
@@ -58,7 +48,7 @@ function Chat() {
         e.preventDefault()
         const roomValue = roomInputRef.current.value
         setRoom(roomValue)
-        joinRoom(roomValue, (cb) => {
+        socketService.joinRoom(roomValue, (cb) => {
             console.log(cb)
         })
     }
@@ -67,7 +57,7 @@ function Chat() {
         e.preventDefault()
         const message = chatMessage
         if (message) {
-            sendMessage({ message, roomName: 'main' }, (cb) => {
+            socketService.sendMessage({ message, roomName: 'main' }, (cb) => {
                 // clear the input after the message is sent
                 setChatMessage("")
                 setMessages((prev) => [...prev, {username:'Me', message: message, self: true}])
