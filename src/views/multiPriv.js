@@ -244,7 +244,7 @@ function MultiPublic() {
                                     <CardActionArea onClick={() => {handleCategory(item)}}>
                                         <CardMedia
                                         component="img"
-                                        height="140"
+                                        height="100"
                                         image={process.env.PUBLIC_URL + "/images/category/"+item.toLowerCase()+".png"}
                                         alt={item}
                                     />
@@ -312,7 +312,13 @@ function MultiPublic() {
                 </Paper>
             </div>
         </div> 
-        <div align="center" display="flex" flexDirection="column">
+        <div 
+            style={{
+                align:"center",
+                display:"flex", 
+                justifyContent: "space-between"
+            }}      
+        >
             {/* Invite button*/}
             <Button variant="contained" display="inline-block" size="large" onClick={handlePlayers}>
                 + Invitar amigos
@@ -327,7 +333,5 @@ function MultiPublic() {
         
   )
 }
-
-
 
 export default MultiPublic

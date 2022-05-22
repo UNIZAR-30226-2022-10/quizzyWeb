@@ -29,6 +29,17 @@ import theme from '../utils/theme';
 import { useSocketContext } from 'context/socketContext';
 
 function Games() {
+    const [gameCode, setGameCode] = useState(0);
+
+    function handleTextBox(e) {
+        e.preventDefault();
+        setGameCode(parseInt(e.target.value));
+    }
+
+    function handleSubmit(e) {
+        e.preventDefault();
+        alert(gameCode);
+    }
 
     const { socket, socketService } = useSocketContext();
     let navigate = useNavigate()
@@ -174,21 +185,52 @@ function Games() {
                         "Unirse a partida pública"
                     )}
                 </Button>
-                <Button
-                    variant="contained"
-                    color="secondary"
-                    size="large"
-                    sx={{
-                        width: "100%",
-                        alignSelf: "center",
-                        borderRadius: "10px",
+                <form
+                    style={{
+                        padding: "1rem 0",
+                        display: "flex",
                     }}
-                    startIcon={<Icon baseClassName="fas" className="fa-lock" />}
+                    //className="chat-input"
+                    onSubmit={handleSubmit}
                 >
-                    Unirse a partida privada
-                </Button>
+                    <TextField
+                        autoFocus
+                        placeholder="Introduce un código de búsqueda"
+                        variant="outlined"
+                        size="small"
+                        color="secondary"
+                        type="number"
+                        value={gameCode}
+                        fullWidth
+                        sx = {{
+                            '& .MuiOutlinedInput-root': {
+                                backgroundColor: "white",
+                                borderRadius: "10px 0 0 10px",
+                              },
+                              
+                        }}
+                        onChange={handleTextBox}
+                    />
+                    <Button
+                        variant="contained"
+                        color="secondary"
+                        type="submit"
+                        sx={{
+                            paddingRight: "2rem", 
+                            paddingLeft: "2rem",
+                            alignSelf: "center",
+                            borderRadius: "0 10px 10px 0",
+                        }}
+                        startIcon={
+                            <Icon baseClassName="fas" className="fa-search" />
+                        }
+                    >
+                        Submit
+                    </Button>
+                </form>
                 <Button
                     variant="contained"
+                    onClick={handleCrearPrivada}
                     color="secondary"
                     size="large"
                     sx={{

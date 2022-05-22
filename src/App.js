@@ -27,7 +27,6 @@ import Multi from "./views/multiPublic"
 import Privada from "./views/multiPriv"
 import Games from "./views/games"
 import AuthService from "services/auth"
-import JoinPriv from "views/joinPriv"
 
 import { useSocketContext } from "context/socketContext";
 
