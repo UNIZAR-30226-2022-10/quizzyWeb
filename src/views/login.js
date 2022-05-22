@@ -9,6 +9,7 @@ import Link from '@mui/material/Link'
 import Grid from '@mui/material/Grid'
 
 import "index.css"
+import { useSocketContext } from "context/socketContext"
 
 function Login() {
     const [details, setDetails] = useState({ nickname: "", psw: ""})
@@ -16,17 +17,12 @@ function Login() {
     const [logged, setLogged] = useState(false)
     let navigate = useNavigate();
 
+    const { socket, socketService } = useSocketContext();
+
     const submitHandler = (e) => {
         e.preventDefault()
         Login(details)
     }
-
-    React.useEffect(() => {
-        if (AuthService.isLoggedIn()) {
-            setLogged(true)
-            navigate("/")
-        }
-    }, [navigate])
 
     const Login = (details) => {
         if (details.nickname !== "" && details.psw !== "") {
@@ -43,6 +39,7 @@ function Login() {
                             AuthService.logout()
                         })
                         setTimeout(() => {
+                            socketService.initSocket();
                             navigate("/")
                         }, 2000)
                     }

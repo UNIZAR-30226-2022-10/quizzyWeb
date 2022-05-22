@@ -24,6 +24,8 @@ import {
     CircularProgress,
 } from "@mui/material"
 
+import { useQuery } from "react-query"
+
 import { useNavigate } from "react-router-dom"
 import CardMedia from "@mui/material/CardMedia"
 import Card from "@mui/material/Card"
@@ -31,40 +33,28 @@ import CardActionArea from "@mui/material/CardActionArea"
 import CardContent from "@mui/material/CardContent"
 import Grid from "@mui/material/Grid"
 
+import gamesService from 'services/gamesService'
+
 import {capitalizeFirstLetter} from "utils/stringService"
 
 import theme from '../utils/theme';
-import { 
-    disconnectSocket, 
-    initSocket, 
-    joinPublicMatch,
-    leavePublicMatch
-} from 'services/sioService'
+import { useSocketContext } from 'context/socketContext'
 
 export default function Menu() {
 
-    var [game, setGame] = React.useState({
-        Partida_1: true, 
-        Partida_2: true,
-        Partida_3: true,
-        Partida_4: true,
-        Partida_5: true,
-        Partida_6: true,
-    })
-
-    const handleGame = (data) => {
-        // if data in the game is true, set to false
-        // else set to true
-        setGame({
-            ...game,
-            [data]: !game[data]
-        })
-    }
+    var [games, setGames] = React.useState([])
 
     let navigate = useNavigate()
     function handleGames(e) {
         navigate("/games", { replace: false })
     }
+
+    const {
+        isLoading: publicGamesLoading,
+        error: publicGamesError,
+        data: publicGames,
+        refetch: refetchPublicGames,
+    } = useQuery("publicGames", gamesService.getPublicGames)
 
     return (
         <Container
@@ -123,16 +113,13 @@ export default function Menu() {
                     Esperando Turno
                 </Typography>
                 <Grid container item justifyContent="center" spacing={2} display="flex" flexDirection="column" flexWrap="row wrap">
-                    {Object.keys(game).map((item) => (
+                    {games.map((item) => (
                         <Grid item xs={20} md={20} key={item}>
-                            <Card 
-                                sx={{   opacity: game[item]? '1' : '0.4', 
-                                        backgroundColor: game[item]? '#fff' : '#C0C1B7',
-                                }}>
+                            <Card>
                                 <CardActionArea onClick={() => {handleGames(item)}}>
                                     <CardContent sx={{textAlign:'center'}}>
                                         <Typography variant="h6" gutterBottom component="div">
-                                            {capitalizeFirstLetter(item)}
+                                            {item.rid}
                                         </Typography> 
                                     </CardContent>
                                 </CardActionArea>

@@ -38,6 +38,8 @@ import theme from '../utils/theme';
 import AuthService from "services/auth"
 import userService from 'services/userService';
 
+import {useSocketContext} from '../context/socketContext';
+
 const drawerWidth = 240
 const openedMixin = (theme) => ({
     width: drawerWidth,
@@ -107,6 +109,9 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 }))
 
 const Layout = () => {
+
+    const { socket, socketService } = useSocketContext();
+
     // Fix font awseome icons
     React.useEffect(() => {
         const node = loadCSS(
@@ -218,7 +223,12 @@ const Layout = () => {
                                 <Button 
                                     color="secondary"
                                     variant="contained" 
-                                    onClick={() => AuthService.logout()}
+                                    onClick={(e) => {
+                                        socketService.disconnectSocket(() => 
+                                            socketService.leavePublicMatch(({ok, msg}) => { console.log("left queue") })
+                                        );
+                                        AuthService.logout()
+                                    }}
                                 >
                                     Cerrar Sesión
                                 </Button>
