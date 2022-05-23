@@ -55,7 +55,7 @@ function Games() {
         if ( rid ) {
             setWaiting(false);
             console.log("joined", rid);
-            navigate("/multi", { replace: false });
+            navigate(`/multi/${rid}`, { replace: false });
         } else {
             setError("Error al entrar en una sala pública:");
         }
