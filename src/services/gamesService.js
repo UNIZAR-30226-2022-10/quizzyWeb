@@ -17,9 +17,33 @@ const getPrivateGames = async () => {
         });
 }
 
+const getInvites = async () => {
+    return await axios.get(API_URL +"/games/invite", { headers: authHeader() })
+        .then((response) => {
+            return response.data;
+        });
+}
+
+const sendInvite = async (rid, nickname) => {
+    return await axios.post(API_URL +"/games/invite", { nickname, rid }, { headers: authHeader() })
+        .then((response) => {
+            return response.data;
+        });
+}
+
+const removeInvite = async (rid) => {
+    return await axios.delete(API_URL +"/games/invite", { headers: authHeader(), data: { rid } })
+        .then((response) => {
+            return response.data;
+        });
+}
+
 const gamesService = {
     getPublicGames,
-    getPrivateGames
+    getPrivateGames,
+    getInvites,
+    sendInvite,
+    removeInvite
 };
 
 export default gamesService;

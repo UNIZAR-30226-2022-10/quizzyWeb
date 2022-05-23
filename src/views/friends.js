@@ -308,7 +308,7 @@ export default function Friends() {
                                     }
                                 >
                                     {(!friendsLoading && friends.friends.some((f) => f.nickname === user.nickname)) ? (
-                                        <p>Añadir amigo</p>
+                                        <p>Ya añadido</p>
                                     ) : (
                                         <p>Añadir amigo</p>
                                     )}
