@@ -144,7 +144,7 @@ function MultiPublic() {
 
   return (
     <Container maxWidth="md" component="main">
-        <Box my={4}>
+        <Box my={4} marginTop="1px" marginBottom="1px">
             <Typography
                 component="h1"
                 variant="h2"
@@ -161,11 +161,17 @@ function MultiPublic() {
                 display: "flex"
             }}>
                 {/* Chat*/}
-                <div>
+                <div
+                    style = {{
+                        flex: 1,
+                    }}>
                     <Chat></Chat>
                 </div>
                 {/* Players*/}
-                <div>
+                <div
+                    style = {{
+                        flex: 1,
+                    }}>
                 <Paper
                 elevation={5}
                 sx={{
@@ -190,6 +196,7 @@ function MultiPublic() {
                                 <Card 
                                     sx={{   opacity: jugadores[item]? '1' : '0.4',
                                             backgroundColor: jugadores[item]? '#fff' : '#C0C1B7',
+                                            height: '60px',
                                         }}>
                                     <CardContent sx={{textAlign:'center'}}>
                                         <Typography variant="h6" gutterBottom component="div">
@@ -203,37 +210,32 @@ function MultiPublic() {
                 </Paper>
             </div>
             {/* Categories & Difficulty & Timer*/}
-            <div>
+            <div
+                    style = {{
+                        flex: 1,
+                    }}>
             <Paper
                 elevation={5}
                 sx={{
                     display: "flex",
                     flexDirection: "column",
                     margin: "10px",
-                    mb: 2,
-                    p: 2,
+                    mb: 1,
+                    p: 1,
                     borderRadius: "20px",
                 }}
                 >
                 {/* Categories */}
                 <Grid container rowSpacing={1}>
                 <Typography
-                    variant="h5"
+                    variant="h6"
                     align="center"
                     color="text.secondary"
                     component="p"
                 >
-                    Unselect the categories you don't want to play with 
-                    and the difficulty of the questions you want to answer 
-                    and the maximum response time !
+                    Unselect the categories you don't want to play!
                 </Typography>
                     {/* Categories*/}
-                    <Typography 
-                        variant="h6" 
-                        component="div" 
-                        sx={{display:'flex',alignItems:'center',marginRight:'8px',fontWeight:'bold'}}>
-                        Categories: 
-                    </Typography>
                     <Grid container item justifyContent="center" spacing={1} display="flex" flexWrap="row wrap">
                         {Object.keys(categories).map((item) => (
                             <Grid item xs={6} md={4} key={item}>
@@ -248,8 +250,8 @@ function MultiPublic() {
                                         image={process.env.PUBLIC_URL + "/images/category/"+item.toLowerCase()+".png"}
                                         alt={item}
                                     />
-                                        <CardContent sx={{textAlign:'center'}}>
-                                            <Typography variant="h6" gutterBottom component="div">
+                                        <CardContent sx={{textAlign:'center', height:"10px"}}>
+                                            <Typography variant="h7" gutterBottom component="div">
                                                 {capitalizeFirstLetter(item)}
                                             </Typography> 
                                         </CardContent>
@@ -262,7 +264,7 @@ function MultiPublic() {
                 <Grid container item justifyContent="space-between">
                     {/* Difficulty*/}
                     <Grid container item xs={12} md={6} justifyContent="center" flexDirection="column">
-                    <Typography variant="h6" component="div" sx={{display:'flex',alignItems:'center',marginRight:'8px',fontWeight:'bold'}}>
+                    <Typography variant="h7" component="div" sx={{display:'flex',alignItems:'center',marginRight:'8px',fontWeight:'bold'}}>
                             Difficulty : 
                         </Typography>
                         <DifficultyToggleButtonGroup
@@ -283,7 +285,7 @@ function MultiPublic() {
                             </ToggleButton>
                         </DifficultyToggleButtonGroup>
                     
-                        <Typography variant="h6" component="div" sx={{display:'flex',alignItems:'center',marginRight:'8px',fontWeight:'bold'}}>
+                        <Typography variant="h7" component="div" sx={{display:'flex',alignItems:'center',marginRight:'8px',fontWeight:'bold'}}>
                             Response time : 
                         </Typography>
                         <TimerToggleButtonGroup
@@ -320,12 +322,29 @@ function MultiPublic() {
             }}      
         >
             {/* Invite button*/}
-            <Button variant="contained" display="inline-block" size="large" onClick={handlePlayers}>
+            <Button variant="contained" display="inline-block" size="large" fullWidth onClick={handlePlayers}
+                style={{
+                    align:"center",
+                    display:"flex", 
+                    justifyContent: "center",
+                    minWidth: "47%",
+                    marginRigth: "25px",
+                }}  
+            >
                 + Invitar amigos
             </Button>
             
             {/* Start button*/}
-            <Button variant="contained" display="inline-block" size="large" onClick={handleStart}>
+            <Button variant="contained" display="inline-block" size="large" onClick={handleStart}
+                style={{
+                    align:"center",
+                    display:"flex", 
+                    justifyContent: "center",
+                    marginRight: "10px",
+                    marginLeft: "25px",
+                    minWidth: "47%",
+                }}  
+            >
                 Start
             </Button>
         </div>
