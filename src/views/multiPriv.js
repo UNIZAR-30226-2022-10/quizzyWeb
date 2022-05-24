@@ -218,7 +218,7 @@ function MultiPublic() {
                     color="text.primary"
                     gutterBottom
                 >
-                    Juego Multijugador
+                    Sala {location.state.rid}
                 </Typography>
             </Box>
 
