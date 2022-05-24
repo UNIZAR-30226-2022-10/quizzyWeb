@@ -5,7 +5,9 @@
  * Description: - Start menu to begin a multi party
  */
 import * as React from 'react'
+import { useNavigate, useParams} from 'react-router-dom'
 
+import Avatar from "@mui/material/Avatar"
 import Box from "@mui/material/Box"
 import Container from "@mui/material/Container"
 import Typography from "@mui/material/Typography"
@@ -17,28 +19,57 @@ import CardContent from "@mui/material/CardContent"
 
 import Chat from "../components/chat/chat"
 
-import {capitalizeFirstLetter} from "utils/stringService"
-
+import { useSocketContext } from "context/socketContext"
+import userService from "services/userService"
 
 function MultiPublic() {
-    
+    let navigate = useNavigate();
+    let rid = useParams().rid;
 
-    var [start, setStart] = React.useState(false)
+    const { socketService } = useSocketContext();
 
-    const [jugadores] = React.useState([
-        "Jugador1",
-        "Jugador2",
-        "Jugador3",
-        "Jugador4",
-        "Jugador5",
-        "Jugador6"
-    ])
+    const [counter, setCounter] = React.useState(5)
+    const [jugadores, setJugadores] = React.useState([])
+    const jugadoresRef = React.useRef(jugadores);
+    jugadoresRef.current = jugadores;
 
-    function handleStart(e) {
-        setStart(true)
-    }
+    const colors = ["#ff0000","#00ff00","#0000ff","#ffff00","#ff00ff","#00ffff"]
+    // Listen if the game is ready to start
+    React.useEffect(() => {
+        async function getUser(){
+            await socketService.turn( (data) => {
+                // Get jugadores informations
+                Object.keys(data.stats).map( (key,index) => {
+                    userService.searchUsers(key).then((res) => {
+                            const user = res.data.results[0]
+                            setJugadores(jugadores => [...jugadores, {
+                                nickname: user.nickname,
+                                avatar: user.actual_cosmetic,
+                                position: 0
+                            }])
+                        }
+                    )
+                })
+            })
+        }
+        getUser();
+        // decrease from 5 to 0 
+        const interval = setInterval(() => {
+            setCounter(prevState => Math.max(prevState - 1,0))
+        }, 1000)
+        // go to tablero
+        const timeout = setTimeout(() => {
+            const players = jugadoresRef.current
+            navigate(`/tablero/${rid}`, { state: {players} });
+        }, 5000);
+        
 
-    //if (start == true) <- go to board (game)
+        // useeffect to clean up
+        return () => {
+            clearInterval(interval);
+            clearTimeout(timeout);
+        }
+    }, [])
 
   return (
     <Container maxWidth="md" component="main">
@@ -84,15 +115,16 @@ function MultiPublic() {
                     </Typography>
                     {/* Players */}
                     <Grid container item justifyContent="center" spacing={0.2} flexWrap="wrap" >
-                        {Object.keys(jugadores).map((item) => (
-                            <Grid item xs={20} md={24} key={item}>
-                                <Card 
-                                    sx={{   opacity: jugadores[item]? '1' : '0.4',
-                                            backgroundColor: jugadores[item]? '#fff' : '#C0C1B7',
-                                        }}>
-                                    <CardContent sx={{textAlign:'center'}}>
+                        {jugadores.map((item,index) => (
+                            <Grid item xs={20} md={24} key={item.nickname}>
+                                <Card>
+                                    <CardContent sx={{display:'flex', wrap: 'nowrap'}}>
+                                        <Avatar
+                                            src={process.env.PUBLIC_URL + "/images/cosmetics/cosmetic_" + item.avatar + ".jpg"}
+                                            sx={{mr:1, border: `3px solid ${colors[index]}`}}
+                                        />
                                         <Typography variant="h6" gutterBottom component="div">
-                                            {capitalizeFirstLetter(jugadores[item])}
+                                            {item.nickname}
                                         </Typography> 
                                     </CardContent>
                                 </Card>
@@ -105,8 +137,8 @@ function MultiPublic() {
 
         {/* Start button*/}
         <Grid container item justifyContent="center">
-            <Button variant="contained" size="large" onClick={handleStart}>
-                Start
+            <Button variant="contained" size="large">
+                Game will start in {counter} seconds
             </Button>
         </Grid>
     </Container>

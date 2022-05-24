@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext }  from 'react'
+import React, { createContext, useContext }  from 'react'
 import { io } from "socket.io-client"
 
 const SocketContext = createContext();
@@ -42,16 +42,15 @@ function SocketProvider({children}) {
             return cb(null, msg)
         })
     }
-    
-    const sendMessage = ({ message,roomName }, cb) => {
-        let username = JSON.parse(localStorage.getItem("user")).nickname
+    // Send message to all client in the room
+    const sendMessage = ({ username,message,roomName }, cb) => {
         if (socket) socket.emit("chat:send", { username, message, roomName}, cb)
     }
     
     const joinRoom = (roomName, cb) => {
         if (socket) socket.emit("join", roomName, cb)
     }
-    
+
     const joinPublicMatch = (joinCallback, joinedCallback) => {
     
         if (socket) {
@@ -69,6 +68,26 @@ function SocketProvider({children}) {
         }
     }
 
+    const turn = (cb) => {
+        if (socket) socket.on("server:turn", cb);
+    }
+
+    const startTurn = (rid, cb) => {
+        if (socket) socket.emit("public:startTurn", { rid }, cb);
+    }
+
+    const answerQuestion = (answer, cb) => {
+        if (socket) socket.emit("public:answer", answer, cb);
+    }
+
+    const questionTimeout= (cb) => {
+        if (socket) socket.on("server:timeout", cb);
+    }
+
+    const makeMove = (args, cb) => {
+        if (socket) socket.emit("public:makeMove", args, cb);
+    }
+
     const socketService = {
         initSocket,
         disconnectSocket,
@@ -77,6 +96,11 @@ function SocketProvider({children}) {
         subscribeToMessages,
         joinPublicMatch,
         leavePublicMatch,
+        turn,
+        startTurn,
+        answerQuestion,
+        questionTimeout,
+        makeMove
     }
 
     return (
