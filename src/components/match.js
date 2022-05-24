@@ -43,7 +43,7 @@ function Match({match}) {
                         fontWeight: 'bold',
                     }}
                 >
-                    ID: {match.rid}
+                    Sala {match.rid}
                 </Typography>
                 <Typography>
                     {match.users.length} jugadores

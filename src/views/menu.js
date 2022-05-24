@@ -5,19 +5,11 @@ import {
     Typography,
     Icon,
     Button,
-    Divider,
-    Dialog,
-    DialogTitle,
-    DialogContentText,
-    DialogActions,
-    Alert,
-    Snackbar,
-    CircularProgress,
-    CardMedia,
-    Card,
-    CardActionArea,
-    CardContent,
     Grid,
+    List,
+    ListItem,
+    ListItemText,
+    Divider
 } from "@mui/material"
 
 import MuiAccordion from "@mui/material/Accordion"
@@ -108,7 +100,20 @@ export default function Menu() {
         error: invitesError,
         data: invites,
         refetch: refetchInvites,
-    } = useQuery("invites", gamesService.getInvites)
+    } = useQuery("invites", gamesService.getInvites);
+
+    const handleClickAccept = (e, rid, nick) => {
+        e.preventDefault();
+        gamesService.removeInvite(rid, nick);
+        navigate("/privada", { state: { rid } })
+        refetchInvites();
+    }
+
+    const handleClickReject = (e, rid, nick) => {
+        e.preventDefault();
+        gamesService.removeInvite(rid, nick);
+        refetchInvites();
+    }
 
     return (
         <Container
@@ -140,9 +145,7 @@ export default function Menu() {
             </Button>
 
             <Accordion>
-                <AccordionSummary 
-                    size="small"
-                    expandIcon={<ExpandMoreIcon />}>
+                <AccordionSummary size="small" expandIcon={<ExpandMoreIcon />}>
                     <Typography
                         variant="h6"
                         align="center"
@@ -165,14 +168,14 @@ export default function Menu() {
                     >
                         {!publicGamesLoading &&
                             !publicGamesError &&
-                            publicGames.games.map((item, key) => <Match key={key} match={item} />)}
+                            publicGames.games.map((item, key) => (
+                                <Match key={key} match={item} />
+                            ))}
                     </Grid>
                 </AccordionDetails>
             </Accordion>
             <Accordion>
-                <AccordionSummary 
-                    size="small"
-                    expandIcon={<ExpandMoreIcon />}>
+                <AccordionSummary size="small" expandIcon={<ExpandMoreIcon />}>
                     <Typography
                         variant="h6"
                         align="center"
@@ -196,14 +199,14 @@ export default function Menu() {
                     >
                         {!privateGamesLoading &&
                             !privateGamesError &&
-                            privateGames.games.map((item, key) => <Match key={key} match={item} />)}
+                            privateGames.games.map((item, key) => (
+                                <Match key={key} match={item} />
+                            ))}
                     </Grid>
                 </AccordionDetails>
             </Accordion>
             <Accordion>
-                <AccordionSummary 
-                    size="small"
-                    expandIcon={<ExpandMoreIcon />}>
+                <AccordionSummary size="small" expandIcon={<ExpandMoreIcon />}>
                     <Typography
                         variant="h6"
                         align="center"
@@ -216,43 +219,69 @@ export default function Menu() {
                     </Typography>
                 </AccordionSummary>
                 <AccordionDetails>
-                    <Grid
-                        container
-                        item
-                        spacing={2}
-                        display="flex"
-                        flexDirection="column"
-                        alignItems="center"
-                        margin="0"
-                        gap="0.1rem"
-                    >
+                    <List sx={{ width: "100%" }}>
                         {!invitesLoading &&
                             !invitesError &&
-                            invites.invites.map((item) => (
-                                <Grid item xs={20} md={20} key={item}>
-                                    <Card>
-                                        <CardActionArea
-                                            onClick={() => {
-                                                handleGames(item)
+                            invites.invites.map((item, key) => (
+                                <div key={key}>
+                                    <ListItem>
+                                        <ListItemText
+                                            disableTypography
+                                            primary={
+                                                <Typography color="white" variant="b">
+                                                    {item.leader_nickname}
+                                                </Typography>
+                                            }
+                                        />
+                                        <div
+                                            style={{
+                                                display: "flex",
+                                                gap: "1em",
                                             }}
                                         >
-                                            <CardMedia height="140" alt={item} />
-                                            <CardContent
-                                                sx={{ textAlign: "center" }}
+                                            <Button
+                                                onClick={(e) =>
+                                                    handleClickAccept(
+                                                        e,
+                                                        item.rid,
+                                                        item.leader_nickname
+                                                    )
+                                                }
+                                                variant="contained"
+                                                color="success"
+                                                endIcon={
+                                                    <Icon
+                                                        baseClassName="fas"
+                                                        className="fa-check"
+                                                    />
+                                                }
                                             >
-                                                <Typography
-                                                    variant="h6"
-                                                    gutterBottom
-                                                    component="div"
-                                                >
-                                                    {item.rid}
-                                                </Typography>
-                                            </CardContent>
-                                        </CardActionArea>
-                                    </Card>
-                                </Grid>
+                                                Añadir
+                                            </Button>
+                                            <Button
+                                                onClick={(e) =>
+                                                    handleClickReject(
+                                                        e,
+                                                        item.rid,
+                                                        item.leader_nickname
+                                                    )
+                                                }
+                                                variant="contained"
+                                                color="error"
+                                                endIcon={
+                                                    <Icon
+                                                        baseClassName="fas"
+                                                        className="fa-xmark"
+                                                    />
+                                                }
+                                            >
+                                                Eliminar
+                                            </Button>
+                                        </div>
+                                    </ListItem>
+                                </div>
                             ))}
-                    </Grid>
+                    </List>
                 </AccordionDetails>
             </Accordion>
         </Container>

@@ -31,8 +31,8 @@ const sendInvite = async (rid, nickname) => {
         });
 }
 
-const removeInvite = async (rid) => {
-    return await axios.delete(API_URL +"/games/invite", { headers: authHeader(), data: { rid } })
+const removeInvite = async (rid, nickname) => {
+    return await axios.delete(API_URL +"/games/invite", { headers: authHeader(), data: { rid, nickname } })
         .then((response) => {
             return response.data;
         });

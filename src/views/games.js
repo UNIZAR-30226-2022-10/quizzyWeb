@@ -57,7 +57,8 @@ function Games() {
     }
 
     function handleCrearPrivada(e) {
-        navigate("/privada", {replace: false})
+        let rid = 0;
+        navigate("/privada", {state : { rid }}, {replace: false})
     }
 
     const joinedCallback = ({ rid }) => {
