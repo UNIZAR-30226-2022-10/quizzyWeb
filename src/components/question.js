@@ -78,10 +78,10 @@ const CustomLinearProgress = styled(LinearProgress)({
 
 // WRAPPER FOR THE QUESTION
 export default function Question(props) {
-    const testonCorrectAnswer = (data) => {
+    const onCorrectAnswer = (data) => {
         props.onCorrectAnswer(data)
     }
-    const testonWrongAnswer = (data) => {
+    const onWrongAnswer = (data) => {
         props.onWrongAnswer(data)
     }
     return (
@@ -90,8 +90,8 @@ export default function Question(props) {
                 difficulty={props.difficulty}
                 timer={props.timer}
                 categories={props.categories}
-                onCorrectAnswer={testonCorrectAnswer}
-                onWrongAnswer={testonWrongAnswer}
+                onCorrectAnswer={onCorrectAnswer}
+                onWrongAnswer={onWrongAnswer}
             />
         </QueryClientProvider>
     )
