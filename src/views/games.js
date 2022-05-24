@@ -2,23 +2,9 @@ import React, { useState, useEffect } from 'react'
 import {
     Container,
     Paper,
-    Tabs,
-    Tab,
-    Box,
-    List,
-    ListItem,
-    ListItemAvatar,
-    Avatar,
-    ListItemText,
-    TextField,
     Typography,
     Icon,
     Button,
-    Divider,
-    Dialog,
-    DialogTitle,
-    DialogContentText,
-    DialogActions,
     Alert,
     Snackbar,
     CircularProgress,
@@ -30,7 +16,7 @@ import { useSocketContext } from 'context/socketContext';
 
 function Games() {
 
-    const { socket, socketService } = useSocketContext();
+    const { socketService } = useSocketContext();
     let navigate = useNavigate()
     function handleSolo(e) {
         navigate("/solo", { replace: false })
@@ -49,8 +35,7 @@ function Games() {
         navigate("/privada", {replace: false})
     }
 
-    const joinedCallback = ({ rid }) => {
-        console.log("done")
+    const joinedCallback = ({ rid, users }) => {
         setWaiting(false);
         if ( rid ) {
             setWaiting(false);
@@ -73,7 +58,11 @@ function Games() {
         socketService.leavePublicMatch(({ok, msg}) => { setWaiting(false); });
         setSuccess("Búsqueda de partida cancelada con éxito")
     }
-
+    useEffect(() => {
+        return () => {
+            if (waiting) socketService.leavePublicMatch(({ok, msg}) => { setWaiting(false); });
+        }
+    }, [])
     // success and error snackbar message
     const [success, setSuccess] = useState(null)
     const [error, setError] = useState(null)

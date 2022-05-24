@@ -28,36 +28,47 @@ function MultiPublic() {
 
     const { socketService } = useSocketContext();
 
-    const [counter, setCounter] = React.useState(50)
+    const [counter, setCounter] = React.useState(5)
     const [jugadores, setJugadores] = React.useState([])
+    const jugadoresRef = React.useRef(jugadores);
+    jugadoresRef.current = jugadores;
 
     const colors = ["#ff0000","#00ff00","#0000ff","#ffff00","#ff00ff","#00ffff"]
     // Listen if the game is ready to start
     React.useEffect(() => {
-        socketService.turn( (data) => {
-            // Get jugadores informations
-            Object.keys(data.stats).map( (key,index) => {
-                userService.searchUsers(key).then((res) => {
-                        const user = res.data.results[0]
-                        setJugadores(jugadores => [...jugadores, {
-                            nickname: user.nickname,
-                            avatar: user.actual_cosmetic,
-                        }])
-                    }
-                )
+        async function getUser(){
+            await socketService.turn( (data) => {
+                // Get jugadores informations
+                Object.keys(data.stats).map( (key,index) => {
+                    userService.searchUsers(key).then((res) => {
+                            const user = res.data.results[0]
+                            setJugadores(jugadores => [...jugadores, {
+                                nickname: user.nickname,
+                                avatar: user.actual_cosmetic,
+                                position: 0
+                            }])
+                        }
+                    )
+                })
             })
-        })
+        }
+        getUser();
         // decrease from 5 to 0 
-        setInterval(() => {
+        const interval = setInterval(() => {
             setCounter(prevState => Math.max(prevState - 1,0))
         }, 1000)
         // go to tablero
-        setTimeout(() => {
-            navigate(`/tablero/${rid}`, { replace: false });
-        }, 50000);
+        const timeout = setTimeout(() => {
+            const players = jugadoresRef.current
+            navigate(`/tablero/${rid}`, { state: {players} });
+        }, 5000);
+        
 
         // useeffect to clean up
-        return () => {}
+        return () => {
+            clearInterval(interval);
+            clearTimeout(timeout);
+        }
     }, [])
 
   return (
