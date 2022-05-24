@@ -7,6 +7,7 @@ import {
     Button,
     Alert,
     Snackbar,
+    TextField,
     CircularProgress,
 } from "@mui/material"
 import { useNavigate } from "react-router-dom"
@@ -49,7 +50,7 @@ function Games() {
 
     const joinedCallback = ({ rid, users }) => {
         setWaiting(false);
-        if ( rid ) {
+        if ( rid != null ) {
             setWaiting(false);
             console.log("joined", rid);
             navigate(`/multi/${rid}`, { replace: false });
