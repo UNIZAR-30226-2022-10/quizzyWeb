@@ -35,30 +35,29 @@ function MultiPublic() {
 
     const colors = ["#ff0000","#00ff00","#0000ff","#ffff00","#ff00ff","#00ffff"]
     // Listen if the game is ready to start
-    React.useEffect(() => {
-        async function getUser(){
-            await socketService.turn( (data) => {
-                // Get jugadores informations
-                Object.keys(data.stats).map( (key,index) => {
-                    userService.searchUsers(key).then((res) => {
-                            const user = res.data.results[0]
-                            setJugadores(jugadores => [...jugadores, {
-                                nickname: user.nickname,
-                                avatar: user.actual_cosmetic,
-                                position: 0
-                            }])
-                        }
-                    )
-                })
+    React.useEffect(async () => {
+        await socketService.turn( (data) => {
+            console.log("Turn received");
+            // Get player information
+            Object.keys(data.stats).map( async (key,index) => {
+                await userService.searchUsers(key)
+                    .then((res) => {
+                        const user = res.data.results[0]
+                        setJugadores(jugadores => [...jugadores, {
+                            nickname: key,
+                            avatar: user.actual_cosmetic,
+                            position: 0
+                        }])
+                    }
+                )
             })
-        }
-        getUser();
+        })
         // decrease from 5 to 0 
-        const interval = setInterval(() => {
+        let interval = setInterval(() => {
             setCounter(prevState => Math.max(prevState - 1,0))
         }, 1000)
         // go to tablero
-        const timeout = setTimeout(() => {
+        let timeout = setTimeout(() => {
             const players = jugadoresRef.current
             navigate(`/tablero/${rid}`, { state: {players} });
         }, 5000);
