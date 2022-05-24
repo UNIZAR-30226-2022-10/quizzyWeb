@@ -42,9 +42,11 @@ const theme = createTheme({
     palette: {
         primary: {
             main: '#112D4E',
+            light: '#1A406E'
         },
         secondary: {
             main: '#3F72AF',
+            light: '#5791D5'
         },
         accent: {
             main: '#CADEFC',

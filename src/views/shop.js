@@ -230,9 +230,9 @@ export default function Shop() {
                     </AppBar>
                 </Grid>
                 {/* Wildcard Items */}
-                {wildcards.map((item) => {
+                {wildcards.map((item, key) => {
                     return (
-                        <Grid item key={"shop-wildcard-"+item.wildcard_id}>
+                        <Grid item key={key}>
                             <Tooltip title={item.description}>
                                 <Badge
                                     overlap="circular"
@@ -375,9 +375,9 @@ export default function Shop() {
                     </AppBar>
                 </Grid>
                 {/* Cosmetic Items */}
-                {cosmetics.map((item) => {
+                {cosmetics.map((item, key) => {
                     return (
-                        <Grid item key={"shop-cosmetic-"+item.cosmetic_id}>
+                        <Grid item key={key}>
                             <Tooltip title={item.cname}>
                                 <ImageListItem 
                                     className={possessedCosmetics.some(wc => wc.cosmetic_id === item.cosmetic_id) ? "equipped" : ""}
