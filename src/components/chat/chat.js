@@ -1,4 +1,5 @@
-import { useEffect, useState, useRef } from "react"
+import { useEffect, useState } from "react"
+import { useOutletContext, useParams } from "react-router-dom";
 
 import "css/chat.css"
 import UserMessage from "./UserMessage"
@@ -6,8 +7,9 @@ import SystemMessage from "./SystemMessage"
 
 import Button from "@mui/material/Button"
 import CssBaseline from "@mui/material/CssBaseline"
-import Grid from "@mui/material/Grid"
+import Grid from  "@mui/material/Grid"
 import SendIcon from "@material-ui/icons/Send"
+import TextField from  "@mui/material/TextField"
 import { useSocketContext } from "context/socketContext"
 
 function DateToHoursAndMinutes(datestring) {
@@ -16,7 +18,7 @@ function DateToHoursAndMinutes(datestring) {
 }
 
 function Chat() {
-
+    const [user,setUser] = useOutletContext();
     const { socket, socketService } = useSocketContext();
 
     const [token, setToken] = useState(localStorage.getItem('token')) 
@@ -24,33 +26,17 @@ function Chat() {
     const [messages, setMessages] = useState([])
 
     useEffect(() => {
-
         socketService.subscribeToMessages((err, data) => {
             setMessages((prev) => [...prev, data])
         })
     }, [token])
 
-    const submitToken = (e) => {
-        e.preventDefault()
-        const tokenValue = tokenInputRef.current.value
-        setToken(tokenValue)
-    }
-
-    const submitRoom = (e) => {
-        // TODO: add dynamic room support
-        e.preventDefault()
-        const roomValue = roomInputRef.current.value
-        setRoom(roomValue)
-        socketService.joinRoom(roomValue, (cb) => {
-            console.log(cb)
-        })
-    }
-
     const submitMessage = (e) => {
         e.preventDefault()
         const message = chatMessage
         if (message) {
-            socketService.sendMessage({ message, roomName: 'main' }, (cb) => {
+            let username = user.nickname
+            socketService.sendMessage({ username, message, roomName: 'main' }, (cb) => {
                 // clear the input after the message is sent
                 setChatMessage("")
                 setMessages((prev) => [...prev, {username:'Me', message: message, self: true}])
