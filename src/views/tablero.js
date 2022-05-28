@@ -63,26 +63,26 @@ export default function Tablero() {
         }))
     }, [cases])
     // Set players position in map
-    useEffect(() => {
-        console.log("players changed", players)
+    const updatePlayersMap = () => {
+        console.log("players or cases changed", players)
         let newPlayersPos = []
-        players.forEach((player, index) => {
+        Object.keys(players).forEach((key, index) => {
             newPlayersPos.push({
-                id: player.nickname,
+                id: key,
                 shape: "player",
-                coords: tableroCoords[player.position],
+                coords: tableroCoords[players[key].position],
                 preFillColor: "rgba(0,0,0,0.3)",
                 fillColor: "blue",
                 strokeColor: colors[index],
                 lineWidth: 6,
-                cosmeticId: player.avatar,
+                cosmeticId: players[key].avatar,
             })
         })
         setMap((prevState) => ({
             ...prevState,
             areas: [...prevState.areas.slice(0, cases.length).concat(newPlayersPos)],
         }))
-    }, [players, cases])
+    }
 
     function startTurn() {
         socketService.startTurn(rid, (res) => {
@@ -107,26 +107,28 @@ export default function Tablero() {
         }
         handleResize()
         window.addEventListener("resize", handleResize)
-        
+
+        updatePlayersMap()
         startTurn()
+
+        socketService.turn((data) => {
+            console.log("server emits : TURN", data, user)
+            if (data.turns === user.nickname) {
+                startTurn()
+            }
+            //get and set players position from data.stats
+            Object.keys(data.stats).forEach((player) => {
+                console.log("player: ", player)
+                players[player].position = data.stats[player].position
+                players[player].totalAnswers = data.stats[player].totalAnswers
+                players[player].correctAnswers =
+                    data.stats[player].correctAnswers
+                players[player].tokens = data.stats[player].tokens
+            })
+            updatePlayersMap()
+        })
     }, [])
 
-    socketService.turn((data) => {
-        console.log("server emits : TURN", data, user)
-        if (data.turns === user.nickname) {
-            startTurn()
-        }
-        //get and set players position from data.stats
-        Object.keys(data.stats).forEach((player) => {
-            console.log("player: ", player)
-            players[player] = {}
-            players[player].position = data.stats[player].position
-            players[player].totalAnswers = data.stats[player].totalAnswers
-            players[player].correctAnswers =
-                data.stats[player].correctAnswers
-            players[player].tokens = data.stats[player].tokens
-        })
-    })
 
     // 2 . on correct answer set dice
     const handleCorrectAnswer = (data) => {
@@ -387,14 +389,14 @@ export default function Tablero() {
                         pt: 2,
                     }}
                 >
-                    {players.map((player, index) => {
+                    {Object.keys(players).map((key, index) => {
                         return (
                             <Grid container item alignItems="center" sx={{ px: 2 }}>
                                 <Avatar
                                     src={
                                         process.env.PUBLIC_URL +
                                         "/images/cosmetics/cosmetic_" +
-                                        player.avatar +
+                                        players[key].avatar +
                                         ".jpg"
                                     }
                                     alt="Avatar"
@@ -406,7 +408,7 @@ export default function Tablero() {
                                     }}
                                 />
                                 <Typography variant="body">
-                                    {player.nickname}
+                                    {key}
                                 </Typography>
                             </Grid>
                         )
