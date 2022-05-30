@@ -29,7 +29,7 @@ function MultiPublic() {
     const { socketService } = useSocketContext();
 
     const [counter, setCounter] = React.useState(5)
-    const [jugadores, setJugadores] = React.useState([])
+    const [jugadores, setJugadores] = React.useState({})
     const jugadoresRef = React.useRef(jugadores);
     jugadoresRef.current = jugadores;
 
@@ -39,18 +39,19 @@ function MultiPublic() {
         await socketService.turn( (data) => {
             console.log("Turn received");
             // Get player information
+            const playersData = {}
             Object.keys(data.stats).map( async (key,index) => {
                 await userService.searchUsers(key)
                     .then((res) => {
                         const user = res.data.results[0]
-                        setJugadores(jugadores => [...jugadores, {
-                            nickname: key,
+                        playersData[key] = {
                             avatar: user.actual_cosmetic,
                             position: 0
-                        }])
+                        }
                     }
                 )
             })
+            setJugadores(playersData)
         })
         // decrease from 5 to 0 
         let interval = setInterval(() => {
@@ -114,16 +115,16 @@ function MultiPublic() {
                     </Typography>
                     {/* Players */}
                     <Grid container item justifyContent="center" spacing={0.2} flexWrap="wrap" >
-                        {jugadores.map((item,index) => (
-                            <Grid item xs={20} md={24} key={item.nickname}>
+                        {Object.keys(jugadores).map((key,index) => (
+                            <Grid item xs={20} md={24} key={key}>
                                 <Card>
                                     <CardContent sx={{display:'flex', wrap: 'nowrap'}}>
                                         <Avatar
-                                            src={process.env.PUBLIC_URL + "/images/cosmetics/cosmetic_" + item.avatar + ".jpg"}
+                                            src={process.env.PUBLIC_URL + "/images/cosmetics/cosmetic_" + jugadores[key].avatar + ".jpg"}
                                             sx={{mr:1, border: `3px solid ${colors[index]}`}}
                                         />
                                         <Typography variant="h6" gutterBottom component="div">
-                                            {item.nickname}
+                                            {key}
                                         </Typography> 
                                     </CardContent>
                                 </Card>
