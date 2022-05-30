@@ -95,7 +95,7 @@ export default function Tablero() {
         })
     }
 
-    // Resize the grid when the window is resized and at initial render
+    // Add event listeners
     useEffect(() => {
         function handleResize() {
             if (gridRef.current) {
@@ -109,24 +109,23 @@ export default function Tablero() {
         window.addEventListener("resize", handleResize)
         
         startTurn()
-    }, [])
 
-    socketService.turn((data) => {
-        console.log("server emits : TURN", data, user)
-        if (data.turns === user.nickname) {
-            startTurn()
-        }
-        //get and set players position from data.stats
-        Object.keys(data.stats).forEach((player) => {
-            console.log("player: ", player)
-            players[player] = {}
-            players[player].position = data.stats[player].position
-            players[player].totalAnswers = data.stats[player].totalAnswers
-            players[player].correctAnswers =
-                data.stats[player].correctAnswers
-            players[player].tokens = data.stats[player].tokens
-        })
-    })
+        socketService.turn((data) => {
+            console.log("server emits : TURN", data, user)
+            if (data.turns === user.nickname) {
+                setTimeout(() => startTurn(), 500);
+            }
+            //get and set players position from data.stats
+            Object.keys(data.stats).forEach((player) => {
+                console.log("player: ", player)
+                players[player] = {}
+                players[player].position = data.stats[player].position
+                players[player].totalAnswers = data.stats[player].totalAnswers
+                players[player].correctAnswers = data.stats[player].correctAnswers
+                players[player].tokens = data.stats[player].tokens
+            })
+        });
+    }, [])
 
     // 2 . on correct answer set dice
     const handleCorrectAnswer = (data) => {
@@ -134,6 +133,7 @@ export default function Tablero() {
         setDiceData(data)
         setDice(true)
     }
+
     // 3. setReachableCases
     const handleReachableCases = (e) => {
         setTimeout( () => {
@@ -148,6 +148,7 @@ export default function Tablero() {
         
         socketService.makeMove({ rid, pos }, (data) => {
             if (data.ok === false) {
+                
             } else if ( data.rollAgain === true ) {
                 setDice(true)
             } else {
