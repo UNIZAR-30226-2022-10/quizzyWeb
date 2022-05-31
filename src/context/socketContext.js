@@ -86,6 +86,10 @@ function SocketProvider({children}) {
         if (socket) socket.on("server:timeout", cb);
     }
 
+    const hasWon = (cb) => {
+        if (socket) socket.on("server:winner", cb);
+    }
+
     const createPrivateMatch = ( args, cb ) => {
         if (socket) socket.emit("private:create", args, cb);
     }
@@ -129,6 +133,7 @@ function SocketProvider({children}) {
         answerQuestion,
         questionTimeout,
         makeMove,
+        hasWon,
         createPrivateMatch,
         joinPrivateMatch,
         leaveRoom,

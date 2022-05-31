@@ -115,17 +115,10 @@ export default function QuestionMulti(props) {
             displayResp()
         })
         // start timer
-        const timeout = setTimeout(() => {
-            handleTimer()
-            return () => {
-                clearInterval(timerInterval)
-            }
-        }, 2000)
+        handleTimer()
         // cleanup useeffect
         return () => {
             clearInterval(timerInterval)
-            clearTimeout(timeout)
-            //TODO: stop listening to timeout on leave
         }
     }, [])
 
