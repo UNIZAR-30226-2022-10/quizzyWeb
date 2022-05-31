@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react"
 import {
     Container,
-    Paper,
     Typography,
     Icon,
     Button,
@@ -9,7 +8,8 @@ import {
     List,
     ListItem,
     ListItemText,
-    Divider
+    Snackbar,
+    Alert
 } from "@mui/material"
 
 import MuiAccordion from "@mui/material/Accordion"
@@ -76,7 +76,13 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
 }))
 
 export default function Menu() {
-    let navigate = useNavigate()
+    const { socket, socketService } = useSocketContext();
+    let navigate = useNavigate();
+
+    // success and error snackbar message
+    const [success, setSuccess] = useState(null)
+    const [error, setError] = useState(null)
+
     function handleGames(e) {
         navigate("/games", { replace: false })
     }
@@ -104,9 +110,31 @@ export default function Menu() {
 
     const handleClickAccept = (e, rid, nick) => {
         e.preventDefault();
-        gamesService.removeInvite(rid, nick);
-        navigate("/privada", { state: { rid } })
-        refetchInvites();
+        gamesService.removeInvite(rid, nick)
+        .then(() => {
+            socketService.joinPrivateMatch(rid, (args) => {
+                console.log("args : ", args)
+                if (args.ok) {
+                    navigate(
+                        "/privada",
+                        {
+                            state: {
+                                rid,
+                                players: args.players.map((p) => {
+                                    return { nickname: p, cosmetic: 1 }
+                                }),
+                            },
+                        },
+                        { replace: false }
+                    )
+                } else {
+                    setError("Error al unirse a la partida privada : " + args.msg)
+                }
+            })
+        })
+        .catch(() => {
+            setError("Error al aceptar la invitación");
+        });
     }
 
     const handleClickReject = (e, rid, nick) => {
@@ -302,6 +330,34 @@ export default function Menu() {
                     </List>
                 </AccordionDetails>
             </Accordion>
+            {/* Success snackbar */}
+            <Snackbar
+                open={success !== null}
+                autoHideDuration={6000}
+                onClose={() => setSuccess(null)}
+            >
+                <Alert
+                    onClose={() => setSuccess(null)}
+                    severity="success"
+                    sx={{ width: "100%" }}
+                >
+                    {success}
+                </Alert>
+            </Snackbar>
+            {/* Error snackbar */}
+            <Snackbar
+                open={error !== null}
+                autoHideDuration={6000}
+                onClose={() => setError(null)}
+            >
+                <Alert
+                    onClose={() => setError(null)}
+                    severity="error"
+                    sx={{ width: "100%" }}
+                >
+                    {error}
+                </Alert>
+            </Snackbar>
         </Container>
     )
 }

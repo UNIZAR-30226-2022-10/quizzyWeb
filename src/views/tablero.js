@@ -98,7 +98,7 @@ export default function Tablero() {
 
     const startTurn = () => {
         socketService.startTurn(rid, (res) => {
-            console.log("server respond to : STARTTURN ", res.currentQuestion)
+            console.log("server respond to : STARTTURN ", res)
             if (res.ok === false) {
                 setQuestion(false)
             } else {
@@ -147,7 +147,7 @@ export default function Tablero() {
                 }
             })
             setPlayers(newPlayers)
-        })
+        });
 
         socketService.hasWon((data) => {
             console.log("server emits : HASWON", data)
@@ -155,6 +155,10 @@ export default function Tablero() {
             if (data.hasWon) {
                 setWinner(data.winner)
             }
+        })
+        
+        return (() => {
+            socketService.cleanup("server:turn");
         })
     }, [])
 

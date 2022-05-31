@@ -33,6 +33,7 @@ function SocketProvider({children}) {
     const subscribeToMessages = (cb) => {
         if (!socket) return true
         socket.on("chat:message", (msg) => {
+            console.log("mesg")
             return cb(null, msg)
         })
         socket.on("otherConnect", (msg) => {
@@ -46,17 +47,13 @@ function SocketProvider({children}) {
     const sendMessage = ({ username,message,roomName }, cb) => {
         if (socket) socket.emit("chat:send", { username, message, roomName}, cb)
     }
-    
-    const joinRoom = (roomName, cb) => {
-        if (socket) socket.emit("join", roomName, cb)
-    }
 
     const joinPublicMatch = (joinCallback, joinedCallback) => {
     
         if (socket) {
             console.log("joining match");
             socket.emit("public:join", joinCallback);
-            socket.on("server:public:joined", joinedCallback);
+            socket.once("server:public:joined", joinedCallback);
         }
     }
     
@@ -92,12 +89,38 @@ function SocketProvider({children}) {
         if (socket) socket.on("server:winner", cb);
     }
 
+    const createPrivateMatch = ( args, cb ) => {
+        if (socket) socket.emit("private:create", args, cb);
+    }
+    
+    const joinPrivateMatch = (rid, cb) => {
+        if (socket) socket.emit("private:join", { rid }, cb)
+    }
+
+    const leaveRoom = (rid, cb) => {
+        if (socket) socket.emit("private:leave", { rid }, cb)
+    }
+
+    const listenNewPlayers = (cb) => {
+        if (socket) socket.on("server:private:player:join", cb);
+    }
+
+    const listenLeavePlayers = (cb) => {
+        if (socket) socket.on("server:private:player:leave", cb);
+    }
+
+    const cleanup = (event) => {
+        if (socket) {
+            console.log("cleanup : ", event)
+            socket.off(event);
+        }
+    }
 
     const socketService = {
         initSocket,
         disconnectSocket,
         sendMessage,
-        joinRoom,
+        leaveRoom,
         subscribeToMessages,
         joinPublicMatch,
         leavePublicMatch,
@@ -106,7 +129,12 @@ function SocketProvider({children}) {
         answerQuestion,
         questionTimeout,
         makeMove,
-        hasWon
+        hasWon,
+        createPrivateMatch,
+        joinPrivateMatch,
+        listenNewPlayers,
+        listenLeavePlayers,
+        cleanup,
     }
 
     return (
