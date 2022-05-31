@@ -97,10 +97,12 @@ export default function Tablero() {
     },[players])
 
     const startTurn = () => {
+        //TODO: FIX ERROR WHEN RESPONDING TO QUICK TO QUESTION IT DON'T THE QUESTION
+        setQuestion(false)
         socketService.startTurn(rid, state.public, (res) => {
             console.log("server respond to : STARTTURN ", res)
             if (res.ok === false) {
-                setQuestion(false)
+                console.log("error starting turn")  
             } else {
                 setQuestion(res.currentQuestion)
                 setQuestionTimeout(res.timeout/1000)
