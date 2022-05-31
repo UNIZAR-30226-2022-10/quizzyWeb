@@ -33,6 +33,7 @@ function SocketProvider({children}) {
     const subscribeToMessages = (cb) => {
         if (!socket) return true
         socket.on("chat:message", (msg) => {
+            console.log("mesg")
             return cb(null, msg)
         })
         socket.on("otherConnect", (msg) => {

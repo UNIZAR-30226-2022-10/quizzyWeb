@@ -113,9 +113,9 @@ function MultiPublic() {
         console.log("location : ", location.state)
         setPlayers(location.state.players);
 
-        socketService.listenNewPlayers((nickname) => {
+        socketService.listenNewPlayers(({player}) => {
             // TODO: fetch avatar
-            setPlayers((prev) => [ ...prev, {nickname, cosmetic : 1} ]);
+            setPlayers((prev) => [ ...prev, {nickname : player, cosmetic : 1} ]);
         });
 
         return () => {
@@ -155,7 +155,7 @@ function MultiPublic() {
                         flex: 1,
                     }}
                 >
-                    <Chat></Chat>
+                    <Chat rid={location.state.rid} />
                 </div>
                 {/* Players*/}
                 <Paper
@@ -187,11 +187,12 @@ function MultiPublic() {
                         container
                         item
                         justifyContent="center"
+
                     >
                         {players.map((item, key) => (
                             <Grid item xs={20} md={24} key={key}>
                                 <Card>
-                                    <CardContent sx={{ textAlign: "center" }}>
+                                    <CardContent sx={{display:'flex', wrap: 'nowrap'}}>
                                         <Avatar
                                             src={process.env.PUBLIC_URL + "/images/cosmetics/cosmetic_" + item.cosmetic + ".jpg"}
                                             sx={{mr:1, border: `3px solid ${colors[key]}`}}
