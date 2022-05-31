@@ -168,9 +168,15 @@ export default function Menu() {
                     >
                         {!publicGamesLoading &&
                             !publicGamesError &&
-                            publicGames.games.map((item, key) => (
-                                <Match key={key} match={item} />
-                            ))}
+                                publicGames.games.length !== 0 ? 
+                                    publicGames.games.map((item, key) => (
+                                        <Match key={key} match={item} />
+                                    ))
+                                :
+                                    <Typography variant="h6" align="center" color="white">
+                                        No hay partidas públicas
+                                    </Typography>
+                        }
                     </Grid>
                 </AccordionDetails>
             </Accordion>
@@ -199,9 +205,15 @@ export default function Menu() {
                     >
                         {!privateGamesLoading &&
                             !privateGamesError &&
-                            privateGames.games.map((item, key) => (
-                                <Match key={key} match={item} />
-                            ))}
+                                publicGames.games.length !== 0 ? 
+                                    privateGames.games.map((item, key) => (
+                                        <Match key={key} match={item} />
+                                    ))
+                                :
+                                    <Typography variant="h6" align="center" color="white">
+                                        No hay partidas privadas
+                                    </Typography>
+                        }
                     </Grid>
                 </AccordionDetails>
             </Accordion>
@@ -222,65 +234,71 @@ export default function Menu() {
                     <List sx={{ width: "100%" }}>
                         {!invitesLoading &&
                             !invitesError &&
-                            invites.invites.map((item, key) => (
-                                <div key={key}>
-                                    <ListItem>
-                                        <ListItemText
-                                            disableTypography
-                                            primary={
-                                                <Typography color="white" variant="b">
-                                                    {item.leader_nickname}
-                                                </Typography>
-                                            }
-                                        />
-                                        <div
-                                            style={{
-                                                display: "flex",
-                                                gap: "1em",
-                                            }}
-                                        >
-                                            <Button
-                                                onClick={(e) =>
-                                                    handleClickAccept(
-                                                        e,
-                                                        item.rid,
-                                                        item.leader_nickname
-                                                    )
-                                                }
-                                                variant="contained"
-                                                color="success"
-                                                endIcon={
-                                                    <Icon
-                                                        baseClassName="fas"
-                                                        className="fa-check"
-                                                    />
-                                                }
-                                            >
-                                                Añadir
-                                            </Button>
-                                            <Button
-                                                onClick={(e) =>
-                                                    handleClickReject(
-                                                        e,
-                                                        item.rid,
-                                                        item.leader_nickname
-                                                    )
-                                                }
-                                                variant="contained"
-                                                color="error"
-                                                endIcon={
-                                                    <Icon
-                                                        baseClassName="fas"
-                                                        className="fa-xmark"
-                                                    />
-                                                }
-                                            >
-                                                Eliminar
-                                            </Button>
+                                invites.invites.length !== 0 ?
+                                    invites.invites.map((item, key) => (
+                                        <div key={key}>
+                                            <ListItem>
+                                                <ListItemText
+                                                    disableTypography
+                                                    primary={
+                                                        <Typography color="white" variant="b">
+                                                            {item.leader_nickname}
+                                                        </Typography>
+                                                    }
+                                                />
+                                                <div
+                                                    style={{
+                                                        display: "flex",
+                                                        gap: "1em",
+                                                    }}
+                                                >
+                                                    <Button
+                                                        onClick={(e) =>
+                                                            handleClickAccept(
+                                                                e,
+                                                                item.rid,
+                                                                item.leader_nickname
+                                                            )
+                                                        }
+                                                        variant="contained"
+                                                        color="success"
+                                                        endIcon={
+                                                            <Icon
+                                                                baseClassName="fas"
+                                                                className="fa-check"
+                                                            />
+                                                        }
+                                                    >
+                                                        Añadir
+                                                    </Button>
+                                                    <Button
+                                                        onClick={(e) =>
+                                                            handleClickReject(
+                                                                e,
+                                                                item.rid,
+                                                                item.leader_nickname
+                                                            )
+                                                        }
+                                                        variant="contained"
+                                                        color="error"
+                                                        endIcon={
+                                                            <Icon
+                                                                baseClassName="fas"
+                                                                className="fa-xmark"
+                                                            />
+                                                        }
+                                                    >
+                                                        Eliminar
+                                                    </Button>
+                                                </div>
+                                            </ListItem>
                                         </div>
-                                    </ListItem>
-                                </div>
-                            ))}
+                                    ))
+                                :
+                                    <Typography variant="h6" align="center" color="white">
+                                        No hay invitaciones
+                                    </Typography>
+                        }
                     </List>
                 </AccordionDetails>
             </Accordion>
