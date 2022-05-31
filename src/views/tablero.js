@@ -126,6 +126,10 @@ export default function Tablero() {
                 players[player].tokens = data.stats[player].tokens
             })
             updatePlayersMap()
+        });
+
+        return (() => {
+            socketService.cleanup("server:turn");
         })
     }, [])
 
