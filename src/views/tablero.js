@@ -13,7 +13,11 @@ import AccordionDetails from "@mui/material/AccordionDetails"
 import AccordionSummary from "@mui/material/AccordionSummary"
 import Avatar from "@mui/material/Avatar"
 import Box from "@mui/material/Box"
+import Button from "@mui/material/Button"
 import Dialog from "@mui/material/Dialog"
+import DialogTitle from "@mui/material/DialogTitle"
+import DialogContent from "@mui/material/DialogContent"
+import DialogActions from "@mui/material/DialogActions"
 import Grid from "@mui/material/Grid"
 import Icon from "@mui/material/Icon"
 import Paper from "@mui/material/Paper"
@@ -49,6 +53,7 @@ export default function Tablero() {
 
     const [question, setQuestion] = useState(false)
     const [questionTimeout, setQuestionTimeout] = useState(null)
+    const [winner, setWinner] = useState(null)
 
     const gridRef = useRef()
     const [dimY, setDimY] = useState(null)
@@ -118,7 +123,7 @@ export default function Tablero() {
         return () => window.removeEventListener("resize", handleResize)
     }, [])
 
-    //  0 - Listen to turn
+    //  0 - Listeners
     useEffect(() => {
         startTurn()
 
@@ -142,6 +147,14 @@ export default function Tablero() {
                 }
             })
             setPlayers(newPlayers)
+        })
+
+        socketService.hasWon((data) => {
+            console.log("server emits : HASWON", data)
+            console.log(data)
+            if (data.hasWon) {
+                setWinner(data.winner)
+            }
         })
     }, [])
 
@@ -390,6 +403,60 @@ export default function Tablero() {
                         setQuestion(false)
                     }}
                 />
+            </Dialog>
+
+            <Dialog
+                open={!!winner}
+                disableEscapeKeyDown
+                onClose={(event) => event.preventDefault()}
+                onBackdropClick={(event) => event.preventDefault()}
+                fullWidth
+                maxWidth="lg"
+            >
+                {winner && <>
+                    <DialogTitle>{winner} has won the party</DialogTitle>
+                    <DialogContent>
+                        He was won with :
+                        <ul>
+                            {players[winner].correctAnswers.map((cat, index) => {
+                                return (
+                                    <li key={index}>
+                                        {categories[index].name} :
+                                        {cat}
+                                        /
+                                        {players[winner].totalAnswers[index]}
+                                    </li>
+                                );
+                            })}
+                        </ul>
+                        <br></br>
+                        {(user.nickname === winner) && <>
+                            But your score is :
+                            <ul>
+                                {players[user.nickname].correctAnswers.map((cat, index) => {
+                                    return (
+                                        <li key={index}>
+                                            {categories[index].name} :
+                                            {cat}
+                                            /
+                                            {players[user.nickname].totalAnswers[index]}
+                                        </li>
+                                    );
+                                })}
+                            </ul>
+                        </>}
+                        Thanks for playing ! Back to menu
+                    </DialogContent>
+                    <DialogActions>
+                        <Button
+                            href="/menu"
+                            variant="contained"
+                            color="primary"
+                        >
+                            Back to menu
+                        </Button>
+                    </DialogActions>
+                </>} 
             </Dialog>
         </Grid>
     )

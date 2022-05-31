@@ -88,6 +88,11 @@ function SocketProvider({children}) {
         if (socket) socket.emit("public:makeMove", args, cb);
     }
 
+    const hasWon = (cb) => {
+        if (socket) socket.on("server:winner", cb);
+    }
+
+
     const socketService = {
         initSocket,
         disconnectSocket,
@@ -100,7 +105,8 @@ function SocketProvider({children}) {
         startTurn,
         answerQuestion,
         questionTimeout,
-        makeMove
+        makeMove,
+        hasWon
     }
 
     return (
