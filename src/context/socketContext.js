@@ -98,7 +98,11 @@ function SocketProvider({children}) {
     }
 
     const listenNewPlayers = (cb) => {
-        if (socket) socket.on("server:private:player", cb);
+        if (socket) socket.on("server:private:player:join", cb);
+    }
+
+    const listenLeavePlayers = (cb) => {
+        if (socket) socket.on("server:private:player:leave", cb);
     }
 
     const cleanup = (event) => {
@@ -124,6 +128,7 @@ function SocketProvider({children}) {
         createPrivateMatch,
         joinPrivateMatch,
         listenNewPlayers,
+        listenLeavePlayers,
         cleanup,
     }
 

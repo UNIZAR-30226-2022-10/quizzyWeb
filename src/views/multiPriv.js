@@ -4,7 +4,7 @@
  * Module: - Game / Multi / Priv
  * Description: - Start menu to begin a multi party
  */
-import React, { useEffect, useRef, useState } from "react"
+import React, { useEffect, useState } from "react"
 
 import {
     Box,
@@ -15,11 +15,6 @@ import {
     Paper,
     Card,
     CardContent,
-    ToggleButtonGroup,
-    ToggleButton,
-    Icon,
-    CardMedia,
-    CardActionArea,
     CircularProgress,
     Dialog,
     List,
@@ -41,7 +36,6 @@ import SendIcon from "@mui/icons-material/Send";
 import Chat from "../components/chat/chat"
 import "css/solo.css"
 
-import { capitalizeFirstLetter } from "utils/stringService"
 import { useLocation, useNavigate } from "react-router-dom"
 import friendService from "services/friendService"
 import gamesService from "services/gamesService"
@@ -59,7 +53,7 @@ function MultiPublic() {
 
     const colors = ["#ff0000","#00ff00","#0000ff","#ffff00","#ff00ff","#00ffff"]
 
-    const { socket, socketService } = useSocketContext();
+    const { socketService } = useSocketContext();
     let navigate = useNavigate()
 
     const location = useLocation()
@@ -73,7 +67,8 @@ function MultiPublic() {
     const [success, setSuccess] = useState(null)
     const [error, setError] = useState(null)
 
-    const [players, setPlayers] = React.useState([])
+    const [players, setPlayers] = useState([])
+    const [initialState, setInitialState] = useState(null);
 
     function handleStart(e) {}
 
@@ -118,9 +113,17 @@ function MultiPublic() {
             setPlayers((prev) => [ ...prev, {nickname : player, cosmetic : 1} ]);
         });
 
+        socketService.listenLeavePlayers(({player}) => {
+            // TODO: fetch avatar
+            setPlayers((prev) => prev.filter((u) => u.nickname === player));
+        });
+
         return () => {
-            socketService.leaveRoom(location.state.rid, () => { console.log("left room") });
-            socketService.cleanup('server:private:player');
+            if ( initialState == null ) {
+                socketService.leaveRoom(location.state.rid, () => { console.log("left room") });
+                socketService.cleanup('server:private:player:join');
+                socketService.cleanup('server:private:player:leave');   
+            }
         }
     }, [])
 
@@ -253,7 +256,7 @@ function MultiPublic() {
                         <PlayCircleIcon />
                     }
                 >
-                    Start
+                    Comenzar partida
                 </Button>
             </div>
             <Dialog
