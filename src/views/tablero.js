@@ -194,8 +194,9 @@ export default function Tablero() {
                     position: pos
                 }
             })
-            if ( data.rollAgain === true ) {
+            if ( data.roll ) {
                 setDice(true)
+                setDiceData({roll : data.roll, cells : data.cells})
             } else {
                 setDice(false)
             }
