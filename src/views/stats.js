@@ -66,9 +66,11 @@ export default function Stats() {
             <Box sx={{borderBottom: 1, borderColor: "divider"}}>
                 <Tabs
                     value={value}
+                    onChange={handleChange}
                     variant="fullWidth"
                 >
-                    <Tab label={"Historial"}></Tab>
+                    <Tab label={"Historial Partidas Públicas"}/>
+                    <Tab label={"Historial Partidas Privadas"}/>
                 </Tabs>
             </Box>
 
@@ -83,6 +85,8 @@ export default function Stats() {
                     <PublicMatch key={idx} rid={idx} players={item} winner={item[0].nickname} />
                 )}
             </div>
+            </TabPanel>
+            <TabPanel value={value} index={1}>
             <div
                 style={{
                     marginTop:"20px",
