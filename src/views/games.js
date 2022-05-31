@@ -30,6 +30,9 @@ import { useSocketContext } from "context/socketContext"
 
 import userService from "services/userService"
 
+import PlayCircleFilledWhiteIcon from '@mui/icons-material/PlayCircleFilledWhite';
+import CloseIcon from '@mui/icons-material/Close';
+
 const DifficultyToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
     "& .MuiToggleButtonGroup-grouped": {
         margin: theme.spacing(0.5),
@@ -605,13 +608,22 @@ function Games() {
                                 />
                             </Grid>
                         </Grid>
-                        {/* Start button*/}
-                        <Grid container item justifyContent="center">
-                            {/* Difficulty*/}
+                        {/* buttons */}
+                        <Grid container item justifyContent="space-between">
+                            <Button
+                                variant="contained"
+                                size="large"
+                                color="error"
+                                onClick={() => setOpenDialog(false)}
+                                endIcon={<CloseIcon />}
+                            >
+                                Cancelar
+                            </Button>
                             <Button
                                 variant="contained"
                                 size="large"
                                 onClick={handleCreateButton}
+                                endIcon={<PlayCircleFilledWhiteIcon />}
                             >
                                 {loading ? (
                                     <CircularProgress size={25} color="light" />
@@ -619,6 +631,7 @@ function Games() {
                                     "Crear partida privada"
                                 )}
                             </Button>
+                            
                         </Grid>
                     </Grid>
                 </DialogContent>
