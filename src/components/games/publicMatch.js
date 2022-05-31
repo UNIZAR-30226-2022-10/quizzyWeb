@@ -80,7 +80,13 @@ function PublicMatch({ rid, players, winner }) {
                     gap:"10px"
                 }}
             >
-                <Icon baseClassName="fas" className="fa-crown" />
+                <div
+                    style={{
+                        color : "yellow"
+                    }}
+                >
+                    <Icon baseClassName="fas" className="fa-crown" />
+                </div>
                 <Typography
                     xs={4}
                 >

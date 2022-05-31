@@ -1,26 +1,34 @@
 import React, {useState, useEffect} from 'react'
-import Container from "@mui/material/Container"
-import Box from "@mui/material/Box"
-import {Tabs, Tab} from "@mui/material"
+import {Container,
+        Box,
+        Tab,
+        Tabs,
+        Accordion,
+        AccordionDetails
+} from "@mui/material"
 import { useTheme } from "@mui/material"
-import { Grid } from '@mui/material'
-import { Card } from '@mui/material'
-import { Typography } from '@mui/material'
-import { CardContent } from '@mui/material'
-
-import { capitalizeFirstLetter } from "utils/stringService"
 
 import PublicMatch from "../components/games/publicMatch"
+import PrivateMatch from "../components/games/privateMatch"
 
 import "index.css"
 
-const players = [
+const players1 = [
     { nickname : "hola", actual_cosmetic : 3 },
     { nickname : "hola2", actual_cosmetic : 1 },
     { nickname : "hola3", actual_cosmetic : 2 },
     { nickname : "hola4", actual_cosmetic : 5 },
     { nickname : "hola5", actual_cosmetic : 1 },
     { nickname : "hola6", actual_cosmetic : 7 },
+]
+
+const players = [
+    { nickname : "hola" , actual_cosmetic : 3, time : 15, difficulty : "easy",   help : true },
+    { nickname : "hola2", actual_cosmetic : 1, time : 20, difficulty : "easy",   help : false },
+    { nickname : "hola3", actual_cosmetic : 2, time : 15, difficulty : "medium", help : false },
+    { nickname : "hola4", actual_cosmetic : 5, time : 20, difficulty : "easy",   help : true },
+    { nickname : "hola5", actual_cosmetic : 1, time : 15, difficulty : "medium", help : false },
+    { nickname : "hola6", actual_cosmetic : 7, time : 5,  difficulty : "hard",   help : true },
 ]
 
 export default function Stats() {
@@ -74,16 +82,33 @@ export default function Stats() {
             </Box>
 
             <TabPanel value={value} index={0}>
-                <div
-                    style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: "1rem"
-                    }}>
-                    {matches.map((item, idx) =>
-                        <PublicMatch key={idx} rid={idx} players={item} winner={item[0].nickname} />
-                    )}
-                </div>
+            <div
+                style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "1rem"
+                }}>
+                {matches.map((item, idx) =>
+                    <PublicMatch key={idx} rid={idx} players={item} winner={item[0].nickname} />
+                    /*
+                    <PrivateMatch key={idx} rid={idx} time={15} difficulty={"hard"} help={false} players={item} winner={item[0].nickname} />
+                    */
+                )}
+            </div>
+            <div
+                style={{
+                    marginTop:"20px",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "1rem"
+                }}>
+                {matches.map((item, idx) =>
+                    /*
+                    <PublicMatch key={idx} rid={idx} players={item} winner={item[0].nickname} />
+                    */
+                    <PrivateMatch key={idx} rid={idx} time={15} difficulty={"hard"} help={false} players={item} winner={item[0].nickname} />
+                )}
+            </div>
             </TabPanel>
         </Container>
     )
