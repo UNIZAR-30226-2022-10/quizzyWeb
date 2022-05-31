@@ -181,7 +181,7 @@ export default function Tablero() {
     const handleMovement = async (area) => {
         let pos = area.id
         
-        socketService.makeMove({ rid, pos }, state.public, (data) => {
+        socketService.makeMove({ rid, pos }, state.pub, (data) => {
             if (data.ok === false) {
                 return
             } 
