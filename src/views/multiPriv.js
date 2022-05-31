@@ -4,7 +4,7 @@
  * Module: - Game / Multi / Priv
  * Description: - Start menu to begin a multi party
  */
-import React, { useState } from "react"
+import React, { useEffect, useRef, useState } from "react"
 
 import {
     Box,
@@ -33,7 +33,6 @@ import {
     Snackbar,
     Alert,
 } from "@mui/material"
-import { styled } from "@mui/material/styles"
 
 import PlayCircleIcon from "@mui/icons-material/PlayCircle";
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
@@ -46,55 +45,7 @@ import { capitalizeFirstLetter } from "utils/stringService"
 import { useLocation, useNavigate } from "react-router-dom"
 import friendService from "services/friendService"
 import gamesService from "services/gamesService"
-
-const DifficultyToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
-    "& .MuiToggleButtonGroup-grouped": {
-        margin: theme.spacing(0.5),
-        border: 0,
-        "&:not(:first-of-type)": {
-            borderRadius: theme.shape.borderRadius,
-        },
-        "&:first-of-type": {
-            borderRadius: theme.shape.borderRadius,
-        },
-        "&.Mui-disabled": {
-            border: 0,
-        },
-        "&.Mui-selected": {
-            fontWeight: "bold",
-            "&:not(:first-of-type)": {
-                backgroundColor: "#ffffba",
-            },
-            "&:last-of-type": {
-                backgroundColor: "#ffb3ba",
-            },
-            "&:first-of-type": {
-                backgroundColor: "#baffc9",
-            },
-            color: "black",
-        },
-    },
-}))
-const TimerToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
-    "& .MuiToggleButtonGroup-grouped": {
-        margin: theme.spacing(0.5),
-        border: 0,
-        "&:not(:first-of-type)": {
-            borderRadius: theme.shape.borderRadius,
-        },
-        "&:first-of-type": {
-            borderRadius: theme.shape.borderRadius,
-        },
-        "&.Mui-disabled": {
-            border: 0,
-        },
-        "&.Mui-selected": {
-            fontWeight: "bold",
-            backgroundColor: "#bae1ff",
-            color: "black",
-        },
-    },
-}))
+import { useSocketContext } from "context/socketContext";
 
 function cosmeticssrcSet(id) {
     return {
@@ -105,70 +56,26 @@ function cosmeticssrcSet(id) {
 }
 
 function MultiPublic() {
+
+    const colors = ["#ff0000","#00ff00","#0000ff","#ffff00","#ff00ff","#00ffff"]
+
+    const { socket, socketService } = useSocketContext();
     let navigate = useNavigate()
 
     const location = useLocation()
 
     const [friends, setFriends] = useState([])
     const [friendsLoading, setFriendsLoading] = useState(false)
-    const [difficulty, setDifficulty] = React.useState("medium")
-    const [categories, setCategories] = React.useState({
-        History: true,
-        Science: true,
-        Geography: true,
-        Sports: true,
-        Entertainment: true,
-        Art: true,
-    })
-    const [timer, setTimer] = React.useState("15")
+    
     const [openInviteDialog, setOpenInviteDialog] = useState(false)
 
     // success and error snackbar message
     const [success, setSuccess] = useState(null)
     const [error, setError] = useState(null)
 
-    const [jugadores] = React.useState([
-        "Jugador1",
-        "Jugador2",
-        "Jugador3",
-        "Jugador4",
-        "Jugador5",
-        "Jugador6",
-    ])
+    const [players, setPlayers] = React.useState([])
 
     function handleStart(e) {}
-
-    const handleDifficulty = (event, data) => {
-        if (data !== null) {
-            setDifficulty(data)
-        }
-    }
-
-    const handleTimer = (event, data) => {
-        if (data !== null) {
-            setTimer(data)
-        }
-    }
-
-    const handleCategory = (data) => {
-        // if data in categories is true, set to false
-        // else set to true
-        setCategories({
-            ...categories,
-            [data]: !categories[data],
-        })
-    }
-
-    const chosenCategory = () => {
-        let chosenCategory = []
-        //if element is true push element to array
-        for (let key in categories) {
-            if (categories[key]) {
-                chosenCategory.push(key)
-            }
-        }
-        return chosenCategory
-    }
 
     const handleClickInvite = async (e) => {
         e.preventDefault()
@@ -201,6 +108,21 @@ function MultiPublic() {
                 }
             })
     }
+
+    useEffect(() => {
+        console.log("location : ", location.state)
+        setPlayers(location.state.players);
+
+        socketService.listenNewPlayers((nickname) => {
+            // TODO: fetch avatar
+            setPlayers((prev) => [ ...prev, {nickname, cosmetic : 1} ]);
+        });
+
+        return () => {
+            socketService.leaveRoom(location.state.rid, () => { console.log("left room") });
+            socketService.cleanup('server:private:player');
+        }
+    }, [])
 
     return (
         <Container
@@ -266,194 +188,21 @@ function MultiPublic() {
                         item
                         justifyContent="center"
                     >
-                        {Object.keys(jugadores).map((item) => (
-                            <Grid item xs={12} key={item}>
-                                <Card
-                                    sx={{
-                                        opacity: jugadores[item] ? "1" : "0.4",
-                                        backgroundColor: jugadores[item]
-                                            ? "#fff"
-                                            : "#C0C1B7",
-                                    }}
-                                >
+                        {players.map((item, key) => (
+                            <Grid item xs={20} md={24} key={key}>
+                                <Card>
                                     <CardContent sx={{ textAlign: "center" }}>
-                                        <Typography
-                                            variant="h6"
-                                            gutterBottom
-                                            component="div"
-                                        >
-                                            {capitalizeFirstLetter(jugadores[item])}
-                                        </Typography>
+                                        <Avatar
+                                            src={process.env.PUBLIC_URL + "/images/cosmetics/cosmetic_" + item.cosmetic + ".jpg"}
+                                            sx={{mr:1, border: `3px solid ${colors[key]}`}}
+                                        />
+                                        <Typography variant="h6" gutterBottom component="div">
+                                            {item.nickname}
+                                        </Typography> 
                                     </CardContent>
                                 </Card>
                             </Grid>
                         ))}
-                    </Grid>
-                </Paper>
-                {/* Categories & Difficulty & Timer*/}
-                <Paper
-                    elevation={5}
-                    sx={{
-                        display: "flex",
-                        flex: 1,
-                        flexDirection: "column",
-                        margin: "10px",
-                        mb: 2,
-                        p: 2,
-                        borderRadius: "20px",
-                    }}
-                >
-                    {/* Categories */}
-                    <Grid container rowSpacing={1}>
-                        <Typography
-                            align="center"
-                            color="text.secondary"
-                            component="p"
-                        >
-                            Unselect the categories you don't want to play with and
-                            the difficulty of the questions you want to answer and
-                            the maximum response time !
-                        </Typography>
-                        {/* Categories*/}
-                        <Typography
-                            variant="h6"
-                            component="div"
-                            sx={{
-                                display: "flex",
-                                alignItems: "center",
-                                marginRight: "8px",
-                                fontWeight: "bold",
-                            }}
-                        >
-                            Categories:
-                        </Typography>
-                        <Grid
-                            container
-                            item
-                            justifyContent="center"
-                            spacing={1}
-                            display="flex"
-                            flexWrap="row wrap"
-                        >
-                            {Object.keys(categories).map((item) => (
-                                <Grid item xs={6} md={4} key={item}>
-                                    <Card
-                                        sx={{
-                                            opacity: categories[item] ? "1" : "0.4",
-                                            backgroundColor: categories[item]
-                                                ? "#fff"
-                                                : "#C0C1B7",
-                                        }}
-                                    >
-                                        <CardActionArea
-                                            onClick={() => {
-                                                handleCategory(item)
-                                            }}
-                                        >
-                                            <CardMedia
-                                                component="img"
-                                                height="50"
-                                                image={
-                                                    process.env.PUBLIC_URL +
-                                                    "/images/category/" +
-                                                    item.toLowerCase() +
-                                                    ".png"
-                                                }
-                                                alt={item}
-                                            />
-                                            <CardContent
-                                                sx={{ textAlign: "center" }}
-                                            >
-                                                <Typography
-                                                    variant="h6"
-                                                    gutterBottom
-                                                    component="div"
-                                                >
-                                                    {capitalizeFirstLetter(item)}
-                                                </Typography>
-                                            </CardContent>
-                                        </CardActionArea>
-                                    </Card>
-                                </Grid>
-                            ))}
-                        </Grid>
-                    </Grid>
-                    <Grid container item justifyContent="space-between">
-                        {/* Difficulty*/}
-                        <Grid
-                            container
-                            item
-                            xs={12}
-                            md={6}
-                            justifyContent="center"
-                            flexDirection="column"
-                        >
-                            <Typography
-                                variant="h6"
-                                component="div"
-                                sx={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    marginRight: "8px",
-                                    fontWeight: "bold",
-                                }}
-                            >
-                                Difficulty :
-                            </Typography>
-                            <DifficultyToggleButtonGroup
-                                color="primary"
-                                value={difficulty}
-                                exclusive
-                                onChange={handleDifficulty}
-                                aria-label="choose difficulty"
-                            >
-                                <ToggleButton value="easy" aria-label="easy">
-                                    <Icon baseClassName="fas" className="fa-baby" />{" "}
-                                    Easy
-                                </ToggleButton>
-                                <ToggleButton value="medium" aria-label="medium">
-                                    <Icon baseClassName="fas" className="fa-user" />{" "}
-                                    Medium
-                                </ToggleButton>
-                                <ToggleButton value="hard" aria-label="hard">
-                                    <Icon baseClassName="fas" className="fa-skull" />{" "}
-                                    Hard
-                                </ToggleButton>
-                            </DifficultyToggleButtonGroup>
-
-                            <Typography
-                                variant="h6"
-                                component="div"
-                                sx={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    marginRight: "8px",
-                                    fontWeight: "bold",
-                                }}
-                            >
-                                Response time :
-                            </Typography>
-                            <TimerToggleButtonGroup
-                                color="primary"
-                                value={timer}
-                                exclusive
-                                onChange={handleTimer}
-                                aria-label="choose maximum response time "
-                            >
-                                <ToggleButton value="10" aria-label="10">
-                                    10s
-                                </ToggleButton>
-                                <ToggleButton value="15" aria-label="15">
-                                    15s
-                                </ToggleButton>
-                                <ToggleButton value="20" aria-label="20">
-                                    20s
-                                </ToggleButton>
-                                <ToggleButton value="30" aria-label="30">
-                                    30s
-                                </ToggleButton>
-                            </TimerToggleButtonGroup>
-                        </Grid>
                     </Grid>
                 </Paper>
             </div>
