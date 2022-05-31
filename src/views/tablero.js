@@ -85,7 +85,8 @@ export default function Tablero() {
     }
 
     function startTurn() {
-        socketService.startTurn(rid, (res) => {
+        console.log("state : ", state)
+        socketService.startTurn(rid, state.public, (res) => {
             console.log("server respond to : STARTTURN ", res)
             if (res.ok === false) {
                 setQuestion(false)
@@ -130,6 +131,7 @@ export default function Tablero() {
 
         return (() => {
             socketService.cleanup("server:turn");
+            socketService.cleanup("server:timeout");
         })
     }, [])
 
@@ -153,7 +155,7 @@ export default function Tablero() {
         let pos = area.id
         console.log()
         
-        socketService.makeMove({ rid, pos }, (data) => {
+        socketService.makeMove({ rid, pos }, state.public, (data) => {
             if (data.ok === false) {
                 
             } else if ( data.rollAgain === true ) {
@@ -440,6 +442,7 @@ export default function Tablero() {
                     onCloseDialog={() => {
                         setQuestion(false)
                     }}
+                    pub={state.pub}
                 />
             </Dialog>
         </Grid>

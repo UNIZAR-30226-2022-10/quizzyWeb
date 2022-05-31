@@ -4,7 +4,7 @@
  * Module: - Game / Multi / Priv
  * Description: - Start menu to begin a multi party
  */
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useRef, useState } from "react"
 
 import {
     Box,
@@ -68,9 +68,14 @@ function MultiPublic() {
     const [error, setError] = useState(null)
 
     const [players, setPlayers] = useState([])
-    const [initialState, setInitialState] = useState(null);
+    const gameStartedRef = useRef();
 
-    function handleStart(e) {}
+    const handleStart = (e) => {
+        e.preventDefault()
+        socketService.startGame(location.state.rid, ({ok, msg}) => {
+            if ( !ok ) setError("Error al comenzar la partida : " + msg);
+        })
+    }
 
     const handleClickInvite = async (e) => {
         e.preventDefault()
@@ -105,7 +110,7 @@ function MultiPublic() {
     }
 
     useEffect(() => {
-        console.log("location : ", location.state)
+        gameStartedRef.current = false;
         setPlayers(location.state.players);
 
         socketService.listenNewPlayers(({player}) => {
@@ -118,12 +123,19 @@ function MultiPublic() {
             setPlayers((prev) => prev.filter((u) => u.nickname === player));
         });
 
+        socketService.turn((args) => {
+            console.log("args :", args);
+            gameStartedRef.current = true;
+            navigate(`/tablero/${location.state.rid}`, { state: { players : args.stats, pub : false } });
+        })
+
         return () => {
-            if ( initialState == null ) {
+            if ( gameStartedRef.current === false ) {
                 socketService.leaveRoom(location.state.rid, () => { console.log("left room") });
-                socketService.cleanup('server:private:player:join');
-                socketService.cleanup('server:private:player:leave');   
             }
+            socketService.cleanup('server:turn');
+            socketService.cleanup('server:private:player:join');
+            socketService.cleanup('server:private:player:leave');
         }
     }, [])
 

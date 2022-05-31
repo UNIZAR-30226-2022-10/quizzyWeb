@@ -69,20 +69,21 @@ function SocketProvider({children}) {
         if (socket) socket.on("server:turn", cb);
     }
 
-    const startTurn = (rid, cb) => {
-        if (socket) socket.emit("public:startTurn", { rid }, cb);
+    const startTurn = (rid, pub, cb) => {
+        console.log(`${pub ? "public" : "private"}:startTurn`, " to ", rid);
+        if (socket) socket.emit(`${pub ? "public" : "private"}:startTurn`, { rid }, cb);
     }
 
-    const answerQuestion = (answer, cb) => {
-        if (socket) socket.emit("public:answer", answer, cb);
+    const answerQuestion = (answer, pub, cb) => {
+        if (socket) socket.emit(`${pub ? "public" : "private"}:answer`, answer, cb);
+    }
+
+    const makeMove = (args, pub, cb) => {
+        if (socket) socket.emit(`${pub ? "public" : "private"}:makeMove`, args, cb);
     }
 
     const questionTimeout= (cb) => {
         if (socket) socket.on("server:timeout", cb);
-    }
-
-    const makeMove = (args, cb) => {
-        if (socket) socket.emit("public:makeMove", args, cb);
     }
 
     const createPrivateMatch = ( args, cb ) => {
@@ -95,6 +96,10 @@ function SocketProvider({children}) {
 
     const leaveRoom = (rid, cb) => {
         if (socket) socket.emit("private:leave", { rid }, cb)
+    }
+
+    const startGame = (rid, cb) => {
+        if (socket) socket.emit("private:start", { rid }, cb)
     }
 
     const listenNewPlayers = (cb) => {
@@ -116,7 +121,6 @@ function SocketProvider({children}) {
         initSocket,
         disconnectSocket,
         sendMessage,
-        leaveRoom,
         subscribeToMessages,
         joinPublicMatch,
         leavePublicMatch,
@@ -127,6 +131,8 @@ function SocketProvider({children}) {
         makeMove,
         createPrivateMatch,
         joinPrivateMatch,
+        leaveRoom,
+        startGame,
         listenNewPlayers,
         listenLeavePlayers,
         cleanup,
