@@ -62,7 +62,7 @@ export default function QuestionMulti(props) {
         if (!answered) {
             clearInterval(timerInterval)
             socketService.answerQuestion(answer.string, (data) => {
-                if (data.ok) {
+                if (data.ok && !data?.continue === false) {
                     setTimeout(() => {
                         props.onCorrectAnswer(data.roll)
                     }, 3000)
