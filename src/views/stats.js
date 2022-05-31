@@ -13,22 +13,13 @@ import PrivateMatch from "../components/games/privateMatch"
 
 import "index.css"
 
-const players1 = [
+const players = [
     { nickname : "hola", actual_cosmetic : 3 },
     { nickname : "hola2", actual_cosmetic : 1 },
     { nickname : "hola3", actual_cosmetic : 2 },
     { nickname : "hola4", actual_cosmetic : 5 },
     { nickname : "hola5", actual_cosmetic : 1 },
     { nickname : "hola6", actual_cosmetic : 7 },
-]
-
-const players = [
-    { nickname : "hola" , actual_cosmetic : 3, time : 15, difficulty : "easy",   help : true },
-    { nickname : "hola2", actual_cosmetic : 1, time : 20, difficulty : "easy",   help : false },
-    { nickname : "hola3", actual_cosmetic : 2, time : 15, difficulty : "medium", help : false },
-    { nickname : "hola4", actual_cosmetic : 5, time : 20, difficulty : "easy",   help : true },
-    { nickname : "hola5", actual_cosmetic : 1, time : 15, difficulty : "medium", help : false },
-    { nickname : "hola6", actual_cosmetic : 7, time : 5,  difficulty : "hard",   help : true },
 ]
 
 export default function Stats() {
@@ -90,9 +81,6 @@ export default function Stats() {
                 }}>
                 {matches.map((item, idx) =>
                     <PublicMatch key={idx} rid={idx} players={item} winner={item[0].nickname} />
-                    /*
-                    <PrivateMatch key={idx} rid={idx} time={15} difficulty={"hard"} help={false} players={item} winner={item[0].nickname} />
-                    */
                 )}
             </div>
             <div
@@ -103,9 +91,6 @@ export default function Stats() {
                     gap: "1rem"
                 }}>
                 {matches.map((item, idx) =>
-                    /*
-                    <PublicMatch key={idx} rid={idx} players={item} winner={item[0].nickname} />
-                    */
                     <PrivateMatch key={idx} rid={idx} time={15} difficulty={"hard"} help={false} players={item} winner={item[0].nickname} />
                 )}
             </div>
