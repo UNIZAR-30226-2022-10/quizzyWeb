@@ -42,7 +42,7 @@ const categories = [
     {name : "entertainment", color: 'pink'},
 ]
 export default function Tablero() {
-    const rid = useParams().rid
+    const rid = parseInt(useParams().rid);
     const { state } = useLocation()
     const [players,setPlayers] = useState(state.players);
 
@@ -99,10 +99,11 @@ export default function Tablero() {
     const startTurn = () => {
         //TODO: FIX ERROR WHEN RESPONDING TO QUICK TO QUESTION IT DON'T THE QUESTION
         setQuestion(false)
-        socketService.startTurn(rid, state.public, (res) => {
+        console.log(state)
+        socketService.startTurn(rid, state.pub, (res) => {
             console.log("server respond to : STARTTURN ", res)
             if (res.ok === false) {
-                console.log("error starting turn")  
+                console.log("error starting turn : ", res.msg)  
             } else {
                 setQuestion(res.currentQuestion)
                 setQuestionTimeout(res.timeout/1000)

@@ -70,8 +70,13 @@ function SocketProvider({children}) {
     }
 
     const startTurn = (rid, pub, cb) => {
-        console.log(`${pub ? "public" : "private"}:startTurn`, " to ", rid);
-        if (socket) socket.emit(`${pub ? "public" : "private"}:startTurn`, { rid }, cb);
+        if (socket) {
+            console.log(rid);
+            if ( pub === true )
+                socket.emit("public:startTurn", { rid }, cb);
+            else
+                socket.emit("private:startTurn", { rid }, cb);
+        }
     }
 
     const answerQuestion = (answer, pub, cb) => {

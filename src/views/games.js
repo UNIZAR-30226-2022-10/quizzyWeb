@@ -185,6 +185,7 @@ function Games() {
                                                 cosmetic: user.data.actual_cosmetic,
                                             },
                                         ],
+                                        pub : false
                                     },
                                 },
                                 { replace: false }
@@ -218,7 +219,7 @@ function Games() {
         if (rid != null) {
             setWaiting(false)
             console.log("joined", rid)
-            navigate(`/multi/${rid}`, { replace: false })
+            navigate(`/multi/${rid}`, { state: { pub : true } }, { replace: false })
         } else {
             setError("Error al entrar en una sala pública:")
         }
