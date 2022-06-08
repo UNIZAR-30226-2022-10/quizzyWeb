@@ -196,14 +196,18 @@ export default function Tablero() {
                     position: pos
                 }
             })
+
+            console.log("data : ", data);
+
             if ( data.rollAgain === true ) {
                 setDice(true)
+                setDiceData(data)
             } else {
                 setDice(false)
+                startTurn();
             }
             
         })
-        startTurn();
     }
 
     return (
