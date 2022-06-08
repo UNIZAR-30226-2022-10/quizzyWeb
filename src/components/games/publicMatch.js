@@ -1,5 +1,4 @@
 import React from 'react'
-import { useState } from 'react'
 import { 
     Grid, 
     Card, 
@@ -8,11 +7,6 @@ import {
     Avatar
 } from '@mui/material'
 import { Typography } from '@mui/material'
-import { CardContent } from '@mui/material'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-
-
-import { capitalizeFirstLetter } from "utils/stringService"
 
 function PublicMatch({ rid, players, winner }) {
     //PublicMatch contain players, winner
