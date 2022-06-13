@@ -163,6 +163,9 @@ export default function Tablero() {
         return (() => {
             socketService.cleanup("server:turn");
             socketService.cleanup("server:timeout");
+            socketService.pauseGame(rid, state.pub, () => {
+                console.log("paused game : ", rid, state.pub);
+            });
         })
     }, [])
 
