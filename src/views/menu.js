@@ -198,7 +198,7 @@ export default function Menu() {
                             !publicGamesError &&
                                 publicGames.games.length !== 0 ? 
                                     publicGames.games.map((item, key) => (
-                                        <Match key={key} match={item} />
+                                        <Match key={key} match={item} pub={true}/>
                                     ))
                                 :
                                     <Typography variant="h6" align="center" color="white">
@@ -233,9 +233,9 @@ export default function Menu() {
                     >
                         {!privateGamesLoading &&
                             !privateGamesError &&
-                                publicGames.games.length !== 0 ? 
+                                privateGames.games.length !== 0 ? 
                                     privateGames.games.map((item, key) => (
-                                        <Match key={key} match={item} />
+                                        <Match key={key} match={item} public={false}/>
                                     ))
                                 :
                                     <Typography variant="h6" align="center" color="white">

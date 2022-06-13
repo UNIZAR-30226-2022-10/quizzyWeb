@@ -9,7 +9,7 @@ import {
 import React from 'react'
 import PlayCircleIcon from '@mui/icons-material/PlayCircle';
 
-function Match({match}) {
+function Match({match, pub}) {
 
     const handleEnterGame = (e, id) => {
         e.preventDefault();
