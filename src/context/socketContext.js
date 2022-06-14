@@ -149,7 +149,6 @@ function SocketProvider({children}) {
      */
     const startTurn = (rid, pub, cb) => {
         if (socket) {
-            console.log(rid);
             if ( pub === true )
                 socket.emit("public:startTurn", { rid }, cb);
             else
@@ -174,6 +173,11 @@ function SocketProvider({children}) {
      */
     const answerQuestion = (answer, pub, cb) => {
         if (socket) socket.emit(`${pub ? "public" : "private"}:answer`, answer, cb);
+    }
+
+    
+    const moreTime = () => {
+        if (socket) socket.emit('moreTime');
     }
 
     /**
@@ -265,6 +269,7 @@ function SocketProvider({children}) {
         startTurn,
         answerQuestion,
         questionTimeout,
+        moreTime,
         makeMove,
         hasWon,
         createPrivateMatch,
