@@ -5,7 +5,7 @@
  * Description: - Display a question and the answers from the API
  */
 
-import React from "react"
+import React, { useState } from "react"
 
 import { styled } from "@mui/material/styles"
 import Box from "@mui/material/Box"
@@ -19,9 +19,13 @@ import Card from "@mui/material/Card"
 import CardActions from "@mui/material/CardActions"
 import CardContent from "@mui/material/CardContent"
 import CardHeader from "@mui/material/CardHeader"
+import Snackbar from "@mui/material/Snackbar"
+import Alert from "@mui/material/Alert"
+import Badge from "@mui/material/Badge"
 
 import Loader from "./Loader"
 import Error from "views/error404"
+import userService from "services/userService"
 
 import {
     useQuery,
@@ -104,6 +108,14 @@ function Content(props) {
     const [readyNext, setReadyNext] = React.useState(false)
     const [timer, setTimer] = React.useState(0)
     const [answered, setAnswered] = React.useState(false)
+
+    // one joker for question
+    const [useJoker, setJoker] = React.useState(false)
+
+    // success and error snackbar message
+    const [successSnack, setSuccess] = useState(null)
+    const [errorSnack, setError] = useState(null)
+
     /* SELECT RANDOM CATEGORY */
     const randomCategory = () => {
         //get random in the categories
@@ -125,17 +137,24 @@ function Content(props) {
                 }}
             )
             //get answers in an array and randomize this array
-            const anwsers = shuffle([
-                { string: res.data.questions[0].correct_answer },
-                { string: res.data.questions[0].wrong_answer_1 },
-                { string: res.data.questions[0].wrong_answer_2 },
-                { string: res.data.questions[0].wrong_answer_3 },
+            const answers = shuffle([
+                { string: res.data.questions[0].correct_answer, disabled : false },
+                { string: res.data.questions[0].wrong_answer_1, disabled : false },
+                { string: res.data.questions[0].wrong_answer_2, disabled : false },
+                { string: res.data.questions[0].wrong_answer_3, disabled : false },
             ])
             //add answer to res.data.questions[0]
-            res.data.questions[0].answers = anwsers
+            res.data.questions[0].answers = answers
             return res.data
         }
     )
+
+    const {
+        isLoading: wildcardsLoading,
+        error: wildcardsError,
+        data: wildcards,
+        refetch: refetchWildcards,
+    } = useQuery("wildcards", userService.getWildcards)
 
     // Timer
     const tick = 400 //Refresh every X ms
@@ -178,7 +197,58 @@ function Content(props) {
         setReadyNext(false)
         setAnswered(false)
         clearInterval(timer)
+        setJoker(false)
         refetch()
+    }
+
+    // Handle use of more time joker
+    const handleMoreTime = () => {
+
+        setJoker(true)
+
+        userService.useWildcard(2)
+            .then(ok => {
+                if ( ok ) {
+                    // Look up if the user has this kind of jokers.
+                    setProgress((oldProgress) => oldProgress - 15000/(intervalS*10)) 
+                    refetchWildcards();
+                }
+            })
+            .catch(e => {
+                if ( e.response.status === 409 ) {
+                    setError("¡No tienes comodines suficientes!");
+                } else {
+                    setError("Error al usar comodín : " + e.message)
+                }
+            })
+    }
+
+    // Handle use of less answers joker
+    const handleLessAnswers = () => {
+
+        setJoker(true)
+
+        userService.useWildcard(1)
+            .then(ok => {
+                if ( ok ) {
+                    // Look up if the user has this kind of jokers.
+                    let wrong_count = 0;
+                    data.questions[0].answers.forEach((answer) => {
+                        if (answer.string !== data.questions[0].correct_answer && wrong_count < 2) {
+                            answer.disabled = true;
+                            wrong_count++;
+                        }
+                    })
+                    refetchWildcards();
+                }
+            })
+            .catch(e => {
+                if ( e.response.status === 409 ) {
+                    setError("¡No tienes comodines suficientes!");
+                } else {
+                    setError("Error al usar comodín : " + e.message)
+                }
+            })
     }
 
     // Called when the compoonent is unmounted
@@ -296,6 +366,7 @@ function Content(props) {
                                                                             : "error"
                                                                         : "secondary"
                                                                 }
+                                                                disabled={answer.disabled}
                                                                 align="center"
                                                                 fullWidth
                                                                 sx={{
@@ -348,19 +419,45 @@ function Content(props) {
                         }}
                     >
                         <Grid container item xs={3} md={12} justifyContent="center">
-                            <Button variant="contained">Bonus 1</Button>
+                            <Badge badgeContent={wildcards?.wildcards[0].cuantity} color="primary">
+                                <Button fullWidth variant="contained" onClick={handleLessAnswers} disabled={wildcards?.wildcards[0].cuantity === 0 || useJoker}>50/50</Button>
+                            </Badge>
                         </Grid>
                         <Grid container item xs={3} md={12} justifyContent="center">
-                            <Button variant="contained">Bonus 2</Button>
-                        </Grid>
-                        <Grid container item xs={3} md={12} justifyContent="center">
-                            <Button variant="contained">Bonus 3</Button>
-                        </Grid>
-                        <Grid container item xs={3} md={12} justifyContent="center">
-                            <Button variant="contained">Bonus 4</Button>
+                            <Badge badgeContent={wildcards?.wildcards[1].cuantity} color="primary">   
+                                <Button fullWidth variant="contained" onClick={handleMoreTime} disabled={wildcards?.wildcards[1].cuantity === 0 || useJoker}>Más tiempo</Button>
+                            </Badge>
                         </Grid>
                     </Grid>
                 </Grid>
+                {/* Success snackbar */}
+                <Snackbar
+                    open={successSnack !== null}
+                    autoHideDuration={6000}
+                    onClose={() => setSuccess(null)}
+                >
+                    <Alert
+                        onClose={() => setSuccess(null)}
+                        severity="success"
+                        sx={{ width: "100%" }}
+                    >
+                        {successSnack}
+                    </Alert>
+                </Snackbar>
+                {/* Error snackbar */}
+                <Snackbar
+                    open={errorSnack !== null}
+                    autoHideDuration={6000}
+                    onClose={() => setError(null)}
+                >
+                    <Alert
+                        onClose={() => setError(null)}
+                        severity="error"
+                        sx={{ width: "100%" }}
+                    >
+                        {errorSnack}
+                    </Alert>
+                </Snackbar>
             </Container>
         </QueryClientProvider>
     )
