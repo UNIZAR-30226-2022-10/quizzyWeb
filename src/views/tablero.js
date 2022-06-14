@@ -42,7 +42,7 @@ const categories = [
     {name : "entertainment", color: 'pink'},
 ]
 export default function Tablero() {
-    const rid = useParams().rid
+    const rid = parseInt(useParams().rid);
     const { state } = useLocation()
     const [players,setPlayers] = useState(state.players);
 
@@ -99,10 +99,11 @@ export default function Tablero() {
     const startTurn = () => {
         //TODO: FIX ERROR WHEN RESPONDING TO QUICK TO QUESTION IT DON'T THE QUESTION
         setQuestion(false)
-        socketService.startTurn(rid, (res) => {
+        console.log(state)
+        socketService.startTurn(rid, state.pub, (res) => {
             console.log("server respond to : STARTTURN ", res)
             if (res.ok === false) {
-                console.log("error starting turn")  
+                console.log("error starting turn : ", res.msg)  
             } else {
                 setQuestion(res.currentQuestion)
                 setQuestionTimeout(res.timeout/1000)
@@ -161,6 +162,10 @@ export default function Tablero() {
         
         return (() => {
             socketService.cleanup("server:turn");
+            socketService.cleanup("server:timeout");
+            socketService.pauseGame(rid, state.pub, () => {
+                console.log("paused game : ", rid, state.pub);
+            });
         })
     }, [])
 
@@ -182,7 +187,7 @@ export default function Tablero() {
     const handleMovement = async (area) => {
         let pos = area.id
         
-        await socketService.makeMove({ rid, pos }, (data) => {
+        socketService.makeMove({ rid, pos }, state.pub, (data) => {
             if (data.ok === false) {
                 return
             } 
@@ -194,15 +199,16 @@ export default function Tablero() {
                     position: pos
                 }
             })
+            
             if ( data.roll ) {
                 setDice(true)
                 setDiceData({roll : data.roll, cells : data.cells})
             } else {
                 setDice(false)
+                startTurn();
             }
             
         })
-        startTurn();
     }
 
     return (
@@ -409,6 +415,7 @@ export default function Tablero() {
                     onCloseDialog={() => {
                         setQuestion(false)
                     }}
+                    pub={state.pub}
                 />
             </Dialog>
 

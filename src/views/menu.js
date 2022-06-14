@@ -9,7 +9,7 @@ import {
     ListItem,
     ListItemText,
     Snackbar,
-    Alert
+    Alert,
 } from "@mui/material"
 
 import MuiAccordion from "@mui/material/Accordion"
@@ -76,8 +76,8 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
 }))
 
 export default function Menu() {
-    const { socket, socketService } = useSocketContext();
-    let navigate = useNavigate();
+    const { socket, socketService } = useSocketContext()
+    let navigate = useNavigate()
 
     // success and error snackbar message
     const [success, setSuccess] = useState(null)
@@ -106,41 +106,68 @@ export default function Menu() {
         error: invitesError,
         data: invites,
         refetch: refetchInvites,
-    } = useQuery("invites", gamesService.getInvites);
+    } = useQuery("invites", gamesService.getInvites)
 
     const handleClickAccept = (e, rid, nick) => {
-        e.preventDefault();
-        gamesService.removeInvite(rid, nick)
-        .then(() => {
-            socketService.joinPrivateMatch(rid, (args) => {
-                console.log("args : ", args)
-                if (args.ok) {
-                    navigate(
-                        "/privada",
-                        {
-                            state: {
-                                rid,
-                                players: args.players.map((p) => {
-                                    return { nickname: p, cosmetic: 1 }
-                                }),
+        e.preventDefault()
+        gamesService
+            .removeInvite(rid, nick)
+            .then(() => {
+                socketService.joinPrivateMatch(rid, (args) => {
+                    console.log("args : ", args)
+                    if (args.ok) {
+                        navigate(
+                            "/privada",
+                            {
+                                state: {
+                                    rid,
+                                    players: args.players.map((p) => {
+                                        return { nickname: p, cosmetic: 1 }
+                                    }),
+                                },
                             },
-                        },
-                        { replace: false }
-                    )
-                } else {
-                    setError("Error al unirse a la partida privada : " + args.msg)
-                }
+                            { replace: false }
+                        )
+                    } else {
+                        setError(
+                            "Error al unirse a la partida privada : " + args.msg
+                        )
+                    }
+                })
             })
-        })
-        .catch(() => {
-            setError("Error al aceptar la invitación");
-        });
+            .catch(() => {
+                setError("Error al aceptar la invitación")
+            })
     }
 
     const handleClickReject = (e, rid, nick) => {
-        e.preventDefault();
-        gamesService.removeInvite(rid, nick);
-        refetchInvites();
+        e.preventDefault()
+        gamesService.removeInvite(rid, nick)
+        refetchInvites()
+    }
+
+    const handleResume = (args, rid, pub) => {
+        if (args.ok === true) {
+            let players = Object.assign({}, ...Object.keys(args.info.stats).map((p) => (
+                {
+                    [p] : {
+                        avatar: 1,
+                        correctAnswers: [0, 0, 0, 0, 0, 0],
+                        position: args.info.stats[p].position,
+                        tokens: [false, false, false, false, false, false],
+                        totalAnswers: [0, 0, 0, 0, 0, 0],
+                    }
+                }
+            )))
+            navigate(`/tablero/${rid}`, {
+                state: {
+                    players,
+                    pub: true,
+                },
+            })
+        } else {
+            setError("Error al reanudar partida : " + args.msg)
+        }
     }
 
     return (
@@ -195,16 +222,27 @@ export default function Menu() {
                         alignItems="center"
                     >
                         {!publicGamesLoading &&
-                            !publicGamesError &&
-                                publicGames.games.length !== 0 ? 
-                                    publicGames.games.map((item, key) => (
-                                        <Match key={key} match={item} />
-                                    ))
-                                :
-                                    <Typography variant="h6" align="center" color="white">
-                                        No hay partidas públicas
-                                    </Typography>
-                        }
+                        !publicGamesError &&
+                        publicGames.games.length !== 0 ? (
+                            publicGames.games.map((item, key) => (
+                                <Match
+                                    key={key}
+                                    match={item}
+                                    pub={true}
+                                    onResume={(args) =>
+                                        handleResume(
+                                            args,
+                                            item.rid,
+                                            true,
+                                        )
+                                    }
+                                />
+                            ))
+                        ) : (
+                            <Typography variant="h6" align="center" color="white">
+                                No hay partidas públicas
+                            </Typography>
+                        )}
                     </Grid>
                 </AccordionDetails>
             </Accordion>
@@ -232,16 +270,16 @@ export default function Menu() {
                         gap="0.1rem"
                     >
                         {!privateGamesLoading &&
-                            !privateGamesError &&
-                                publicGames.games.length !== 0 ? 
-                                    privateGames.games.map((item, key) => (
-                                        <Match key={key} match={item} />
-                                    ))
-                                :
-                                    <Typography variant="h6" align="center" color="white">
-                                        No hay partidas privadas
-                                    </Typography>
-                        }
+                        !privateGamesError &&
+                        privateGames.games.length !== 0 ? (
+                            privateGames.games.map((item, key) => (
+                                <Match key={key} match={item} public={false} />
+                            ))
+                        ) : (
+                            <Typography variant="h6" align="center" color="white">
+                                No hay partidas privadas
+                            </Typography>
+                        )}
                     </Grid>
                 </AccordionDetails>
             </Accordion>
@@ -261,72 +299,75 @@ export default function Menu() {
                 <AccordionDetails>
                     <List sx={{ width: "100%" }}>
                         {!invitesLoading &&
-                            !invitesError &&
-                                invites.invites.length !== 0 ?
-                                    invites.invites.map((item, key) => (
-                                        <div key={key}>
-                                            <ListItem>
-                                                <ListItemText
-                                                    disableTypography
-                                                    primary={
-                                                        <Typography color="white" variant="b">
-                                                            {item.leader_nickname}
-                                                        </Typography>
-                                                    }
-                                                />
-                                                <div
-                                                    style={{
-                                                        display: "flex",
-                                                        gap: "1em",
-                                                    }}
+                        !invitesError &&
+                        invites.invites.length !== 0 ? (
+                            invites.invites.map((item, key) => (
+                                <div key={key}>
+                                    <ListItem>
+                                        <ListItemText
+                                            disableTypography
+                                            primary={
+                                                <Typography
+                                                    color="white"
+                                                    variant="b"
                                                 >
-                                                    <Button
-                                                        onClick={(e) =>
-                                                            handleClickAccept(
-                                                                e,
-                                                                item.rid,
-                                                                item.leader_nickname
-                                                            )
-                                                        }
-                                                        variant="contained"
-                                                        color="success"
-                                                        endIcon={
-                                                            <Icon
-                                                                baseClassName="fas"
-                                                                className="fa-check"
-                                                            />
-                                                        }
-                                                    >
-                                                        Añadir
-                                                    </Button>
-                                                    <Button
-                                                        onClick={(e) =>
-                                                            handleClickReject(
-                                                                e,
-                                                                item.rid,
-                                                                item.leader_nickname
-                                                            )
-                                                        }
-                                                        variant="contained"
-                                                        color="error"
-                                                        endIcon={
-                                                            <Icon
-                                                                baseClassName="fas"
-                                                                className="fa-xmark"
-                                                            />
-                                                        }
-                                                    >
-                                                        Eliminar
-                                                    </Button>
-                                                </div>
-                                            </ListItem>
+                                                    {item.leader_nickname}
+                                                </Typography>
+                                            }
+                                        />
+                                        <div
+                                            style={{
+                                                display: "flex",
+                                                gap: "1em",
+                                            }}
+                                        >
+                                            <Button
+                                                onClick={(e) =>
+                                                    handleClickAccept(
+                                                        e,
+                                                        item.rid,
+                                                        item.leader_nickname
+                                                    )
+                                                }
+                                                variant="contained"
+                                                color="success"
+                                                endIcon={
+                                                    <Icon
+                                                        baseClassName="fas"
+                                                        className="fa-check"
+                                                    />
+                                                }
+                                            >
+                                                Añadir
+                                            </Button>
+                                            <Button
+                                                onClick={(e) =>
+                                                    handleClickReject(
+                                                        e,
+                                                        item.rid,
+                                                        item.leader_nickname
+                                                    )
+                                                }
+                                                variant="contained"
+                                                color="error"
+                                                endIcon={
+                                                    <Icon
+                                                        baseClassName="fas"
+                                                        className="fa-xmark"
+                                                    />
+                                                }
+                                            >
+                                                Eliminar
+                                            </Button>
                                         </div>
-                                    ))
-                                :
-                                    <Typography variant="h6" align="center" color="white">
-                                        No hay invitaciones
-                                    </Typography>
-                        }
+                                    </ListItem>
+                                </div>
+                            ))
+                        ) : (
+                            <Typography variant="h6" align="center" color="white">
+                                No hay invitaciones
+                            </Typography>
+                        )}
                     </List>
                 </AccordionDetails>
             </Accordion>

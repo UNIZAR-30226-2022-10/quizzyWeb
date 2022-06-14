@@ -60,7 +60,7 @@ function MultiPublic() {
         // go to tablero
         let timeout = setTimeout(() => {
             const players = jugadoresRef.current
-            navigate(`/tablero/${rid}`, { state: {players} });
+            navigate(`/tablero/${rid}`, { state: {players, pub : true} });
         }, 5000);
         
 

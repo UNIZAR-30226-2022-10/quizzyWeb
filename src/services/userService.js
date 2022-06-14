@@ -21,9 +21,9 @@ const getWildcards = () => {
 }
 
 // Set the current user cosmetic
-const setWildcard = async () => {
+const useWildcard = async (id) => {
     return await axios
-        .get(API_URL + "/user/wildcards", { headers: authHeader() })
+        .put(API_URL + `/user/use?id=${id}`, {}, { headers: authHeader() })
         .then((response) => {
             return response.data
         })
@@ -57,7 +57,7 @@ const searchUsers = async (nickname) => {
 const userService = {
     getCosmetics,
     getWildcards,
-    setWildcard,
+    useWildcard,
     getUser,
     equipCosmetic,
     searchUsers
