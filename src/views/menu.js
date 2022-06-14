@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react"
 import {
     Container,
-    Paper,
     Typography,
     Icon,
     Button,
@@ -9,7 +8,8 @@ import {
     List,
     ListItem,
     ListItemText,
-    Divider
+    Snackbar,
+    Alert,
 } from "@mui/material"
 
 import MuiAccordion from "@mui/material/Accordion"
@@ -76,7 +76,13 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
 }))
 
 export default function Menu() {
+    const { socket, socketService } = useSocketContext()
     let navigate = useNavigate()
+
+    // success and error snackbar message
+    const [success, setSuccess] = useState(null)
+    const [error, setError] = useState(null)
+
     function handleGames(e) {
         navigate("/games", { replace: false })
     }
@@ -100,19 +106,68 @@ export default function Menu() {
         error: invitesError,
         data: invites,
         refetch: refetchInvites,
-    } = useQuery("invites", gamesService.getInvites);
+    } = useQuery("invites", gamesService.getInvites)
 
     const handleClickAccept = (e, rid, nick) => {
-        e.preventDefault();
-        gamesService.removeInvite(rid, nick);
-        navigate("/privada", { state: { rid } })
-        refetchInvites();
+        e.preventDefault()
+        gamesService
+            .removeInvite(rid, nick)
+            .then(() => {
+                socketService.joinPrivateMatch(rid, (args) => {
+                    console.log("args : ", args)
+                    if (args.ok) {
+                        navigate(
+                            "/privada",
+                            {
+                                state: {
+                                    rid,
+                                    players: args.players.map((p) => {
+                                        return { nickname: p, cosmetic: 1 }
+                                    }),
+                                },
+                            },
+                            { replace: false }
+                        )
+                    } else {
+                        setError(
+                            "Error al unirse a la partida privada : " + args.msg
+                        )
+                    }
+                })
+            })
+            .catch(() => {
+                setError("Error al aceptar la invitación")
+            })
     }
 
     const handleClickReject = (e, rid, nick) => {
-        e.preventDefault();
-        gamesService.removeInvite(rid, nick);
-        refetchInvites();
+        e.preventDefault()
+        gamesService.removeInvite(rid, nick)
+        refetchInvites()
+    }
+
+    const handleResume = (args, rid, pub) => {
+        if (args.ok === true) {
+            let players = Object.assign({}, ...Object.keys(args.info.stats).map((p) => (
+                {
+                    [p] : {
+                        avatar: 1,
+                        correctAnswers: [0, 0, 0, 0, 0, 0],
+                        position: args.info.stats[p].position,
+                        tokens: [false, false, false, false, false, false],
+                        totalAnswers: [0, 0, 0, 0, 0, 0],
+                    }
+                }
+            )))
+            navigate(`/tablero/${rid}`, {
+                state: {
+                    players,
+                    pub: true,
+                },
+            })
+        } else {
+            setError("Error al reanudar partida : " + args.msg)
+        }
     }
 
     return (
@@ -167,10 +222,27 @@ export default function Menu() {
                         alignItems="center"
                     >
                         {!publicGamesLoading &&
-                            !publicGamesError &&
+                        !publicGamesError &&
+                        publicGames.games.length !== 0 ? (
                             publicGames.games.map((item, key) => (
-                                <Match key={key} match={item} />
-                            ))}
+                                <Match
+                                    key={key}
+                                    match={item}
+                                    pub={true}
+                                    onResume={(args) =>
+                                        handleResume(
+                                            args,
+                                            item.rid,
+                                            true,
+                                        )
+                                    }
+                                />
+                            ))
+                        ) : (
+                            <Typography variant="h6" align="center" color="white">
+                                No hay partidas públicas
+                            </Typography>
+                        )}
                     </Grid>
                 </AccordionDetails>
             </Accordion>
@@ -198,10 +270,16 @@ export default function Menu() {
                         gap="0.1rem"
                     >
                         {!privateGamesLoading &&
-                            !privateGamesError &&
+                        !privateGamesError &&
+                        privateGames.games.length !== 0 ? (
                             privateGames.games.map((item, key) => (
-                                <Match key={key} match={item} />
-                            ))}
+                                <Match key={key} match={item} public={false} />
+                            ))
+                        ) : (
+                            <Typography variant="h6" align="center" color="white">
+                                No hay partidas privadas
+                            </Typography>
+                        )}
                     </Grid>
                 </AccordionDetails>
             </Accordion>
@@ -221,14 +299,18 @@ export default function Menu() {
                 <AccordionDetails>
                     <List sx={{ width: "100%" }}>
                         {!invitesLoading &&
-                            !invitesError &&
+                        !invitesError &&
+                        invites.invites.length !== 0 ? (
                             invites.invites.map((item, key) => (
                                 <div key={key}>
                                     <ListItem>
                                         <ListItemText
                                             disableTypography
                                             primary={
-                                                <Typography color="white" variant="b">
+                                                <Typography
+                                                    color="white"
+                                                    variant="b"
+                                                >
                                                     {item.leader_nickname}
                                                 </Typography>
                                             }
@@ -280,10 +362,43 @@ export default function Menu() {
                                         </div>
                                     </ListItem>
                                 </div>
-                            ))}
+                            ))
+                        ) : (
+                            <Typography variant="h6" align="center" color="white">
+                                No hay invitaciones
+                            </Typography>
+                        )}
                     </List>
                 </AccordionDetails>
             </Accordion>
+            {/* Success snackbar */}
+            <Snackbar
+                open={success !== null}
+                autoHideDuration={6000}
+                onClose={() => setSuccess(null)}
+            >
+                <Alert
+                    onClose={() => setSuccess(null)}
+                    severity="success"
+                    sx={{ width: "100%" }}
+                >
+                    {success}
+                </Alert>
+            </Snackbar>
+            {/* Error snackbar */}
+            <Snackbar
+                open={error !== null}
+                autoHideDuration={6000}
+                onClose={() => setError(null)}
+            >
+                <Alert
+                    onClose={() => setError(null)}
+                    severity="error"
+                    sx={{ width: "100%" }}
+                >
+                    {error}
+                </Alert>
+            </Snackbar>
         </Container>
     )
 }

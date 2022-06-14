@@ -39,14 +39,14 @@ function MultiPublic() {
         await socketService.turn( (data) => {
             console.log("Turn received");
             // Get player information
-            const playersData = {}
+            const playersData = data.stats
             Object.keys(data.stats).map( async (key,index) => {
                 await userService.searchUsers(key)
                     .then((res) => {
                         const user = res.data.results[0]
                         playersData[key] = {
-                            avatar: user.actual_cosmetic,
-                            position: 0
+                            ...playersData[key],
+                            avatar: user.actual_cosmetic
                         }
                     }
                 )
@@ -60,7 +60,7 @@ function MultiPublic() {
         // go to tablero
         let timeout = setTimeout(() => {
             const players = jugadoresRef.current
-            navigate(`/tablero/${rid}`, { state: {players} });
+            navigate(`/tablero/${rid}`, { state: {players, pub : true} });
         }, 5000);
         
 

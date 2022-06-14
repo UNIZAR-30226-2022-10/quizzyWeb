@@ -61,8 +61,8 @@ export default function QuestionMulti(props) {
     const handleAnswer = (answer,index) => {
         if (!answered) {
             clearInterval(timerInterval)
-            socketService.answerQuestion(answer.string, (data) => {
-                if (data.ok) {
+            socketService.answerQuestion(answer.string, props.pub, (data) => {
+                if (data.ok && !data?.continue === false) {
                     setTimeout(() => {
                         props.onCorrectAnswer(data.roll)
                     }, 3000)
@@ -115,17 +115,10 @@ export default function QuestionMulti(props) {
             displayResp()
         })
         // start timer
-        const timeout = setTimeout(() => {
-            handleTimer()
-            return () => {
-                clearInterval(timerInterval)
-            }
-        }, 2000)
+        handleTimer()
         // cleanup useeffect
         return () => {
             clearInterval(timerInterval)
-            clearTimeout(timeout)
-            //TODO: stop listening to timeout on leave
         }
     }, [])
 

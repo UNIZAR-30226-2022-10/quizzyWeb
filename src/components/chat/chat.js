@@ -17,7 +17,7 @@ function DateToHoursAndMinutes(datestring) {
     return date.toLocaleTimeString().slice(0, 5)
 }
 
-function Chat() {
+function Chat({rid}) {
     const [user,setUser] = useOutletContext();
     const { socket, socketService } = useSocketContext();
 
@@ -29,6 +29,11 @@ function Chat() {
         socketService.subscribeToMessages((err, data) => {
             setMessages((prev) => [...prev, data])
         })
+        return () => {
+            socketService.cleanup("chat:message");
+            socketService.cleanup("otherConnect");
+            socketService.cleanup("otherDisconnect");
+        }
     }, [token])
 
     const submitMessage = (e) => {
@@ -36,7 +41,7 @@ function Chat() {
         const message = chatMessage
         if (message) {
             let username = user.nickname
-            socketService.sendMessage({ username, message, roomName: 'main' }, (cb) => {
+            socketService.sendMessage({ username, message, roomName: rid }, (cb) => {
                 // clear the input after the message is sent
                 setChatMessage("")
                 setMessages((prev) => [...prev, {username:'Me', message: message, self: true}])
@@ -67,7 +72,7 @@ function Chat() {
                 className="chat-messages"
             >
                 {messages.map((item, k) => (
-                    <>
+                    <div key={k}>
                         {item.message ? (
                             <UserMessage
                                 key={"user-message-"+k}
@@ -106,7 +111,7 @@ function Chat() {
                                 )}
                             </>
                         )}
-                    </>
+                    </div>
                 ))}
             </Grid>
             <Grid item>

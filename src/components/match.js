@@ -8,12 +8,17 @@ import {
 } from '@mui/material'
 import React from 'react'
 import PlayCircleIcon from '@mui/icons-material/PlayCircle';
+import { useSocketContext } from 'context/socketContext';
 
-function Match({match}) {
+function Match({match, pub, onResume}) {
+
+    const { socket, socketService } = useSocketContext();
 
     const handleEnterGame = (e, id) => {
         e.preventDefault();
-        alert(id);
+        
+        // resume match
+        socketService.resumeGame(match.rid, pub, onResume)
     }
 
     return (
