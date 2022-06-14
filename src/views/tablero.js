@@ -51,6 +51,7 @@ export default function Tablero() {
 
     const [loading, setLoading] = useState(false)
 
+    const [displayQuestion, setDisplayQuestion] = useState(false)
     const [question, setQuestion] = useState(false)
     const [questionTimeout, setQuestionTimeout] = useState(null)
     const [winner, setWinner] = useState(null)
@@ -76,7 +77,6 @@ export default function Tablero() {
 
     // Set players position in map
     useEffect(() => {
-        console.log("players or cases changed", players)
         let newPlayersPos = []
         Object.keys(players).forEach((key, index) => {
             newPlayersPos.push({
@@ -97,14 +97,14 @@ export default function Tablero() {
     },[players])
 
     const startTurn = () => {
-        //TODO: FIX ERROR WHEN RESPONDING TO QUICK TO QUESTION IT DON'T THE QUESTION
-        setQuestion(false)
-        console.log(state)
+        setDisplayQuestion(false)
         socketService.startTurn(rid, state.pub, (res) => {
-            console.log("server respond to : STARTTURN ", res)
+            console.log("server respond to : STARTTURN ")
             if (res.ok === false) {
                 console.log("error starting turn : ", res.msg)  
             } else {
+                console.log(res.currentQuestion.correct_answer)
+                setDisplayQuestion(true)
                 setQuestion(res.currentQuestion)
                 setQuestionTimeout(res.timeout/1000)
             }
@@ -126,13 +126,13 @@ export default function Tablero() {
         return () => window.removeEventListener("resize", handleResize)
     }, [])
 
-    //  0 - Listeners
+    //  1 - Listeners
     useEffect(() => {
         startTurn()
 
         socketService.turn((data) => {
-            console.log("server emits : TURN", data, user)
-            if (data.turns === user.nickname) {
+            console.log("server emits : TURN", data)
+            if (data.turns && data.turns === user.nickname) {
                 startTurn()
             }
             // Update players from data.stats
@@ -173,6 +173,11 @@ export default function Tablero() {
     const handleCorrectAnswer = (data) => {
         setDiceData(data)
         setDice(true)
+    }
+
+    // 2bis . on wrong answer set dice
+    const handleCloseDialog = () => {
+        setDisplayQuestion(false)
     }
 
     // 3. setReachableCases
@@ -401,7 +406,7 @@ export default function Tablero() {
 
             {/* Question */}
             <Dialog
-                open={!!question}
+                open={displayQuestion}
                 disableEscapeKeyDown
                 onClose={(event) => event.preventDefault()}
                 onBackdropClick={(event) => event.preventDefault()}
@@ -414,9 +419,7 @@ export default function Tablero() {
                     question={question}
                     timer={questionTimeout || 15}
                     onCorrectAnswer={handleCorrectAnswer}
-                    onCloseDialog={() => {
-                        setQuestion(false)
-                    }}
+                    onCloseDialog={handleCloseDialog}
                     pub={state.pub}
                 />
             </Dialog>

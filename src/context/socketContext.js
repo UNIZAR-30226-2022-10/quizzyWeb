@@ -149,7 +149,6 @@ function SocketProvider({children}) {
      */
     const startTurn = (rid, pub, cb) => {
         if (socket) {
-            console.log(rid);
             if ( pub === true )
                 socket.emit("public:startTurn", { rid }, cb);
             else

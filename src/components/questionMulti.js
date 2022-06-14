@@ -23,7 +23,6 @@ import {
 import { useSocketContext } from "context/socketContext"
 // CUSTOM COMPONENTS
 import { styled } from "@mui/material/styles"
-import { responsiveProperty } from '@mui/material/styles/cssUtils';
 const CustomLinearProgress = styled(LinearProgress)({
     height: "15px",
     borderRadius: "20px",
@@ -141,7 +140,7 @@ export default function QuestionMulti(props) {
             clearInterval(timerInterval)
             setTimeout(() => {
                 handleCloseDialog()
-            }, 5000)
+            }, 3000)
     }
 
     return (
