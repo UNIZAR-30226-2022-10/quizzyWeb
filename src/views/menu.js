@@ -273,7 +273,18 @@ export default function Menu() {
                         !privateGamesError &&
                         privateGames.games.length !== 0 ? (
                             privateGames.games.map((item, key) => (
-                                <Match key={key} match={item} public={false} />
+                                <Match
+                                    key={key}
+                                    match={item}
+                                    pub={false}
+                                    onResume={(args) =>
+                                        handleResume(
+                                            args,
+                                            item.rid,
+                                            false,
+                                        )
+                                    }
+                                />
                             ))
                         ) : (
                             <Typography variant="h6" align="center" color="white">
