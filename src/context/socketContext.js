@@ -175,6 +175,11 @@ function SocketProvider({children}) {
         if (socket) socket.emit(`${pub ? "public" : "private"}:answer`, answer, cb);
     }
 
+    
+    const moreTime = () => {
+        if (socket) socket.emit('moreTime');
+    }
+
     /**
      * 
      * @param {Object} args 
@@ -264,6 +269,7 @@ function SocketProvider({children}) {
         startTurn,
         answerQuestion,
         questionTimeout,
+        moreTime,
         makeMove,
         hasWon,
         createPrivateMatch,
