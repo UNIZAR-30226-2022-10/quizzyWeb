@@ -39,18 +39,17 @@ import "css/solo.css"
 import { useLocation, useNavigate } from "react-router-dom"
 import friendService from "services/friendService"
 import gamesService from "services/gamesService"
+import userService from "services/userService"
 import { useSocketContext } from "context/socketContext";
 
 function cosmeticssrcSet(id) {
     return {
         src: process.env.PUBLIC_URL + "/images/cosmetics/cosmetic_" + id + ".jpg",
-
         srcSet: process.env.PUBLIC_URL + "/images/cosmetics/cosmetic_" + id + ".jpg",
     }
 }
 
-function MultiPublic() {
-
+function MultiPriv() {
     const colors = ["#ff0000","#00ff00","#0000ff","#ffff00","#ff00ff","#00ffff"]
 
     const { socketService } = useSocketContext();
@@ -68,6 +67,8 @@ function MultiPublic() {
     const [error, setError] = useState(null)
 
     const [players, setPlayers] = useState([])
+    const playersRef = React.useRef(players);
+    playersRef.current = players;
     const gameStartedRef = useRef();
 
     const handleStart = (e) => {
@@ -109,24 +110,51 @@ function MultiPublic() {
             })
     }
 
-    useEffect(() => {
+    useEffect( async () => {
         gameStartedRef.current = false;
-        setPlayers(location.state.players);
 
-        socketService.listenNewPlayers(({player}) => {
-            // TODO: fetch avatar
-            setPlayers((prev) => [ ...prev, {nickname : player, cosmetic : 1} ]);
+        // Get the information of players already in the room
+        // TODO: FIX ISSUE : Cosmetic are set in state but not rendered correclty for the last player in room until another player joins and update the state
+        const playersData = location.state.players
+        await playersData.map( async (player,index) => {
+            await userService.searchUsers(player.nickname)
+                .then((res) => {
+                    const cosmetic = res.data.results[0].actual_cosmetic
+                    playersData[index] = {
+                        ...playersData[index],
+                        cosmetic: cosmetic
+                    }
+                }
+            )
+        })
+        setPlayers(playersData)
+
+        socketService.listenNewPlayers(async ({player}) => {
+            var cosmetic = null;
+            await userService.searchUsers(player)
+                .then((res) => {
+                    cosmetic = res.data.results[0].actual_cosmetic
+                }
+            )
+            setPlayers((prev) => [ ...prev, {nickname : player, cosmetic : cosmetic} ]);
         });
 
         socketService.listenLeavePlayers(({player}) => {
-            // TODO: fetch avatar
-            setPlayers((prev) => prev.filter((u) => u.nickname === player));
+            setPlayers((prev) => prev.filter((u) => u.nickname !== player));
         });
 
+        // Begin
         socketService.turn((args) => {
             console.log("args :", args);
             gameStartedRef.current = true;
-            navigate(`/tablero/${location.state.rid}`, { state: { players : args.stats, pub : false } });
+            const jugadores = args.stats
+            Object.keys(jugadores).map((keyName) => {
+                playersRef.current.forEach((player) => {
+                    if (player.nickname === keyName) 
+                        jugadores[keyName].cosmetic = player.cosmetic
+                })
+            })
+            navigate(`/tablero/${location.state.rid}`, { state: { players : jugadores, pub : false } });
         })
 
         return () => {
@@ -204,12 +232,12 @@ function MultiPublic() {
                         justifyContent="center"
 
                     >
-                        {players.map((item, key) => (
+                        {playersRef.current.map((item, key) => (
                             <Grid item xs={20} md={24} key={key}>
                                 <Card>
                                     <CardContent sx={{display:'flex', wrap: 'nowrap'}}>
                                         <Avatar
-                                            src={process.env.PUBLIC_URL + "/images/cosmetics/cosmetic_" + item.cosmetic + ".jpg"}
+                                            src={cosmeticssrcSet(item.cosmetic).src}
                                             sx={{mr:1, border: `3px solid ${colors[key]}`}}
                                         />
                                         <Typography variant="h6" gutterBottom component="div">
@@ -355,4 +383,4 @@ function MultiPublic() {
     )
 }
 
-export default MultiPublic
+export default MultiPriv

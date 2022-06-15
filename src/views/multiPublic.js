@@ -46,7 +46,7 @@ function MultiPublic() {
                         const user = res.data.results[0]
                         playersData[key] = {
                             ...playersData[key],
-                            avatar: user.actual_cosmetic
+                            cosmetic: user.actual_cosmetic
                         }
                     }
                 )
@@ -120,7 +120,7 @@ function MultiPublic() {
                                 <Card>
                                     <CardContent sx={{display:'flex', wrap: 'nowrap'}}>
                                         <Avatar
-                                            src={process.env.PUBLIC_URL + "/images/cosmetics/cosmetic_" + jugadores[key].avatar + ".jpg"}
+                                            src={process.env.PUBLIC_URL + "/images/cosmetics/cosmetic_" + jugadores[key].cosmetic + ".jpg"}
                                             sx={{mr:1, border: `3px solid ${colors[index]}`}}
                                         />
                                         <Typography variant="h6" gutterBottom component="div">

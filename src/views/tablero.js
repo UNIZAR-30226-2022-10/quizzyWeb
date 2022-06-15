@@ -87,7 +87,7 @@ export default function Tablero() {
                 fillColor: "blue",
                 strokeColor: colors[index],
                 lineWidth: 6,
-                cosmeticId: players[key].avatar,
+                cosmeticId: players[key].cosmetic,
             })
         })
         setMap((prevState) => ({
@@ -356,7 +356,7 @@ export default function Tablero() {
                                     src={
                                         process.env.PUBLIC_URL +
                                         "/images/cosmetics/cosmetic_" +
-                                        players[key].avatar +
+                                        players[key].cosmetic +
                                         ".jpg"
                                     }
                                     alt="Avatar"
