@@ -147,6 +147,7 @@ export default function Menu() {
     }
 
     const handleResume = (args, rid, pub) => {
+        console.log("aa")
         if (args.ok === true) {
             let players = Object.assign({}, ...Object.keys(args.info.stats).map((p) => (
                 {
@@ -162,7 +163,7 @@ export default function Menu() {
             navigate(`/tablero/${rid}`, {
                 state: {
                     players,
-                    pub: true,
+                    pub,
                 },
             })
         } else {
@@ -273,7 +274,18 @@ export default function Menu() {
                         !privateGamesError &&
                         privateGames.games.length !== 0 ? (
                             privateGames.games.map((item, key) => (
-                                <Match key={key} match={item} public={false} />
+                                <Match
+                                    key={key}
+                                    match={item}
+                                    pub={false}
+                                    onResume={(args) =>
+                                        handleResume(
+                                            args,
+                                            item.rid,
+                                            false,
+                                        )
+                                    }
+                                />
                             ))
                         ) : (
                             <Typography variant="h6" align="center" color="white">
