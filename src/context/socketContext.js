@@ -217,6 +217,10 @@ function SocketProvider({children}) {
         if (socket) socket.emit("private:join", { rid }, cb)
     }
 
+    const wildcardsStatus = (rid, cb) => {
+        if (socket) socket.emit("private:wildcardsStatus",{ rid }, cb)
+    }
+
     const leaveRoom = (rid, cb) => {
         if (socket) socket.emit("private:leave", { rid }, cb)
     }
@@ -274,6 +278,7 @@ function SocketProvider({children}) {
         hasWon,
         createPrivateMatch,
         joinPrivateMatch,
+        wildcardsStatus,
         leaveRoom,
         startGame,
         listenNewPlayers,

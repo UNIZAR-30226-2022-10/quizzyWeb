@@ -51,6 +51,7 @@ export default function QuestionMulti(props) {
     // Props
     const question =  props.question;
     const timer = props.timer;
+    const wildcardsEnable = props.wildcardsEnable;
     // Socket
     const { socketService } = useSocketContext();
     // State
@@ -109,7 +110,7 @@ export default function QuestionMulti(props) {
                     // Look up if the user has this kind of jokers.
                     let wrong_count = 0;
                     // Select two random element in the array
-                    while (wrong_count !== 2 ) {
+                    while (wrong_count <= 2 ) {
                         const index = Math.floor(Math.random() * answers.length);
                         if ( answers[index].string !== question.correct_answer ) {
                             answers[index].disabled = true;
@@ -339,12 +340,13 @@ export default function QuestionMulti(props) {
             >
                 <Grid container item xs={3} md={12} justifyContent="center">
                     <Badge badgeContent={wildcards?.wildcards[0].cuantity} color="primary">
-                        <Button fullWidth variant="contained" onClick={handleLessAnswers} disabled={wildcards?.wildcards[0].cuantity === 0 || joker}>50/50</Button>
+                        <Button fullWidth variant="contained" onClick={handleLessAnswers} disabled={wildcards?.wildcards[0].cuantity === 0 || !wildcardsEnable || joker}>50/50</Button>
                     </Badge>
                 </Grid>
                 <Grid container item xs={3} md={12} justifyContent="center">
-                    <Badge badgeContent={wildcards?.wildcards[1].cuantity} color="primary">   
-                        <Button fullWidth variant="contained" onClick={handleMoreTime} disabled={wildcards?.wildcards[1].cuantity === 0 || joker}>Más tiempo</Button>
+                    <Badge badgeContent={wildcards?.wildcards[1].cuantity} color="primary">  
+                        
+                        <Button fullWidth variant="contained" onClick={handleMoreTime} disabled={wildcards?.wildcards[1].cuantity === 0 || !wildcardsEnable || joker}>Más tiempo</Button>
                     </Badge>
                 </Grid>
             </Grid>

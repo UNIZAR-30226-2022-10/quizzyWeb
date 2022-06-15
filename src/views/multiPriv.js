@@ -145,7 +145,7 @@ function MultiPriv() {
 
         // Begin
         socketService.turn((args) => {
-            console.log("args :", args);
+            console.log("server:turn args :", args);
             gameStartedRef.current = true;
             const jugadores = args.stats
             Object.keys(jugadores).map((keyName) => {
@@ -154,7 +154,7 @@ function MultiPriv() {
                         jugadores[keyName].cosmetic = player.cosmetic
                 })
             })
-            navigate(`/tablero/${location.state.rid}`, { state: { players : jugadores, pub : false } });
+            navigate(`/tablero/${location.state.rid}`, { state: { players : jugadores, timer : args.timer/1000, pub : false } });
         })
 
         return () => {

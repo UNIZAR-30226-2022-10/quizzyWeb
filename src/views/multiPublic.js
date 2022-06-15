@@ -30,17 +30,20 @@ function MultiPublic() {
 
     const [counter, setCounter] = React.useState(5)
     const [jugadores, setJugadores] = React.useState({})
+    const [timer, setTimer] = React.useState(null)
+    const timerRef = React.useRef(timer);
+    timerRef.current = timer;
     const jugadoresRef = React.useRef(jugadores);
     jugadoresRef.current = jugadores;
 
     const colors = ["#ff0000","#00ff00","#0000ff","#ffff00","#ff00ff","#00ffff"]
     // Listen if the game is ready to start
     React.useEffect(async () => {
-        await socketService.turn( (data) => {
+        await socketService.turn((args) => {
             console.log("Turn received");
             // Get player information
-            const playersData = data.stats
-            Object.keys(data.stats).map( async (key,index) => {
+            const playersData = args.stats
+            Object.keys(args.stats).map( async (key,index) => {
                 await userService.searchUsers(key)
                     .then((res) => {
                         const user = res.data.results[0]
@@ -52,6 +55,7 @@ function MultiPublic() {
                 )
             })
             setJugadores(playersData)
+            setTimer(args.timer/1000)
         })
         // decrease from 5 to 0 
         let interval = setInterval(() => {
@@ -60,7 +64,7 @@ function MultiPublic() {
         // go to tablero
         let timeout = setTimeout(() => {
             const players = jugadoresRef.current
-            navigate(`/tablero/${rid}`, { state: {players, pub : true} });
+            navigate(`/tablero/${rid}`, { state: {players, timer: timerRef.current , pub : true} });
         }, 5000);
         
 

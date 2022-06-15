@@ -53,7 +53,8 @@ export default function Tablero() {
 
     const [displayQuestion, setDisplayQuestion] = useState(false)
     const [question, setQuestion] = useState(false)
-    const [questionTimeout, setQuestionTimeout] = useState(null)
+    const [questionTimeout] = useState(state.timer || null)
+    const [wildcardsEnable, setWildcardsEnable] = useState(false)
     const [winner, setWinner] = useState(null)
 
     const gridRef = useRef()
@@ -103,10 +104,9 @@ export default function Tablero() {
             if (res.ok === false) {
                 console.log("error starting turn : ", res.msg)  
             } else {
-                console.log(res.currentQuestion.correct_answer)
+                //console.log(res.currentQuestion.correct_answer)
                 setDisplayQuestion(true)
                 setQuestion(res.currentQuestion)
-                setQuestionTimeout(res.timeout/1000)
             }
         })
     };
@@ -159,6 +159,12 @@ export default function Tablero() {
                 setWinner(data.winner)
             }
         })
+
+        socketService.wildcardsStatus(rid ,(data) => {
+            if (data.ok)
+                setWildcardsEnable(data.status)
+        })
+
         
         return (() => {
             socketService.cleanup("server:turn");
@@ -415,6 +421,7 @@ export default function Tablero() {
                 <QuestionMulti
                     key={question?.question_id}
                     question={question}
+                    wildcardsEnable={wildcardsEnable}
                     timer={questionTimeout || 15}
                     onCorrectAnswer={handleCorrectAnswer}
                     onCloseDialog={handleCloseDialog}
