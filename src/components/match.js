@@ -12,10 +12,11 @@ import { useSocketContext } from 'context/socketContext';
 
 function Match({match, pub, onResume}) {
 
-    const { socket, socketService } = useSocketContext();
+    const { socketService } = useSocketContext();
 
-    const handleEnterGame = (e, id) => {
+    const handleEnterGame = (e) => {
         e.preventDefault();
+        console.log("resume")
         
         // resume match
         socketService.resumeGame(match.rid, pub, onResume)
@@ -56,7 +57,7 @@ function Match({match, pub, onResume}) {
                 <Button 
                     variant="contained"
                     color="secondary"
-                    onClick={(e) => handleEnterGame(e, match.rid)}
+                    onClick={handleEnterGame}
                     endIcon={<PlayCircleIcon />}
                 >
                     Entrar

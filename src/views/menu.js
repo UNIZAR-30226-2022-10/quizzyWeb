@@ -147,6 +147,7 @@ export default function Menu() {
     }
 
     const handleResume = (args, rid, pub) => {
+        console.log("aa")
         if (args.ok === true) {
             let players = Object.assign({}, ...Object.keys(args.info.stats).map((p) => (
                 {
@@ -162,7 +163,7 @@ export default function Menu() {
             navigate(`/tablero/${rid}`, {
                 state: {
                     players,
-                    pub: true,
+                    pub,
                 },
             })
         } else {
