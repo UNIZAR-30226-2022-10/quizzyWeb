@@ -53,8 +53,12 @@ export default function Tablero() {
 
     const [displayQuestion, setDisplayQuestion] = useState(false)
     const [question, setQuestion] = useState(false)
+    const [closeQuestionTimeout, setCloseQuestionTimeout] = useState(null)
+    const [newQuestion, setNewQuestion] = useState(false)
+    const newQuestionRef = useRef(newQuestion);
+    newQuestionRef.current = newQuestion;
     const [questionTimeout] = useState(state.timer || null)
-    const [wildcardsEnable, setWildcardsEnable] = useState(false)
+    const [wildcardsEnable, setWildcardsEnable] = useState(state.pub ? true : false)
     const [winner, setWinner] = useState(null)
 
     const gridRef = useRef()
@@ -105,6 +109,7 @@ export default function Tablero() {
                 console.log("error starting turn : ", res.msg)  
             } else {
                 //console.log(res.currentQuestion.correct_answer)
+                setNewQuestion(true)
                 setDisplayQuestion(true)
                 setQuestion(res.currentQuestion)
             }
@@ -183,7 +188,12 @@ export default function Tablero() {
 
     // 2bis . on wrong answer set dice
     const handleCloseDialog = () => {
-        setDisplayQuestion(false)
+        setNewQuestion(false)
+        clearTimeout(closeQuestionTimeout)
+        setCloseQuestionTimeout(setTimeout(() => {
+            if (!newQuestionRef.current)
+                setDisplayQuestion(false)
+        }, 3000))
     }
 
     // 3. setReachableCases
