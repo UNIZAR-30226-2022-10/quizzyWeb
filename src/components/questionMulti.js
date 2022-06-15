@@ -5,9 +5,11 @@
  * Description: - Display a question and the answers from the API
  */
 
-import * as React from 'react';
+import {useState, useEffect} from 'react';
 
 import {
+    Alert,
+    Badge,
     Box,
     Button,
     Card,
@@ -18,12 +20,21 @@ import {
     LinearProgress,
     Paper,
     Typography,
+    Snackbar
 } from "@mui/material"
+
+// Query
+import {useQuery} from "react-query"
+
+// Services
+import userService from "services/userService"
+
 // Socket
 import { useSocketContext } from "context/socketContext"
-// CUSTOM COMPONENTS
+
+// Custom Components
 import { styled } from "@mui/material/styles"
-import { responsiveProperty } from '@mui/material/styles/cssUtils';
+
 const CustomLinearProgress = styled(LinearProgress)({
     height: "15px",
     borderRadius: "20px",
@@ -40,10 +51,11 @@ export default function QuestionMulti(props) {
     // Props
     const question =  props.question;
     const timer = props.timer;
+    const wildcardsEnable = props.wildcardsEnable;
     // Socket
     const { socketService } = useSocketContext();
     // State
-    const [answers, setAnswers] = React.useState(() => {
+    const [answers, setAnswers] = useState(() => {
         return [
             {string : question.correct_answer}, 
             {string : question.wrong_answer_1}, 
@@ -51,11 +63,71 @@ export default function QuestionMulti(props) {
             {string : question.wrong_answer_3}
         ].sort((a,b) => Math.random() - 0.5)
     })
-    const [progress, setProgress] = React.useState(0)
-    const [done, setDone] = React.useState(false)
-    const [timerInterval, setTimerInterval] = React.useState(0)
-    const [answered, setAnswered] = React.useState(false)
+    const [progress, setProgress] = useState(0)
+    const [done, setDone] = useState(false)
+    const [timerInterval, setTimerInterval] = useState(0)
+    const [answered, setAnswered] = useState(false)
+    const [joker, setJoker] = useState(false)
 
+    // success and error snackbar message
+    const [successSnack, setSuccess] = useState(null)
+    const [errorSnack, setError] = useState(null)
+
+    const {
+        isLoading,
+        error,
+        data: wildcards,
+        refetch: refetchWildcards,
+    } = useQuery("wildcards", userService.getWildcards)
+
+    // Handle use of more time joker
+    const handleMoreTime = () => {
+        setJoker(true)
+        userService.useWildcard(2)
+            .then(ok => {
+                if ( ok ) {
+                    // Look up if the user has this kind of jokers.
+                    setProgress((oldProgress) => oldProgress - 15000/(timer*10))
+                    socketService.moreTime()
+                    refetchWildcards();
+                }
+            })
+            .catch(e => {
+                if ( e.response.status === 409 ) {
+                    setError("¡No tienes comodines suficientes!");
+                } else {
+                    setError("Error al usar comodín : " + e.message)
+                }
+            })
+    }
+
+    // Handle use of less answers joker
+    const handleLessAnswers = () => {
+        setJoker(true)
+        userService.useWildcard(1)
+            .then(ok => {
+                if ( ok ) {
+                    // Look up if the user has this kind of jokers.
+                    let wrong_count = 0;
+                    // Select two random element in the array
+                    while (wrong_count <= 2 ) {
+                        const index = Math.floor(Math.random() * answers.length);
+                        if ( answers[index].string !== question.correct_answer ) {
+                            answers[index].disabled = true;
+                            wrong_count++;
+                        }
+                    }
+                    refetchWildcards();
+                }
+            })
+            .catch(e => {
+                if ( e.response.status === 409 ) {
+                    setError("¡No tienes comodines suficientes!");
+                } else {
+                    setError("Error al usar comodín : " + e.message)
+                }
+            })
+    }
    
     // Handle answers
     const handleAnswer = (answer,index) => {
@@ -93,7 +165,7 @@ export default function QuestionMulti(props) {
 
     // Timer
     const tick = 400 //Refresh every X ms
-    var diff = (tick * 100) / (timer * 1000) // diff each tick
+    var diff = tick  / (timer * 10) // diff each tick
     const handleTimer = () => {
         setProgress(0)
         setTimerInterval(
@@ -106,7 +178,7 @@ export default function QuestionMulti(props) {
     }
  
     // Handle Timeoout
-    React.useEffect(() => {
+    useEffect(() => {
         // Listen timeout 
         socketService.questionTimeout((data) => {
             console.log("servers emit timeout : ", data)
@@ -123,7 +195,7 @@ export default function QuestionMulti(props) {
     }, [])
 
     // Detect end of timer
-    React.useEffect(() => {
+    useEffect(() => {
         if (progress === 100) {
             displayResp()
         }
@@ -141,7 +213,7 @@ export default function QuestionMulti(props) {
             clearInterval(timerInterval)
             setTimeout(() => {
                 handleCloseDialog()
-            }, 5000)
+            }, 3000)
     }
 
     return (
@@ -169,7 +241,6 @@ export default function QuestionMulti(props) {
                                 "linear-gradient(135deg, #667eea 0%, #764ba2 100%);",
                         }}
                     />
-
                     <CardContent>
                         <Paper
                             elevation={3}
@@ -218,6 +289,7 @@ export default function QuestionMulti(props) {
                                                         : "error"
                                                     : "secondary"
                                             }
+                                            disabled={answer.disabled}
                                             align="center"
                                             fullWidth
                                             sx={{
@@ -267,18 +339,45 @@ export default function QuestionMulti(props) {
                 }}
             >
                 <Grid container item xs={3} md={12} justifyContent="center">
-                    <Button variant="contained">Bonus 1</Button>
+                    <Badge badgeContent={wildcards?.wildcards[0].cuantity} color="primary">
+                        <Button fullWidth variant="contained" onClick={handleLessAnswers} disabled={wildcards?.wildcards[0].cuantity === 0 || !wildcardsEnable || joker}>50/50</Button>
+                    </Badge>
                 </Grid>
                 <Grid container item xs={3} md={12} justifyContent="center">
-                    <Button variant="contained">Bonus 2</Button>
-                </Grid>
-                <Grid container item xs={3} md={12} justifyContent="center">
-                    <Button variant="contained">Bonus 3</Button>
-                </Grid>
-                <Grid container item xs={3} md={12} justifyContent="center">
-                    <Button variant="contained">Bonus 4</Button>
+                    <Badge badgeContent={wildcards?.wildcards[1].cuantity} color="primary">  
+                        
+                        <Button fullWidth variant="contained" onClick={handleMoreTime} disabled={wildcards?.wildcards[1].cuantity === 0 || !wildcardsEnable || joker}>Más tiempo</Button>
+                    </Badge>
                 </Grid>
             </Grid>
+            {/* Success snackbar */}
+            <Snackbar
+                open={successSnack !== null}
+                autoHideDuration={6000}
+                onClose={() => setSuccess(null)}
+            >
+                <Alert
+                    onClose={() => setSuccess(null)}
+                    severity="success"
+                    sx={{ width: "100%" }}
+                >
+                    {successSnack}
+                </Alert>
+            </Snackbar>
+            {/* Error snackbar */}
+            <Snackbar
+                open={errorSnack !== null}
+                autoHideDuration={6000}
+                onClose={() => setError(null)}
+            >
+                <Alert
+                    onClose={() => setError(null)}
+                    severity="error"
+                    sx={{ width: "100%" }}
+                >
+                    {errorSnack}
+                </Alert>
+            </Snackbar>
         </Grid>
     )
 }

@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import AuthService from "services/auth"
 import { useNavigate } from "react-router-dom";
 import "index.css"
@@ -8,21 +8,73 @@ import Alert from '@mui/material/Alert'
 import AlertTitle from '@mui/material/AlertTitle'
 import Link from '@mui/material/Link'
 import Grid from '@mui/material/Grid'
-import { useForm } from 'react-hook-form';
+import { get, useForm } from 'react-hook-form';
 import { Typography } from "@mui/material";
+
+import theme from '../utils/theme'
 
 const bcrypt = require("bcryptjs")
 
 function Register() {
-    const [DBerror, setDBerror] = useState("") 
-    const [registered,setRegistered] = useState(false)
-    const { register, formState: { errors },getValues, handleSubmit } = useForm({
-        mode: "all" // "onChange"
-      });
+    const [ strength, setStrength ] = useState("");
+    const [ strengthMsg, setStrengthMsg ] = useState("");
+    const [ DBerror, setDBerror] = useState("") 
+    const [ registered,setRegistered] = useState(false)
+    const { register, watch, formState: { errors },getValues, handleSubmit } = useForm({
+        mode: 'all',
+        reValidateMode: 'onChange',
+        criteriaMode: 'all'
+    });
     const onSubmit = (data) => {
         Register(data)
     }
     let navigate = useNavigate();
+
+    /**
+     * 
+     * @param {string} password The password to validate
+     * @returns {Number} The strength of the passwordL
+     *  - 0 for bad passwords
+     *  - 1 for weak passwords
+     *  - 2 for medium passwords
+     *  - 3 for strong passwords
+     */
+    const validatePassword = (password) => {
+        console.log("Password : ", password)
+        // at least 8 characters
+        const regexPasswordWeak = /^.{8,}$/;
+
+        // At least one lowercase, one uppercase, one number. At least 8 characters
+        const regexPasswordMedium = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{8,}$/;
+
+        // At least one lowercase, one uppercase, one number and one special symbol. At least 8 characters
+        const regexPasswordStrong = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[_\-!@#$&*])(?=.*[0-9]).{8,}$/;
+
+        if ( regexPasswordStrong.test(password) ) {
+            setStrength(theme.palette.success.main);
+            setStrengthMsg("Strong password");
+        } else if ( regexPasswordMedium.test(password) ) {
+            setStrength(theme.palette.warning.main);
+            setStrengthMsg("Medium password");
+        } else if ( regexPasswordWeak.test(password) ) {
+            setStrength(theme.palette.error.main);
+            setStrengthMsg("Weak password");
+        } else {
+            setStrength(theme.palette.error.main);
+            setStrengthMsg("");
+        }
+    }
+
+    // Callback version of watch.  It's your responsibility to unsubscribe when done.
+    useEffect(() => {
+        const subscription = watch((value, { name, type }) => {
+            if ( name === 'Password' && type === 'change' ) {
+                validatePassword(value.Password);
+            }
+        });
+        return () => subscription.unsubscribe();
+    }, [watch]);
+
     const Register = async (data) => {
         setDBerror("")
         if (data.Password === data.ConfirmPassword) {
@@ -103,7 +155,15 @@ function Register() {
                                     </Typography>
                                 </div>
                                 <div className="form-group">
-                                    <label htmlFor="password">Password:</label>
+                                    <div
+                                        style={{
+                                            display: "flex",
+                                            justifyContent: "space-between",
+                                            width: "100%"
+                                        }}>
+                                        <label htmlFor="password">Password:</label>
+                                        <p style={{color : strength, fontSize: "12px", marginBottom: "5px"}}>{strengthMsg}</p>
+                                    </div>
                                     <input
                                         type="password"
                                         name="password"
@@ -115,7 +175,7 @@ function Register() {
                                                 value: 8,
                                                 message: "Password must be 8 characters or more"
                                             },
-                                        })}
+                                        })}  
                                     />
                                     <Typography variant="caption" color="error">
                                         {errors.Password && errors.Password.message}

@@ -420,12 +420,12 @@ function Content(props) {
                     >
                         <Grid container item xs={3} md={12} justifyContent="center">
                             <Badge badgeContent={wildcards?.wildcards[0].cuantity} color="primary">
-                                <Button fullWidth variant="contained" onClick={handleLessAnswers} disabled={wildcards?.wildcards[0].cuantity === 0 || useJoker}>50/50</Button>
+                                <Button fullWidth variant="contained" onClick={handleLessAnswers} disabled={wildcards?.wildcards[0].cuantity === 0 || useJoker || answered || readyNext}>50/50</Button>
                             </Badge>
                         </Grid>
                         <Grid container item xs={3} md={12} justifyContent="center">
                             <Badge badgeContent={wildcards?.wildcards[1].cuantity} color="primary">   
-                                <Button fullWidth variant="contained" onClick={handleMoreTime} disabled={wildcards?.wildcards[1].cuantity === 0 || useJoker}>Más tiempo</Button>
+                                <Button fullWidth variant="contained" onClick={handleMoreTime} disabled={wildcards?.wildcards[1].cuantity === 0 || useJoker || answered || readyNext}>Más tiempo</Button>
                             </Badge>
                         </Grid>
                     </Grid>

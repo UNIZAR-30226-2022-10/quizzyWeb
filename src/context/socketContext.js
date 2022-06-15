@@ -149,7 +149,6 @@ function SocketProvider({children}) {
      */
     const startTurn = (rid, pub, cb) => {
         if (socket) {
-            console.log(rid);
             if ( pub === true )
                 socket.emit("public:startTurn", { rid }, cb);
             else
@@ -174,6 +173,11 @@ function SocketProvider({children}) {
      */
     const answerQuestion = (answer, pub, cb) => {
         if (socket) socket.emit(`${pub ? "public" : "private"}:answer`, answer, cb);
+    }
+
+    
+    const moreTime = () => {
+        if (socket) socket.emit('moreTime');
     }
 
     /**
@@ -211,6 +215,10 @@ function SocketProvider({children}) {
     
     const joinPrivateMatch = (rid, cb) => {
         if (socket) socket.emit("private:join", { rid }, cb)
+    }
+
+    const wildcardsStatus = (rid, cb) => {
+        if (socket) socket.emit("private:wildcardsStatus",{ rid }, cb)
     }
 
     const leaveRoom = (rid, cb) => {
@@ -265,10 +273,12 @@ function SocketProvider({children}) {
         startTurn,
         answerQuestion,
         questionTimeout,
+        moreTime,
         makeMove,
         hasWon,
         createPrivateMatch,
         joinPrivateMatch,
+        wildcardsStatus,
         leaveRoom,
         startGame,
         listenNewPlayers,
