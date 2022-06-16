@@ -52,6 +52,14 @@ const getPrivateHistory = async () => {
         });
 }
 
+const getState = async () => {
+    return await axios
+        .get(API_URL + "/admin/stats", { headers: authHeader() })
+        .then((response) => {
+            return response.data
+        })
+}
+
 const gamesService = {
     getPublicGames,
     getPrivateGames,
@@ -59,7 +67,8 @@ const gamesService = {
     sendInvite,
     removeInvite,
     getPublicHistory,
-    getPrivateHistory
+    getPrivateHistory,
+    getState
 };
 
 export default gamesService;
