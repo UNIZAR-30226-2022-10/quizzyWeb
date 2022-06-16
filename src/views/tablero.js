@@ -60,6 +60,8 @@ export default function Tablero() {
     const [questionTimeout] = useState(state.timer || null)
     const [wildcardsEnable, setWildcardsEnable] = useState(state.pub ? true : false)
     const [winner, setWinner] = useState(null)
+    const winnernRef = useRef(winner);
+    winnernRef.current = winner;
 
     const gridRef = useRef()
     const [dimY, setDimY] = useState(null)
@@ -157,12 +159,9 @@ export default function Tablero() {
             setPlayers(newPlayers)
         });
 
-        socketService.hasWon((data) => {
-            console.log("server emits : HASWON", data)
-            console.log(data)
-            if (data.hasWon) {
-                setWinner(data.winner)
-            }
+        socketService.hasWon((winner) => {
+            console.log("server emits : HASWON", winner)
+            setWinner(winner)
         })
 
         socketService.wildcardsStatus(rid ,(data) => {
@@ -183,7 +182,8 @@ export default function Tablero() {
     // 2 . on correct answer set dice
     const handleCorrectAnswer = (data) => {
         setDiceData(data)
-        setDice(true)
+        if (!winnernRef.current)
+            setDice(true)
     }
 
     // 2bis . on wrong answer set dice
@@ -450,30 +450,26 @@ export default function Tablero() {
                 {winner && <>
                     <DialogTitle>{winner} has won the party</DialogTitle>
                     <DialogContent>
-                        He was won with :
+                        {winner} was won with :
                         <ul>
                             {players[winner].correctAnswers.map((cat, index) => {
                                 return (
                                     <li key={index}>
                                         {categories[index].name} :
-                                        {cat}
-                                        /
-                                        {players[winner].totalAnswers[index]}
+                                        {cat}/{players[winner].totalAnswers[index]}
                                     </li>
                                 );
                             })}
                         </ul>
                         <br></br>
-                        {(user.nickname === winner) && <>
-                            But your score is :
+                        {(user.nickname !== winner) && <>
+                            But, {user.nickname}, your score is :
                             <ul>
                                 {players[user.nickname].correctAnswers.map((cat, index) => {
                                     return (
                                         <li key={index}>
                                             {categories[index].name} :
-                                            {cat}
-                                            /
-                                            {players[user.nickname].totalAnswers[index]}
+                                            {cat}/{players[user.nickname].totalAnswers[index]}
                                         </li>
                                     );
                                 })}
@@ -483,7 +479,7 @@ export default function Tablero() {
                     </DialogContent>
                     <DialogActions>
                         <Button
-                            href="/menu"
+                            href="/"
                             variant="contained"
                             color="primary"
                         >
