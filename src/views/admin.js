@@ -22,7 +22,11 @@ import {
     Alert,
     Snackbar,
     CircularProgress,
+    InputLabel,
+    Grid,
 } from "@mui/material"
+
+import gamesService from "services/gamesService"
 
 import questionService from "../services/questionService"
 import Loader from "components/Loader"
@@ -111,6 +115,14 @@ export default function Admin() {
         refetch: refetchproposals,
     } = useQuery("proposals", questionService.getPendingProposals)
 
+    
+    const {
+        isLoading: stateLoading,
+        error: stateError,
+        data: state,
+        refetch: refetchstate,
+    } = useQuery("state", gamesService.getState)
+
     function QuestionCard({q}) {
 
         let fields = [
@@ -160,6 +172,29 @@ export default function Admin() {
             }}
             maxWidth="md"
         >
+            <Box>
+                <Typography variant="h2">
+                    Estado
+                </Typography>
+                <Grid display="flex" flexDirection="column">
+                    <Grid display="flex" justifyContent="space-between">
+                        <label>Usuarios activos: </label>
+                        <label>{!stateLoading && !stateError && state.onlineUsers}</label>
+                    </Grid>
+                    <Grid display="flex" justifyContent="space-between">
+                        <label>Partidas privadas activas: </label>
+                        <label>{!stateLoading && !stateError && state.activePrivateGames}</label>
+                    </Grid>
+                    <Grid display="flex" justifyContent="space-between">
+                        <label>Partidas públicas activas: </label>
+                        <label>{!stateLoading && !stateError && state.activePublicGames}</label>
+                    </Grid>
+                    <Grid display="flex" justifyContent="space-between">
+                        <label>Usuarios a la espera de partidas públicas: </label>
+                        <label>{!stateLoading && !stateError && state.enqueuedUsers}</label>
+                    </Grid>
+                </Grid>
+            </Box>
             <Box sx={{ margin: "1rem 0" }}>
                 <Typography variant="h2">
                     Revisión de preguntas
