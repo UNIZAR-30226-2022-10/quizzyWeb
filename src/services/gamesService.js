@@ -38,12 +38,28 @@ const removeInvite = async (rid, nickname) => {
         });
 }
 
+const getPublicHistory = async () => {
+    return await axios.get(API_URL +"/games/history/public", { headers: authHeader() })
+        .then((response) => {
+            return response.data;
+        });
+}
+
+const getPrivateHistory = async () => {
+    return await axios.get(API_URL +"/games/history/private", { headers: authHeader() })
+        .then((response) => {
+            return response.data;
+        });
+}
+
 const gamesService = {
     getPublicGames,
     getPrivateGames,
     getInvites,
     sendInvite,
-    removeInvite
+    removeInvite,
+    getPublicHistory,
+    getPrivateHistory
 };
 
 export default gamesService;

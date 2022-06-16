@@ -38,6 +38,15 @@ const getUser = async () => {
         })
 }
 
+//get cosmetic from user
+const getUserCosmetic = async (nickname) => {
+    return await axios
+        .get(API_URL + "/user/reduced", { params: {nickname} })
+        .then((response) => {
+            return response.data
+        })
+}
+
 const equipCosmetic = async (cosmeticId) => {
     return await axios
         .put(API_URL + "/user/equip", { id: cosmeticId }, { headers: authHeader() })
@@ -55,6 +64,7 @@ const searchUsers = async (nickname) => {
 }
 
 const userService = {
+    getUserCosmetic,
     getCosmetics,
     getWildcards,
     useWildcard,
