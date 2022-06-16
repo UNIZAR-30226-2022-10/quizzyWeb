@@ -22,7 +22,10 @@ import {
     Alert,
     Snackbar,
     CircularProgress,
+    InputLabel,
+    Grid,
 } from "@mui/material"
+
 
 import questionService from "../services/questionService"
 import Loader from "components/Loader"
@@ -160,6 +163,29 @@ export default function Admin() {
             }}
             maxWidth="md"
         >
+            <Box>
+                <Typography variant="h2">
+                    Estado
+                </Typography>
+                <Grid display="flex" flexDirection="column">
+                    <Grid display="flex" justifyContent="space-between">
+                        <label>Usuarios activos: </label>
+                        <label>XPEOPLE</label>
+                    </Grid>
+                    <Grid display="flex" justifyContent="space-between">
+                        <label>Partidas privadas activas: </label>
+                        <label>XPEOPLE</label>
+                    </Grid>
+                    <Grid display="flex" justifyContent="space-between">
+                        <label>Partidas públicas activas: </label>
+                        <label>XPEOPLE</label>
+                    </Grid>
+                    <Grid display="flex" justifyContent="space-between">
+                        <label>Usuarios a la espera de partidas públicas: </label>
+                        <label>XPEOPLE</label>
+                    </Grid>
+                </Grid>
+            </Box>
             <Box sx={{ margin: "1rem 0" }}>
                 <Typography variant="h2">
                     Revisión de preguntas
